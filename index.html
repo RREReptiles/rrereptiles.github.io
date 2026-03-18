@@ -3,205 +3,1812 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RREReptiles: Colorado Reptile & Aquatic Shop</title>
+    <title>Red Rocks Exotic Reptiles | Colorado Reptile &amp; Aquatic Shop</title>
+    <meta name="description" content="Red Rocks Exotic Reptiles LLC - Ethically bred geckos, skinks, arboreal lizards, aquatic plants and reptile supplies from Colorado.">
     <style>
+        /* ===== CSS RESET & VARIABLES ===== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
         :root {
-            --primary-color: #2e7d32; /* Forest Green */
-            --dark-bg: #1a1a1a;
-            --text-light: #f4f4f4;
-            --accent: #81c784;
+            --bg: #E2DCCA;
+            --accent: #9E1403;
+            --accent-hover: #7a1003;
+            --black: #1a1a1a;
+            --white: #ffffff;
+            --gray: #555;
+            --light-gray: #d5cfbf;
+            --card-bg: #ffffff;
+            --shadow: 0 2px 16px rgba(0,0,0,.10);
+            --radius: 10px;
+            --transition: .3s ease;
+            --max-w: 1200px;
         }
+
+        html { scroll-behavior: smooth; }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
-            margin: 0;
-            background-color: #ffffff;
-            color: #333;
+            background: var(--bg);
+            color: var(--black);
         }
 
-        /* Navigation */
-        nav {
-            background-color: var(--dark-bg);
-            color: white;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        img { max-width: 100%; display: block; }
+        a { color: var(--accent); text-decoration: none; transition: color var(--transition); }
+        a:hover { color: var(--accent-hover); }
+        ul { list-style: none; }
+
+        /* ===== HEADER / NAV ===== */
+        header {
+            background: var(--black);
             position: sticky;
             top: 0;
             z-index: 1000;
+            box-shadow: 0 2px 12px rgba(0,0,0,.3);
         }
 
-        nav .logo {
-            font-weight: bold;
-            font-size: 1.5rem;
-            color: var(--accent);
-        }
-
-        nav ul {
-            list-style: none;
+        .nav-container {
+            max-width: var(--max-w);
+            margin: 0 auto;
             display: flex;
-            margin: 0;
-            padding: 0;
+            justify-content: space-between;
+            align-items: center;
+            padding: .6rem 1.5rem;
         }
 
-        nav ul li {
-            margin-left: 20px;
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            color: var(--white);
+            font-weight: 700;
+            font-size: 1.15rem;
+            letter-spacing: .5px;
         }
 
-        nav ul li a {
-            color: white;
-            text-decoration: none;
-            transition: color 0.3s;
+        .logo .accent { color: var(--accent); }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
         }
 
-        nav ul li a:hover {
+        /* Desktop nav */
+        .nav-links {
+            display: flex;
+            gap: .15rem;
+        }
+
+        .nav-links a {
+            color: var(--white);
+            padding: .55rem .9rem;
+            border-radius: 6px;
+            font-size: .88rem;
+            font-weight: 500;
+            transition: background var(--transition), color var(--transition);
+            white-space: nowrap;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: var(--accent);
+            color: var(--white);
+        }
+
+        /* Hamburger */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 6px;
+            background: none;
+            border: none;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 26px;
+            height: 3px;
+            background: var(--white);
+            border-radius: 3px;
+            transition: var(--transition);
+        }
+
+        .hamburger.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+        /* Mobile nav */
+        .mobile-nav {
+            display: none;
+            flex-direction: column;
+            background: var(--black);
+            padding: 0 1.5rem 1rem;
+        }
+
+        .mobile-nav.show { display: flex; }
+
+        .mobile-nav a {
+            color: var(--white);
+            padding: .7rem 0;
+            border-bottom: 1px solid #333;
+            font-size: .95rem;
+        }
+
+        .mobile-nav a:hover,
+        .mobile-nav a.active { color: var(--accent); }
+
+        @media (max-width: 860px) {
+            .nav-links { display: none; }
+            .hamburger { display: flex; }
+        }
+
+        /* ===== PAGE SECTIONS ===== */
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* ===== HERO ===== */
+        .hero {
+            background:
+                linear-gradient(160deg, rgba(158,20,3,.85) 0%, rgba(26,26,26,.80) 100%),
+                url('https://images.unsplash.com/photo-1504450874802-0ba2bcd9b5ae?w=1400&q=80') center/cover no-repeat;
+            color: var(--white);
+            text-align: center;
+            padding: 5rem 1.5rem 4.5rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 800;
+            margin-bottom: .6rem;
+            letter-spacing: 1px;
+        }
+
+        .hero .tagline {
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            opacity: .9;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+
+        .hero-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .7rem;
+            justify-content: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .badge {
+            background: rgba(255,255,255,.15);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,.25);
+            padding: .4rem 1rem;
+            border-radius: 50px;
+            font-size: .8rem;
+            font-weight: 500;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: .75rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: .95rem;
+            cursor: pointer;
+            transition: background var(--transition), transform var(--transition);
+            border: none;
+        }
+
+        .btn:hover { transform: translateY(-2px); }
+
+        .btn-primary {
+            background: var(--white);
             color: var(--accent);
         }
 
-        /* Hero Section */
-        header {
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&w=1200&q=80'); /* Placeholder image */
-            background-size: cover;
-            background-position: center;
-            color: white;
-            text-align: center;
-            padding: 100px 20px;
+        .btn-primary:hover { background: #f0ece0; color: var(--accent); }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--white);
+            border: 2px solid var(--white);
         }
 
-        /* Content Sections */
-        section {
-            padding: 40px 10% 60px;
-            max-width: 1200px;
+        .btn-outline:hover { background: var(--white); color: var(--accent); }
+
+        .btn-accent {
+            background: var(--accent);
+            color: var(--white);
+        }
+
+        .btn-accent:hover { background: var(--accent-hover); color: var(--white); }
+
+        .hero-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+        /* ===== SECTION STYLES ===== */
+        .section {
+            max-width: var(--max-w);
+            margin: 0 auto;
+            padding: 3.5rem 1.5rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: .5rem;
+            color: var(--black);
+        }
+
+        .section-title .accent { color: var(--accent); }
+
+        .section-subtitle {
+            color: var(--gray);
+            font-size: 1.05rem;
+            margin-bottom: 2.5rem;
+            max-width: 650px;
+        }
+
+        .text-center { text-align: center; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+
+        /* ===== WELCOME COLS ===== */
+        .welcome-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .welcome-grid .text h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .welcome-grid .text p {
+            color: var(--gray);
+            margin-bottom: 1rem;
+        }
+
+        .welcome-img {
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        @media (max-width: 768px) {
+            .welcome-grid { grid-template-columns: 1fr; }
+        }
+
+        /* ===== FEATURE CARDS (Home) ===== */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 2rem 1.5rem;
+            box-shadow: var(--shadow);
+            transition: transform var(--transition);
+        }
+
+        .feature-card:hover { transform: translateY(-4px); }
+
+        .feature-icon {
+            width: 52px;
+            height: 52px;
+            background: var(--accent);
+            color: var(--white);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 { margin-bottom: .5rem; font-size: 1.1rem; }
+        .feature-card p { color: var(--gray); font-size: .92rem; }
+
+        /* ===== SHOP ===== */
+        .shop-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem;
+            margin-bottom: 2rem;
+        }
+
+        .shop-tab {
+            padding: .5rem 1.2rem;
+            border-radius: 50px;
+            border: 2px solid var(--accent);
+            background: transparent;
+            color: var(--accent);
+            font-weight: 600;
+            cursor: pointer;
+            font-size: .85rem;
+            transition: background var(--transition), color var(--transition);
+            font-family: inherit;
+        }
+
+        .shop-tab:hover,
+        .shop-tab.active {
+            background: var(--accent);
+            color: var(--white);
+        }
+
+        .shop-category { display: none; }
+        .shop-category.active { display: block; }
+
+        .shop-notice {
+            background: var(--card-bg);
+            border-left: 4px solid var(--accent);
+            padding: 1.2rem 1.5rem;
+            border-radius: 0 var(--radius) var(--radius) 0;
+            margin-bottom: 2rem;
+            font-size: .93rem;
+            color: var(--gray);
+        }
+
+        .shop-notice strong { color: var(--black); }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform var(--transition);
+        }
+
+        .product-card:hover { transform: translateY(-4px); }
+
+        .product-img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            background: var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            font-size: .9rem;
+        }
+
+        .product-info {
+            padding: 1.1rem 1.2rem;
+        }
+
+        .product-info h3 { font-size: 1.05rem; margin-bottom: .3rem; }
+        .product-info .species { color: var(--gray); font-size: .82rem; font-style: italic; margin-bottom: .5rem; }
+
+        .price {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--accent);
+        }
+
+        .product-info .inquire {
+            display: inline-block;
+            margin-top: .5rem;
+            padding: .4rem 1rem;
+            background: var(--accent);
+            color: var(--white);
+            border-radius: 50px;
+            font-size: .8rem;
+            font-weight: 600;
+        }
+
+        .product-info .inquire:hover { background: var(--accent-hover); color: var(--white); }
+
+        /* ===== ABOUT ===== */
+        .about-hero {
+            background: var(--black);
+            color: var(--white);
+            padding: 3.5rem 1.5rem;
+        }
+
+        .about-hero .section {
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            .about-content { grid-template-columns: 1fr; }
+        }
+
+        .about-content h2 { font-size: 1.8rem; margin-bottom: 1rem; }
+        .about-content p { color: #ccc; margin-bottom: 1rem; }
+
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .value-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .value-card h4 {
+            color: var(--accent);
+            margin-bottom: .5rem;
+            font-size: 1.05rem;
+        }
+
+        .value-card p { color: var(--gray); font-size: .9rem; }
+
+        .vision-mission {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            .vision-mission { grid-template-columns: 1fr; }
+        }
+
+        .vm-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border-top: 4px solid var(--accent);
+        }
+
+        .vm-card h3 { color: var(--accent); margin-bottom: .7rem; }
+        .vm-card p { color: var(--gray); font-size: .93rem; }
+
+        /* ===== SOCIALS ===== */
+        .socials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .social-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: transform var(--transition);
+        }
+
+        .social-card:hover { transform: translateY(-4px); }
+
+        .social-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin: 0 auto 1rem;
+            color: var(--white);
+        }
+
+        .social-card h3 { margin-bottom: .5rem; }
+        .social-card p { color: var(--gray); font-size: .9rem; margin-bottom: 1rem; }
+
+        /* ===== REPTILOG ===== */
+        .reptilog-hero {
+            background:
+                linear-gradient(160deg, rgba(158,20,3,.9) 0%, rgba(26,26,26,.85) 100%);
+            color: var(--white);
+            padding: 4rem 1.5rem;
+            text-align: center;
+        }
+
+        .reptilog-hero h2 {
+            font-size: 2.4rem;
+            margin-bottom: .5rem;
+        }
+
+        .reptilog-hero p {
+            max-width: 650px;
+            margin: 0 auto 2rem;
+            opacity: .9;
+        }
+
+        .reptilog-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            max-width: 800px;
             margin: 0 auto;
         }
 
-        .welcome-text {
+        .rl-feature {
+            background: rgba(255,255,255,.12);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,.2);
+            border-radius: var(--radius);
+            padding: 1.5rem;
             text-align: center;
-            font-size: 1.1rem;
         }
 
-        /* Parent Animals Grid */
-        .parent-grid {
+        .rl-feature .icon { font-size: 2rem; margin-bottom: .5rem; }
+        .rl-feature h4 { margin-bottom: .3rem; }
+        .rl-feature p { font-size: .85rem; opacity: .85; }
+
+        /* ===== CARE GUIDES ===== */
+        .guides-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .guide-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform var(--transition);
+        }
+
+        .guide-card:hover { transform: translateY(-4px); }
+
+        .guide-icon {
+            width: 52px;
+            height: 52px;
+            min-width: 52px;
+            background: var(--accent);
+            color: var(--white);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .guide-card h4 { margin-bottom: .2rem; font-size: 1rem; }
+        .guide-card p { color: var(--gray); font-size: .82rem; }
+
+        /* ===== FAQ ACCORDION ===== */
+        .faq-item {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            margin-bottom: .8rem;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .faq-question {
+            width: 100%;
+            background: none;
+            border: none;
+            text-align: left;
+            padding: 1.2rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--black);
+            font-family: inherit;
+        }
+
+        .faq-question:hover { color: var(--accent); }
+
+        .faq-arrow {
+            transition: transform var(--transition);
+            font-size: 1.2rem;
+            color: var(--accent);
+        }
+
+        .faq-item.open .faq-arrow { transform: rotate(180deg); }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .35s ease, padding .35s ease;
+            padding: 0 1.5rem;
+            color: var(--gray);
+            font-size: .93rem;
+        }
+
+        .faq-item.open .faq-answer {
+            max-height: 600px;
+            padding: 0 1.5rem 1.2rem;
+        }
+
+        .shipping-info {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
         }
 
-        .animal-card {
-            border: 1px solid #ddd;
-            border-radius: 8px;
+        .ship-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border-top: 4px solid var(--accent);
+        }
+
+        .ship-card h3 { color: var(--accent); margin-bottom: .5rem; font-size: 1.05rem; }
+        .ship-card p, .ship-card li { color: var(--gray); font-size: .9rem; }
+        .ship-card ul { padding-left: 1.2rem; list-style: disc; }
+        .ship-card ul li { margin-bottom: .3rem; }
+
+        /* ===== MEET THE PARENTS ===== */
+        .parents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .parent-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
             overflow: hidden;
+            box-shadow: var(--shadow);
             text-align: center;
-            background: #f9f9f9;
+            transition: transform var(--transition);
         }
 
-        .animal-card img {
+        .parent-card:hover { transform: translateY(-4px); }
+
+        .parent-card img {
             width: 100%;
             height: 200px;
             object-fit: cover;
         }
 
-        .animal-card h3 {
-            margin: 10px 0 5px;
-            color: var(--primary-color);
+        .parent-card .info {
+            padding: 1rem;
         }
 
-        /* Footer */
+        .parent-card .info h4 { font-size: .95rem; margin-bottom: .2rem; }
+        .parent-card .info p { color: var(--gray); font-size: .8rem; font-style: italic; }
+
+        /* ===== FOOTER ===== */
         footer {
-            background-color: var(--dark-bg);
-            color: white;
+            background: var(--black);
+            color: #aaa;
+            padding: 3rem 1.5rem 1.5rem;
+        }
+
+        .footer-grid {
+            max-width: var(--max-w);
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-grid h4 {
+            color: var(--white);
+            margin-bottom: .8rem;
+            font-size: 1rem;
+        }
+
+        .footer-grid p,
+        .footer-grid a {
+            color: #aaa;
+            font-size: .88rem;
+            line-height: 1.8;
+        }
+
+        .footer-grid a:hover { color: var(--accent); }
+
+        .footer-bottom {
+            max-width: var(--max-w);
+            margin: 0 auto;
             text-align: center;
-            padding: 40px 20px;
-            margin-top: 50px;
+            padding-top: 1.5rem;
+            border-top: 1px solid #333;
+            font-size: .82rem;
         }
 
-        .contact-info {
-            margin-bottom: 20px;
+        /* ===== UTILITIES ===== */
+        .divider {
+            width: 60px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+            margin-bottom: 1.5rem;
         }
 
-        .social-links a {
-            color: var(--accent);
-            margin: 0 10px;
-            text-decoration: none;
+        .text-center .divider { margin-left: auto; margin-right: auto; }
+
+        .img-placeholder {
+            background: var(--light-gray);
+            border-radius: var(--radius);
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            font-size: .9rem;
         }
+
+        .contact-strip {
+            background: var(--accent);
+            color: var(--white);
+            text-align: center;
+            padding: 2.5rem 1.5rem;
+        }
+
+        .contact-strip h3 { font-size: 1.5rem; margin-bottom: .5rem; }
+        .contact-strip p { opacity: .9; margin-bottom: 1.5rem; }
+
+        .contact-methods {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .contact-methods a {
+            color: var(--white);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+        }
+
+        .contact-methods a:hover { opacity: .8; color: var(--white); }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
     </style>
 </head>
+
 <body>
-
-    <nav>
-        <div class="logo">RRE Reptiles</div>
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="#">Shop</a></li>
-            <li><a href="#">About Us</a></li>
-            <li><a href="#">Care Guides</a></li>
-            <li><a href="#">FAQ</a></li>
-        </ul>
-    </nav>
-
+    <!-- ===== HEADER ===== -->
     <header>
-        <h1>Red Rocks Exotic Reptiles</h1>
-        <p>Specializing in Geckos, Skinks, and Aquatic Goods</p>
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-icon">&#129422;</div>
+                <span><span class="accent">Red Rocks</span> Exotic Reptiles</span>
+            </div>
+            <nav class="nav-links">
+                <a href="#" data-page="home" class="active">Home</a>
+                <a href="#" data-page="shop">Shop</a>
+                <a href="#" data-page="about">About Us</a>
+                <a href="#" data-page="socials">Socials</a>
+                <a href="#" data-page="reptilog">ReptiLog</a>
+                <a href="#" data-page="care">Care Guides</a>
+                <a href="#" data-page="faq">Shipping/FAQs</a>
+            </nav>
+            <button class="hamburger" id="hamburger" aria-label="Toggle navigation">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+        <nav class="mobile-nav" id="mobileNav">
+            <a href="#" data-page="home" class="active">Home</a>
+            <a href="#" data-page="shop">Shop</a>
+            <a href="#" data-page="about">About Us</a>
+            <a href="#" data-page="socials">Socials</a>
+            <a href="#" data-page="reptilog">ReptiLog</a>
+            <a href="#" data-page="care">Care Guides</a>
+            <a href="#" data-page="faq">Shipping/FAQs</a>
+        </nav>
     </header>
 
-    <section>
-        <h2>Welcome to Our Website!</h2>
-        <p class="welcome-text">
-            We sell all sorts of geckos, skinks, arboreal lizards, and other reptile supplies and insect feeders! 
-            We also offer aquatic plants and aquarium keeping goods. We are always looking to expand our 
-            breeding efforts and business, so feel free to reach out to us with trade suggestions or questions!
-        </p>
-    </section>
+    <!-- ================================================================= -->
+    <!--                          HOME PAGE                                -->
+    <!-- ================================================================= -->
+    <div class="page active" id="page-home">
 
-    <section style="background-color: #f0f0f0; max-width: 100%;">
-        <div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
-            <h2>About Our Business</h2>
-            <p>Formed in Colorado in 2023, what started as a lifelong hobby turned into a full-blown business. 
-               We finally decided that we want to help diversify the breeding of particular reptile species.</p>
+        <!-- Hero -->
+        <section class="hero">
+            <div class="hero-badges">
+                <span class="badge">&#127466;&#127480; Colorado Based</span>
+                <span class="badge">&#9877;&#65039; Veteran Owned</span>
+                <span class="badge">&#129426; Ethically Bred</span>
+                <span class="badge">&#127793; Aquatic Plants</span>
+            </div>
+            <h1>Red Rocks Exotic Reptiles</h1>
+            <p class="tagline">Colorado's source for ethically bred geckos, skinks, arboreal lizards, aquatic plants&nbsp;&amp;&nbsp;reptile supplies.</p>
+            <div class="hero-buttons">
+                <a href="#" class="btn btn-primary" data-page="shop">Browse the Shop</a>
+                <a href="#" class="btn btn-outline" data-page="about">Our Story</a>
+            </div>
+        </section>
+
+        <!-- Welcome -->
+        <section class="section">
+            <div class="welcome-grid">
+                <div class="text">
+                    <div class="divider"></div>
+                    <h2>Welcome to <span style="color:var(--accent)">RRE Reptiles!</span></h2>
+                    <p>We sell all sorts of geckos, skinks, arboreal lizards, and other reptile supplies and insect feeders! We also offer aquatic plants and aquarium keeping goods!</p>
+                    <p>We are always looking to expand our breeding efforts and business, so feel free to reach out to us with trade suggestions or just any comments you may have! We're confident you'll have a great experience working with us and love having conversations with other enthusiasts!</p>
+                    <p>At the moment, we offer geckos of many different morphs and species, Emerald Tree Skinks, Green Keel-Bellied Lizards and Red-Eyed Crocodile Skinks amongst many other reptiles. We are also looking to eventually offer more bug feeders, aquatic plants, shrimp, medication and dry goods &mdash; stay tuned for updates!</p>
+                    <br>
+                    <a href="#" class="btn btn-accent" data-page="about">Learn More About Us &rarr;</a>
+                </div>
+                <div>
+                    <div class="img-placeholder">
+                        <!-- Replace with your own hero image -->
+                        Add your welcome image here
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- What We Offer -->
+        <section class="section" style="padding-top:0;">
+            <div class="text-center">
+                <h2 class="section-title">What We <span class="accent">Offer</span></h2>
+                <div class="divider" style="margin:0 auto 1.5rem;"></div>
+            </div>
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">&#129422;</div>
+                    <h3>Geckos &amp; Lizards</h3>
+                    <p>Crested Geckos, Pictus Geckos, Chinese Cave Geckos, Cat Geckos, Sara Geckos, Emerald Tree Skinks, Green Keel-Bellied Lizards, and more.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#127793;</div>
+                    <h3>Aquatic Plants</h3>
+                    <p>Fully submerged grown plants including Amazon Swords, Java Fern, Java Moss, Red Root Floaters, Hornwort, and many more varieties.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#128026;</div>
+                    <h3>Feeders &amp; Insects</h3>
+                    <p>Mealworms, Superworms, Dubia Roaches, and White Dwarf Isopods. Colonies growing &mdash; more options coming soon!</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#128230;</div>
+                    <h3>Custom Goods</h3>
+                    <p>Hand-made arboreal cup ledges, food bowls, flat hides, climbing vines, enclosure kits, and more in a wide range of colors.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Meet the Parents -->
+        <section class="section" style="padding-top:0;">
+            <div class="text-center">
+                <h2 class="section-title">Meet the <span class="accent">Parents</span></h2>
+                <div class="divider" style="margin:0 auto .5rem;"></div>
+                <p class="section-subtitle mx-auto">Our breeding adults &mdash; not for sale, but proud parents of the babies you'll find in our shop!</p>
+            </div>
+            <div class="parents-grid">
+                <div class="parent-card">
+                    <div class="img-placeholder" style="height:200px;">Photo</div>
+                    <div class="info">
+                        <h4>&#9792; Butter &amp; Toast &#9794;</h4>
+                        <p>Emerald Tree Skink (Lamprolepis smaragdina)</p>
+                    </div>
+                </div>
+                <div class="parent-card">
+                    <div class="img-placeholder" style="height:200px;">Photo</div>
+                    <div class="info">
+                        <h4>Pancake &#9794; &amp; Syrup &#9792;</h4>
+                        <p>Green Keel-Bellied Lizard (Gastropholis prasina)</p>
+                    </div>
+                </div>
+                <div class="parent-card">
+                    <div class="img-placeholder" style="height:200px;">Photo</div>
+                    <div class="info">
+                        <h4>Big Papa &#9794; / Nubs &#9792; / Juniper &#9792;</h4>
+                        <p>Pictus Gecko (Paroedura pictus)</p>
+                    </div>
+                </div>
+                <div class="parent-card">
+                    <div class="img-placeholder" style="height:200px;">Photo</div>
+                    <div class="info">
+                        <h4>Lotus &#9792; &amp; Chili &#9792;</h4>
+                        <p>Pictus Gecko (Paroedura pictus)</p>
+                    </div>
+                </div>
+                <div class="parent-card">
+                    <div class="img-placeholder" style="height:200px;">Photo</div>
+                    <div class="info">
+                        <h4>Simba &#9794; &amp; Nala &#9792;</h4>
+                        <p>Sara Gecko (Correlophus sarasinorum)</p>
+                    </div>
+                </div>
+                <div class="parent-card">
+                    <div class="img-placeholder" style="height:200px;">Photo</div>
+                    <div class="info">
+                        <h4>Babu &#9794; / Ebony &#9792; / Dahlia &#9792;</h4>
+                        <p>Short-Fingered Gecko (Stenodactylus sthenodactylus)</p>
+                    </div>
+                </div>
+                <div class="parent-card">
+                    <div class="img-placeholder" style="height:200px;">Photo</div>
+                    <div class="info">
+                        <h4>Khan &#9794; &amp; Kai &#9794;</h4>
+                        <p>Malaysian Cat Gecko (Aeluroscalabotes felinus)</p>
+                    </div>
+                </div>
+                <div class="parent-card">
+                    <div class="img-placeholder" style="height:200px;">Photo</div>
+                    <div class="info">
+                        <h4>MidKnight</h4>
+                        <p>Yellow Spotted Night Lizard (Lepidophyma flavimaculatum)</p>
+                    </div>
+                </div>
+                <div class="parent-card">
+                    <div class="img-placeholder" style="height:200px;">Photo</div>
+                    <div class="info">
+                        <h4>Shadow &#9794; &amp; Scar &#9794;</h4>
+                        <p>Chinese Cave Gecko (Goniurosaurus hainanensis)</p>
+                    </div>
+                </div>
+                <div class="parent-card">
+                    <div class="img-placeholder" style="height:200px;">Photo</div>
+                    <div class="info">
+                        <h4>Aqua &#9792; &amp; Fuego &#9792;</h4>
+                        <p>Chinese Cave Gecko (Goniurosaurus hainanensis)</p>
+                    </div>
+                </div>
+                <div class="parent-card">
+                    <div class="img-placeholder" style="height:200px;">Photo</div>
+                    <div class="info">
+                        <h4>Paprika &#9792; / Royal &#9794; / Avery &#9792; / Aries &#9794;</h4>
+                        <p>Crested Gecko (Correlophus ciliatus)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Strip -->
+        <section class="contact-strip">
+            <h3>Interested in One of Our Animals?</h3>
+            <p>We handle all sales via email, phone, social media, or MorphMarket. Reach out anytime!</p>
+            <div class="contact-methods">
+                <a href="mailto:rrereptiles@gmail.com">&#9993; rrereptiles@gmail.com</a>
+                <a href="tel:9704001278">&#9742; 970-400-1278</a>
+                <a href="https://www.morphmarket.com/stores/red_rocks_exotic_reptiles/" target="_blank" rel="noopener">&#128722; MorphMarket</a>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================================================================= -->
+    <!--                           SHOP PAGE                               -->
+    <!-- ================================================================= -->
+    <div class="page" id="page-shop">
+        <section class="section">
+            <h2 class="section-title">Our <span class="accent">Shop</span></h2>
+            <div class="divider"></div>
+
+            <div class="shop-notice">
+                <strong>How to Purchase:</strong> We currently do not have a store portal. All sales are handled via PayPal Goods &amp; Services and Venmo Business. To purchase, contact us at <strong>970-400-1278</strong>, email us at <a href="mailto:rrereptiles@gmail.com">rrereptiles@gmail.com</a>, or reach out on any of our social medias or <a href="https://www.morphmarket.com/stores/red_rocks_exotic_reptiles/" target="_blank" rel="noopener">MorphMarket</a>!
+            </div>
+
+            <!-- Shop Sub-tabs -->
+            <div class="shop-tabs">
+                <button class="shop-tab active" data-shop="geckos-crested">Crested Geckos</button>
+                <button class="shop-tab" data-shop="geckos-other">Other Geckos</button>
+                <button class="shop-tab" data-shop="plants">Aquatic Plants</button>
+                <button class="shop-tab" data-shop="shrimp">Freshwater Shrimp</button>
+                <button class="shop-tab" data-shop="feeders">Insects/Feeders</button>
+                <button class="shop-tab" data-shop="goods">Other Goods</button>
+            </div>
+
+            <!-- Crested Geckos -->
+            <div class="shop-category active" id="shop-geckos-crested">
+                <div class="product-grid">
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Sunshine &#9792;</h3>
+                            <p class="species">Crested Gecko (Correlophus ciliatus)</p>
+                            <span class="price">$325</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Sunshine" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Potato</h3>
+                            <p class="species">Crested Gecko (Correlophus ciliatus)</p>
+                            <span class="price">TBD</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Potato" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other Geckos -->
+            <div class="shop-category" id="shop-geckos-other">
+                <p class="section-subtitle">We are always trying to expand our breeding efforts. If you are looking for a specific reptile, please reach out and we can see if we can locate them for you.</p>
+                <div class="product-grid">
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Juvenile Pictus Geckos</h3>
+                            <p class="species">Paroedura pictus</p>
+                            <span class="price">$100 &ndash; $125</span>
+                            <p style="color:var(--gray);font-size:.82rem;margin-top:.3rem;">Over 30 available!</p>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Pictus%20Geckos" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Juvenile Chinese Cave Geckos</h3>
+                            <p class="species">Goniurosaurus hainanensis</p>
+                            <span class="price">$150 &ndash; $200</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Chinese%20Cave%20Geckos" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Onyx &#9794;</h3>
+                            <p class="species">Spear-Point Leaf Tail Gecko (Uroplatus ebenaui)</p>
+                            <span class="price">$300</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Onyx" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Aquatic Plants -->
+            <div class="shop-category" id="shop-plants">
+                <p class="section-subtitle">We grow all of our plants fully submerged. This means when you buy from us, there is a very low chance of melt back and our plants are more adaptable to your tank compared to other sellers!</p>
+                <div class="product-grid">
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Amazon Sword</h3>
+                            <p class="species">Multiple sizes</p>
+                            <span class="price">$2 &ndash; $15</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Amazon%20Sword" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Echinodorus "Red Flame"</h3>
+                            <span class="price">$3 &ndash; $20</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Red%20Flame" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Jungle Vallisneria Gigantea</h3>
+                            <span class="price">$2 &ndash; $25</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Vallisneria" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Ludwigia Repens (Super Red)</h3>
+                            <span class="price">$5 &ndash; $15</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Ludwigia" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Scarlet Root Clump</h3>
+                            <span class="price">$10</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Scarlet%20Root%20Clump" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Rotala Indica Orange Juice</h3>
+                            <span class="price">Contact for pricing</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Rotala" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Water Sprite</h3>
+                            <p class="species">Multiple sizes</p>
+                            <span class="price">Contact for pricing</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Water%20Sprite" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Pogostemon Stellatus "Octopus"</h3>
+                            <span class="price">Contact for pricing</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Pogostemon" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Red Root Floaters</h3>
+                            <p class="species">5 oz bag</p>
+                            <span class="price">$5</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Red%20Root%20Floaters" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Java Moss</h3>
+                            <p class="species">2 oz bag</p>
+                            <span class="price">$5</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Java%20Moss" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Java Fern</h3>
+                            <span class="price">Contact for pricing</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Java%20Fern" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Alternanthera Reineckii</h3>
+                            <span class="price">Contact for pricing</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Alternanthera" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Cryptocoryne Bronze Wendtii</h3>
+                            <span class="price">Contact for pricing</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Cryptocoryne" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Tiger Lotus</h3>
+                            <span class="price">Contact for pricing</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Tiger%20Lotus" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Hornwort</h3>
+                            <span class="price">Contact for pricing</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Hornwort" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Freshwater Shrimp -->
+            <div class="shop-category" id="shop-shrimp">
+                <div class="shop-notice">
+                    <strong>Coming Soon!</strong> We are currently working on building up our shrimp supply. Check back for updates!
+                </div>
+                <div class="product-grid">
+                    <div class="product-card">
+                        <div class="product-img" style="background:#e8d5d5;">Coming Soon</div>
+                        <div class="product-info">
+                            <h3>Cherry Reds</h3>
+                            <span class="price">Coming Soon</span>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img" style="background:#d5e8d5;">Coming Soon</div>
+                        <div class="product-info">
+                            <h3>Jade Green</h3>
+                            <span class="price">Coming Soon</span>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img" style="background:#d5d5e8;">Coming Soon</div>
+                        <div class="product-info">
+                            <h3>Blue Velvet</h3>
+                            <span class="price">Coming Soon</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feeders -->
+            <div class="shop-category" id="shop-feeders">
+                <div class="shop-notice">
+                    <strong>Expanding!</strong> We are working on establishing our colonies at larger scale. Current offerings below &mdash; more coming soon!
+                </div>
+                <div class="product-grid">
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Mealworms</h3>
+                            <p class="species">10 / 20 / 50 / 100 count</p>
+                            <span class="price">Contact for pricing</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Mealworms" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Superworms</h3>
+                            <p class="species">5 / 10 / 20 / 50 count</p>
+                            <span class="price">Contact for pricing</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Superworms" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>White Dwarf Isopods</h3>
+                            <p class="species">One culture</p>
+                            <span class="price">Contact for pricing</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Isopods" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Dubia Roaches</h3>
+                            <p class="species">25 / 50 / 100 count</p>
+                            <span class="price">Contact for pricing</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Dubia%20Roaches" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other Goods -->
+            <div class="shop-category" id="shop-goods">
+                <p class="section-subtitle">Custom-made goods, d&eacute;cor, and misc.&nbsp;items in a wide range of colors for all your reptile and aquatic needs! Have a specific idea or design in mind? Send us a message!</p>
+                <div class="product-grid">
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Arboreal Cup Ledge w/ Suction Cup</h3>
+                            <span class="price">$10</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Cup%20Ledge" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Food Bowls</h3>
+                            <p class="species">Multiple sizes</p>
+                            <span class="price">Contact for pricing</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Food%20Bowls" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Flat Hides</h3>
+                            <p class="species">Multiple sizes</p>
+                            <span class="price">$5</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Flat%20Hides" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Hygrometer + Shell w/ Suction Cup</h3>
+                            <span class="price">$8</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Hygrometer" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Box Hides</h3>
+                            <p class="species">Multiple sizes</p>
+                            <span class="price">$5</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Box%20Hides" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Temporary Arboreal Enclosure Mega Kit</h3>
+                            <p class="species">Food ledge, bowls, cups, foliage, hygrometer, perches &mdash; escape proof!</p>
+                            <span class="price">$30</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Mega%20Kit" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Climbing Vines</h3>
+                            <p class="species">3ft, 6ft, custom sizes</p>
+                            <span class="price">Contact for pricing</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Climbing%20Vines" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Isopod/Container Vents</h3>
+                            <span class="price">Contact for pricing</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Container%20Vents" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Assorted Toys</h3>
+                            <span class="price">Contact for pricing</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Toys" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact strip -->
+        <section class="contact-strip">
+            <h3>Ready to Order?</h3>
+            <p>Email, call, or message us on social media to purchase!</p>
+            <div class="contact-methods">
+                <a href="mailto:rrereptiles@gmail.com">&#9993; rrereptiles@gmail.com</a>
+                <a href="tel:9704001278">&#9742; 970-400-1278</a>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================================================================= -->
+    <!--                         ABOUT US PAGE                             -->
+    <!-- ================================================================= -->
+    <div class="page" id="page-about">
+
+        <!-- About Hero -->
+        <div class="about-hero">
+            <section class="section">
+                <div class="about-content">
+                    <div>
+                        <div class="divider" style="background:var(--accent);"></div>
+                        <h2>About <span style="color:var(--accent);">Red Rocks Exotic Reptiles</span></h2>
+                        <p>We started out raising reptiles for fun and as a hobby, but as time went on we thought, why not help spread the joy of reptile keeping to others? So, we opened our business in 2023 in the beautiful centennial state of Colorado.</p>
+                        <p>We chose the name Red Rocks Exotic Reptiles because we absolutely love the striking beauty that the Red Rocks state park offers, and we felt that it was a great comparison to the beauty we see in reptiles as well!</p>
+                        <p>We are proud to be a <strong style="color:var(--white);">woman, Veteran, Hispanic, and Native American owned</strong> company.</p>
+                        <p>The joy we get from seeing pets with their caretakers is part of why we started our business. We want as many people as possible to feel the way we do about animals. We work with our customers to educate and provide them with everything they and their scaled friends need for a great life together.</p>
+                    </div>
+                    <div>
+                        <div class="img-placeholder" style="background:#333;color:#777;height:350px;">
+                            Add your team photo here
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
-    </section>
 
-    <section>
-        <h2>Meet the Parents (Not For Sale)</h2>
-        <div class="parent-grid">
-            <div class="animal-card">
-                <img src="https://via.placeholder.com/300x200?text=Green+Keel-Bellied" alt="Pancake">
-                <h3>Pancake ♂</h3>
-                <p>Green Keel-Bellied Lizard</p>
+        <!-- Vision & Mission -->
+        <section class="section">
+            <div class="text-center">
+                <h2 class="section-title">Our <span class="accent">Vision &amp; Mission</span></h2>
+                <div class="divider" style="margin:0 auto 2rem;"></div>
             </div>
-            <div class="animal-card">
-                <img src="https://via.placeholder.com/300x200?text=Emerald+Tree+Skink" alt="Butter & Toast">
-                <h3>Butter & Toast</h3>
-                <p>Emerald Tree Skinks</p>
+            <div class="vision-mission">
+                <div class="vm-card">
+                    <h3>&#127775; Vision Statement</h3>
+                    <p>To revolutionize the reptile industry by setting a new standard for clean, ethical breeding practices, putting the health of the reptiles first, and fostering trust and confidence among reptile enthusiasts worldwide.</p>
+                </div>
+                <div class="vm-card">
+                    <h3>&#127919; Our Mission</h3>
+                    <p>At Red Rocks Exotic Reptiles, our mission is to provide reptile enthusiasts with ethically bred, captive-born and bred (CBB) reptiles that are not only healthy and well-tempered but also ethically sourced. We are committed to maintaining impeccable standards of cleanliness and husbandry, handling our reptiles daily to ensure their socialization and well-being, and fostering a transparent and trustworthy relationship with our customers.</p>
+                </div>
             </div>
-            <div class="animal-card">
-                <img src="https://via.placeholder.com/300x200?text=Pictus+Gecko" alt="Big Papa">
-                <h3>Big Papa ♂</h3>
-                <p>Pictus Gecko</p>
+        </section>
+
+        <!-- Core Values -->
+        <section class="section" style="padding-top:0;">
+            <div class="text-center">
+                <h2 class="section-title">Our <span class="accent">Core Values</span></h2>
+                <div class="divider" style="margin:0 auto .5rem;"></div>
+                <p class="section-subtitle mx-auto">What this means for YOU, the customer.</p>
             </div>
-            <div class="animal-card">
-                <img src="https://via.placeholder.com/300x200?text=Chinese+Cave+Gecko" alt="Shadow">
-                <h3>Shadow ♂</h3>
-                <p>Chinese Cave Gecko</p>
+            <div class="values-grid">
+                <div class="value-card">
+                    <h4>&#9878;&#65039; Ethical Breeding</h4>
+                    <p>We are dedicated to practicing ethical breeding methods, caring only for captive-bred and born reptiles to ensure the sustainability of wild populations and the welfare of individual animals. You will only receive healthy and captive bred reptiles from us, guaranteed free of parasites and deformities most wild caught (WC) reptiles exhibit.</p>
+                </div>
+                <div class="value-card">
+                    <h4>&#128154; Animal Welfare</h4>
+                    <p>We prioritize the health, well-being, and temperament of every reptile in our care, providing them with the highest standards of husbandry and enrichment.</p>
+                </div>
+                <div class="value-card">
+                    <h4>&#128065;&#65039; Transparency</h4>
+                    <p>We believe in open communication and transparency in all aspects of our business, from our breeding practices to our customer interactions, to build trust and confidence among our clientele. If you have any questions at any time, even post-purchase, we are here to help!</p>
+                </div>
+                <div class="value-card">
+                    <h4>&#11088; Customer Satisfaction</h4>
+                    <p>We are committed to exceeding customer expectations by providing exceptional service, expert advice, and ongoing support throughout the reptile ownership journey.</p>
+                </div>
+                <div class="value-card">
+                    <h4>&#128218; Education</h4>
+                    <p>We're not just here to run a business &mdash; we are also passionate about educating our customers and the public about responsible reptile care, habitat enrichment, and conservation efforts to empower them to be knowledgeable and responsible reptile enthusiasts.</p>
+                </div>
+                <div class="value-card">
+                    <h4>&#129309; Community Engagement</h4>
+                    <p>We actively engage with and support the reptile and wildlife community through partnerships, donation programs, and educational initiatives to promote responsible reptile ownership and conservation efforts. We also offer photography, videography, and free social media promotions!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Strip -->
+        <section class="contact-strip">
+            <h3>Questions? We'd Love to Hear From You!</h3>
+            <p>Reach out anytime &mdash; we're always happy to chat about reptiles.</p>
+            <div class="contact-methods">
+                <a href="mailto:rrereptiles@gmail.com">&#9993; rrereptiles@gmail.com</a>
+                <a href="tel:9704001278">&#9742; 970-400-1278</a>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================================================================= -->
+    <!--                        SOCIALS PAGE                               -->
+    <!-- ================================================================= -->
+    <div class="page" id="page-socials">
+        <section class="section">
+            <div class="text-center">
+                <h2 class="section-title">Follow Us on <span class="accent">Social Media</span></h2>
+                <div class="divider" style="margin:0 auto .5rem;"></div>
+                <p class="section-subtitle mx-auto">We are primarily active on Instagram and TikTok. If you want to reach out to us, these platforms are typically the best place to do so!</p>
+            </div>
+            <div class="socials-grid">
+                <div class="social-card">
+                    <div class="social-icon" style="background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);">&#128247;</div>
+                    <h3>Instagram</h3>
+                    <p>Our primary platform for updates, photos, and DMs. Follow along for daily content!</p>
+                    <a href="https://www.instagram.com/red_rocks_reptiles/" target="_blank" rel="noopener" class="btn btn-accent">@red_rocks_reptiles</a>
+                </div>
+                <div class="social-card">
+                    <div class="social-icon" style="background:#1877f2;">&#128077;</div>
+                    <h3>Facebook</h3>
+                    <p>Follow our Facebook page for community updates, live events, and more!</p>
+                    <a href="https://www.facebook.com/RREReptiles" target="_blank" rel="noopener" class="btn btn-accent">RREReptiles</a>
+                </div>
+                <div class="social-card">
+                    <div class="social-icon" style="background:#000;">&#9654;</div>
+                    <h3>TikTok</h3>
+                    <p>Short-form videos, reptile clips, and behind-the-scenes content!</p>
+                    <a href="https://www.tiktok.com/@red_rocks_reptiles" target="_blank" rel="noopener" class="btn btn-accent">@red_rocks_reptiles</a>
+                </div>
+                <div class="social-card">
+                    <div class="social-icon" style="background:#ff0000;">&#9654;</div>
+                    <h3>YouTube</h3>
+                    <p>Unboxing videos, convention tours, and more! Follow our other socials to stay updated on new releases.</p>
+                    <a href="https://www.youtube.com/@RREReptiles" target="_blank" rel="noopener" class="btn btn-accent">RRE Reptiles</a>
+                </div>
+                <div class="social-card">
+                    <div class="social-icon" style="background:#4ea24e;">&#129422;</div>
+                    <h3>MorphMarket</h3>
+                    <p>Browse our available reptiles and purchase directly through MorphMarket.</p>
+                    <a href="https://www.morphmarket.com/stores/red_rocks_exotic_reptiles/" target="_blank" rel="noopener" class="btn btn-accent">Our Store</a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================================================================= -->
+    <!--                        REPTILOG PAGE                              -->
+    <!-- ================================================================= -->
+    <div class="page" id="page-reptilog">
+        <div class="reptilog-hero">
+            <h2>&#128221; ReptiLog</h2>
+            <p style="font-size:1.2rem;font-weight:600;margin-bottom:.5rem;">A Personal Husbandry Planner, Tracker &amp; Logger in Your Pocket!</p>
+            <p>Sometimes life gets busy and trying to remember your critter's schedules can be difficult! Whether you're a breeder or a hobbyist &mdash; have one reptile or fifty &mdash; being organized and thorough in your care is always helpful not only for you, but for your critter's benefit as well.</p>
+            <p style="max-width:650px;margin:0 auto 2rem;opacity:.9;">We at Red Rocks Reptiles completely understand all these challenges. We want to make sure we are properly tracking all the ins and outs of our reptiles, but it can be cumbersome. And thus, a great idea was born &mdash; <strong>ReptiLog!</strong></p>
+            <div class="reptilog-features">
+                <div class="rl-feature">
+                    <div class="icon">&#128203;</div>
+                    <h4>Logging</h4>
+                    <p>Track feedings, sheds, weights, and health notes.</p>
+                </div>
+                <div class="rl-feature">
+                    <div class="icon">&#128197;</div>
+                    <h4>Calendar</h4>
+                    <p>Visual schedule for all your reptile care tasks.</p>
+                </div>
+                <div class="rl-feature">
+                    <div class="icon">&#128276;</div>
+                    <h4>Reminders</h4>
+                    <p>Never miss a feeding, vet visit, or misting.</p>
+                </div>
+                <div class="rl-feature">
+                    <div class="icon">&#9729;&#65039;</div>
+                    <h4>Cloud Sync</h4>
+                    <p>Premium feature &mdash; access data from any device.</p>
+                </div>
             </div>
         </div>
-    </section>
+        <section class="section text-center">
+            <h2 class="section-title">Interested in <span class="accent">ReptiLog</span>?</h2>
+            <div class="divider" style="margin:0 auto 1rem;"></div>
+            <p class="section-subtitle mx-auto">ReptiLog is a convenient reptile tracking app that helps you take back control of your caretaking schedules and organize your care in a more efficient way so you can spend more time on what matters &mdash; interacting with and admiring your reptiles!</p>
+            <p class="section-subtitle mx-auto" style="margin-bottom:2rem;">The app also has a premium functionality that allows you to sync your data to the cloud and access it from any device! If this sounds appealing to you, reach out and we will promptly send you a link to test the app for free!</p>
+            <a href="mailto:rrereptiles@gmail.com?subject=ReptiLog%20Interest" class="btn btn-accent">&#128231; Get Early Access</a>
+        </section>
+    </div>
 
+    <!-- ================================================================= -->
+    <!--                      CARE GUIDES PAGE                             -->
+    <!-- ================================================================= -->
+    <div class="page" id="page-care">
+        <section class="section">
+            <h2 class="section-title"><span class="accent">Care</span> Guides</h2>
+            <div class="divider"></div>
+            <p class="section-subtitle">Care guides are provided with each purchase. Below is a list of care sheets we follow from fellow breeders or reptile resources. Click any card to view the guide.</p>
+
+            <div class="guides-grid">
+                <a href="https://drive.google.com/file/d/1FUB_gegN79bRN7E54bET9ezAUhg2o2Kt/view" target="_blank" rel="noopener" class="guide-card" style="color:inherit;">
+                    <div class="guide-icon">&#129422;</div>
+                    <div>
+                        <h4>Emerald Tree Skink</h4>
+                        <p>Lamprolepis smaragdina</p>
+                    </div>
+                </a>
+                <a href="https://docs.google.com/document/d/1s6aeeYYT0k_BD_FrzahCVRLLlNXhsqzMVqk3N1nZhjg/edit" target="_blank" rel="noopener" class="guide-card" style="color:inherit;">
+                    <div class="guide-icon">&#129422;</div>
+                    <div>
+                        <h4>Green Keel-Bellied Lizard</h4>
+                        <p>Gastropholis prasina</p>
+                    </div>
+                </a>
+                <a href="https://drive.google.com/file/d/18DmUuReGDJ4nmbpWSINpXZP6zVLhiQhz/view" target="_blank" rel="noopener" class="guide-card" style="color:inherit;">
+                    <div class="guide-icon">&#129422;</div>
+                    <div>
+                        <h4>Red-Eyed Crocodile Skink</h4>
+                        <p>Tribolonotus gracilis</p>
+                    </div>
+                </a>
+                <a href="https://docs.google.com/document/d/1yyZykINGQtH82yxyx6tnni0RtiE5dnryzIih3uIiAOg/edit" target="_blank" rel="noopener" class="guide-card" style="color:inherit;">
+                    <div class="guide-icon">&#129422;</div>
+                    <div>
+                        <h4>Crested Gecko</h4>
+                        <p>Correlophus ciliatus</p>
+                    </div>
+                </a>
+                <a href="mailto:rrereptiles@gmail.com?subject=Bearded%20Dragon%20Care%20Guide" class="guide-card" style="color:inherit;">
+                    <div class="guide-icon">&#129422;</div>
+                    <div>
+                        <h4>Bearded Dragon</h4>
+                        <p>Pogona vitticeps</p>
+                    </div>
+                </a>
+            </div>
+
+            <div style="margin-top:2.5rem;" class="shop-notice">
+                <strong>Need a care guide for a species not listed?</strong> Reach out and we'll be happy to provide guidance or point you in the right direction. We're always here to help, even after purchase!
+            </div>
+        </section>
+    </div>
+
+    <!-- ================================================================= -->
+    <!--                    SHIPPING / FAQS PAGE                           -->
+    <!-- ================================================================= -->
+    <div class="page" id="page-faq">
+        <section class="section">
+            <h2 class="section-title">Shipping &amp; <span class="accent">FAQs</span></h2>
+            <div class="divider"></div>
+
+            <!-- Shipping Info -->
+            <div class="shipping-info">
+                <div class="ship-card">
+                    <h3>&#128230; How We Ship</h3>
+                    <p>We ship live reptiles and plants via overnight carriers with insulated packaging, heat/cold packs as needed depending on the season, and secure containers to ensure your new friend arrives safely.</p>
+                </div>
+                <div class="ship-card">
+                    <h3>&#127777;&#65039; Live Arrival Guarantee</h3>
+                    <p>All live animals are covered by our live arrival guarantee. If there is an issue upon arrival, contact us immediately with photos and we will work with you to make it right.</p>
+                </div>
+                <div class="ship-card">
+                    <h3>&#128176; Payment Methods</h3>
+                    <ul>
+                        <li>PayPal Goods &amp; Services</li>
+                        <li>Venmo Business</li>
+                        <li>MorphMarket</li>
+                    </ul>
+                    <p style="margin-top:.5rem;">More methods coming as we grow!</p>
+                </div>
+                <div class="ship-card">
+                    <h3>&#128205; Local Pickup</h3>
+                    <p>We are based in Colorado and offer local pickup. Contact us to arrange a time and meeting point!</p>
+                </div>
+            </div>
+
+            <!-- FAQs -->
+            <h3 class="section-title" style="font-size:1.5rem;margin-bottom:1.5rem;">Frequently Asked <span class="accent">Questions</span></h3>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    How do I purchase a reptile from you?
+                    <span class="faq-arrow">&#9660;</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Contact us at 970-400-1278, email us at <a href="mailto:rrereptiles@gmail.com">rrereptiles@gmail.com</a>, or reach out on any of our social medias or MorphMarket. We handle all sales via PayPal Goods &amp; Services and Venmo Business.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    Are your reptiles captive bred?
+                    <span class="faq-arrow">&#9660;</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Yes! All of our reptiles are captive-born and bred (CBB). We are dedicated to ethical breeding and you will only receive healthy reptiles from us, guaranteed free of parasites and deformities most wild caught (WC) reptiles exhibit.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    Do you ship nationwide?
+                    <span class="faq-arrow">&#9660;</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Yes, we ship live reptiles and plants across the United States via overnight carriers. We use insulated packaging and heat/cold packs depending on the season to ensure safe delivery. Shipping costs vary &mdash; contact us for a quote.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    Do you offer local pickup?
+                    <span class="faq-arrow">&#9660;</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Yes! We are based in Colorado and offer local pickup. Reach out to us to arrange a time and meeting point.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    What if my reptile arrives unhealthy or doesn't survive shipping?
+                    <span class="faq-arrow">&#9660;</span>
+                </button>
+                <div class="faq-answer">
+                    <p>All live reptile shipments are covered by our live arrival guarantee. If there is an issue, contact us immediately with photos and we will work with you to make it right.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    Do you provide care guides?
+                    <span class="faq-arrow">&#9660;</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Absolutely! Care guides are provided with each purchase. We also have care sheets available for free on our <a href="#" data-page="care">Care Guides</a> page. And we're always available for questions, even after purchase.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    Can you help me find a specific species?
+                    <span class="faq-arrow">&#9660;</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Yes! We are always expanding our breeding efforts. If you are looking for a specific reptile, please reach out and we can see if we can locate one for you.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    What is ReptiLog?
+                    <span class="faq-arrow">&#9660;</span>
+                </button>
+                <div class="faq-answer">
+                    <p>ReptiLog is a reptile husbandry tracking app we are developing. It helps you log feedings, sheds, weights, and other care tasks with calendars, reminders, and cloud sync. Visit our <a href="#" data-page="reptilog">ReptiLog page</a> to learn more.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
     <footer>
-        <div class="contact-info">
-            <p>Email: RREReptiles@gmail.com</p>
-            <p>Phone: 970-400-1278</p>
+        <div class="footer-grid">
+            <div>
+                <h4 style="color:var(--accent);">Red Rocks Exotic Reptiles</h4>
+                <p>Colorado's source for ethically bred reptiles, aquatic plants, and custom reptile goods. Woman, Veteran, Hispanic &amp; Native American owned.</p>
+            </div>
+            <div>
+                <h4>Quick Links</h4>
+                <a href="#" data-page="home">Home</a><br>
+                <a href="#" data-page="shop">Shop</a><br>
+                <a href="#" data-page="about">About Us</a><br>
+                <a href="#" data-page="care">Care Guides</a><br>
+                <a href="#" data-page="faq">Shipping/FAQs</a>
+            </div>
+            <div>
+                <h4>Contact Us</h4>
+                <p>
+                    <a href="mailto:rrereptiles@gmail.com">rrereptiles@gmail.com</a><br>
+                    <a href="tel:9704001278">970-400-1278</a>
+                </p>
+            </div>
+            <div>
+                <h4>Follow Us</h4>
+                <a href="https://www.instagram.com/red_rocks_reptiles/" target="_blank" rel="noopener">Instagram</a><br>
+                <a href="https://www.facebook.com/RREReptiles" target="_blank" rel="noopener">Facebook</a><br>
+                <a href="https://www.tiktok.com/@red_rocks_reptiles" target="_blank" rel="noopener">TikTok</a><br>
+                <a href="https://www.youtube.com/@RREReptiles" target="_blank" rel="noopener">YouTube</a><br>
+                <a href="https://www.morphmarket.com/stores/red_rocks_exotic_reptiles/" target="_blank" rel="noopener">MorphMarket</a>
+            </div>
         </div>
-        <div class="social-links">
-            <a href="#">Instagram</a> | 
-            <a href="#">Facebook</a> | 
-            <a href="#">MorphMarket</a>
+        <div class="footer-bottom">
+            <p>&copy; 2023&ndash;2026 Red Rocks Exotic Reptiles LLC. All rights reserved.</p>
         </div>
-        <p>&copy; 2025 by Red Rocks Exotic Reptiles</p>
     </footer>
 
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        // ---- Page Navigation ----
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+            var target = document.getElementById('page-' + pageId);
+            if (target) target.classList.add('active');
+            document.querySelectorAll('[data-page]').forEach(function(link) {
+                link.classList.toggle('active', link.getAttribute('data-page') === pageId);
+            });
+            document.getElementById('mobileNav').classList.remove('show');
+            document.getElementById('hamburger').classList.remove('open');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.querySelectorAll('[data-page]').forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                navigateTo(this.getAttribute('data-page'));
+            });
+        });
+
+        // ---- Mobile hamburger ----
+        document.getElementById('hamburger').addEventListener('click', function() {
+            this.classList.toggle('open');
+            document.getElementById('mobileNav').classList.toggle('show');
+        });
+
+        // ---- Shop Sub-tabs ----
+        document.querySelectorAll('.shop-tab').forEach(function(tab) {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.shop-tab').forEach(function(t) { t.classList.remove('active'); });
+                document.querySelectorAll('.shop-category').forEach(function(c) { c.classList.remove('active'); });
+                this.classList.add('active');
+                var target = document.getElementById('shop-' + this.getAttribute('data-shop'));
+                if (target) target.classList.add('active');
+            });
+        });
+
+        // ---- FAQ Accordion ----
+        document.querySelectorAll('.faq-question').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var item = this.parentElement;
+                var isOpen = item.classList.contains('open');
+                document.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('open'); });
+                if (!isOpen) item.classList.add('open');
+            });
+        });
+    </script>
 </body>
 </html>

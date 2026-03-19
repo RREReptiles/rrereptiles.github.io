@@ -71,12 +71,94 @@
         .logo-icon {
             width: 38px;
             height: 38px;
-            background: var(--accent);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
+            overflow: hidden;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .hero-logo {
+            max-width: 600px;
+            width: 90%;
+            margin: 0 auto 1.5rem;
+        }
+
+        .reptilog-app-icon {
+            width: 120px;
+            height: 120px;
+            border-radius: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,.3);
+            margin: 0 auto 1.5rem;
+        }
+
+        .google-play-badge {
+            display: inline-block;
+            margin-top: 1rem;
+        }
+
+        .google-play-badge img {
+            height: 60px;
+        }
+
+        .policy-section {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            margin-top: 3rem;
+            box-shadow: var(--shadow);
+        }
+
+        .policy-section h3 {
+            color: var(--accent);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: .75rem;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .policy-section h4 {
+            color: var(--black);
+            margin: 1.5rem 0 .75rem;
+            font-size: 1.1rem;
+        }
+
+        .policy-section ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .policy-section ol li {
+            margin-bottom: 1rem;
+            line-height: 1.7;
+            color: var(--gray);
+        }
+
+        .policy-section ol li strong {
+            color: var(--black);
+        }
+
+        .policy-section p {
+            color: var(--gray);
+            line-height: 1.7;
+            margin-bottom: .75rem;
+        }
+
+        .policy-section ul {
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .policy-section ul li {
+            margin-bottom: .5rem;
+            line-height: 1.7;
+            color: var(--gray);
         }
 
         /* Desktop nav */
@@ -158,7 +240,7 @@
         .hero {
             background:
                 linear-gradient(160deg, rgba(158,20,3,.85) 0%, rgba(26,26,26,.80) 100%),
-                url('https://images.unsplash.com/photo-1504450874802-0ba2bcd9b5ae?w=1400&q=80') center/cover no-repeat;
+                url('images/Jasper.JPG') center/cover no-repeat;
             color: var(--white);
             text-align: center;
             padding: 5rem 1.5rem 4.5rem;
@@ -796,7 +878,7 @@
     <header>
         <div class="nav-container">
             <div class="logo">
-                <div class="logo-icon">&#129422;</div>
+                <div class="logo-icon"><img src="images/Logo.svg" alt="RRE Logo"></div>
                 <span><span class="accent">Red Rocks</span> Exotic Reptiles</span>
             </div>
             <nav class="nav-links">
@@ -830,11 +912,13 @@
 
         <!-- Hero -->
         <section class="hero">
+            <img src="images/Logo%20Letters.png" alt="Red Rocks Exotic Reptiles" class="hero-logo">
             <div class="hero-badges">
-                <span class="badge">&#127466;&#127480; Colorado Based</span>
-                <span class="badge">&#9877;&#65039; Veteran Owned</span>
-                <span class="badge">&#129426; Ethically Bred</span>
-                <span class="badge">&#127793; Aquatic Plants</span>
+                <span class="badge">&#127482;&#127480; Colorado Based</span>
+                <span class="badge">🎖️ Veteran Owned</span>
+                <span class="badge">🦎 Ethically Bred Reptiles</span>
+                <span class="badge">&#127793; Aquatic & Tropical Plants</span>
+                <span class="badge">🦋 Entymology Art</span>
             </div>
             <h1>Red Rocks Exotic Reptiles</h1>
             <p class="tagline">Colorado's source for ethically bred geckos, skinks, arboreal lizards, aquatic plants&nbsp;&amp;&nbsp;reptile supplies.</p>
@@ -849,18 +933,15 @@
             <div class="welcome-grid">
                 <div class="text">
                     <div class="divider"></div>
-                    <h2>Welcome to <span style="color:var(--accent)">RRE Reptiles!</span></h2>
+                    <h2>Welcome to <span style="color:var(--accent)">Red Rocks Exotic Reptiles!</span></h2>
                     <p>We sell all sorts of geckos, skinks, arboreal lizards, and other reptile supplies and insect feeders! We also offer aquatic plants and aquarium keeping goods!</p>
                     <p>We are always looking to expand our breeding efforts and business, so feel free to reach out to us with trade suggestions or just any comments you may have! We're confident you'll have a great experience working with us and love having conversations with other enthusiasts!</p>
                     <p>At the moment, we offer geckos of many different morphs and species, Emerald Tree Skinks, Green Keel-Bellied Lizards and Red-Eyed Crocodile Skinks amongst many other reptiles. We are also looking to eventually offer more bug feeders, aquatic plants, shrimp, medication and dry goods &mdash; stay tuned for updates!</p>
                     <br>
                     <a href="#" class="btn btn-accent" data-page="about">Learn More About Us &rarr;</a>
                 </div>
-                <div>
-                    <div class="img-placeholder">
-                        <!-- Replace with your own hero image -->
-                        Add your welcome image here
-                    </div>
+                <div style="text-align:center;">
+                    <img src="images/Logo.svg" alt="Red Rocks Exotic Reptiles Logo" style="max-width:100%;border-radius:var(--radius);">
                 </div>
             </div>
         </section>
@@ -883,12 +964,12 @@
                     <p>Fully submerged grown plants including Amazon Swords, Java Fern, Java Moss, Red Root Floaters, Hornwort, and many more varieties.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">&#128026;</div>
+                    <div class="feature-icon">🦗</div>
                     <h3>Feeders &amp; Insects</h3>
                     <p>Mealworms, Superworms, Dubia Roaches, and White Dwarf Isopods. Colonies growing &mdash; more options coming soon!</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">&#128230;</div>
+                    <div class="feature-icon">🔨</div>
                     <h3>Custom Goods</h3>
                     <p>Hand-made arboreal cup ledges, food bowls, flat hides, climbing vines, enclosure kits, and more in a wide range of colors.</p>
                 </div>
@@ -1015,26 +1096,18 @@
                 <button class="shop-tab" data-shop="shrimp">Freshwater Shrimp</button>
                 <button class="shop-tab" data-shop="feeders">Insects/Feeders</button>
                 <button class="shop-tab" data-shop="goods">Other Goods</button>
+                <button class="shop-tab" data-shop="goods">Entymology Art</button>
             </div>
 
             <!-- Crested Geckos -->
             <div class="shop-category active" id="shop-geckos-crested">
-                <div class="product-grid">
-                    <div class="product-card">
-                        <div class="product-img">Photo</div>
-                        <div class="product-info">
-                            <h3>Sunshine &#9792;</h3>
-                            <p class="species">Crested Gecko (Correlophus ciliatus)</p>
-                            <span class="price">$325</span><br>
-                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Sunshine" class="inquire">Inquire</a>
-                        </div>
-                    </div>
+                <div class="product-grid">         
                     <div class="product-card">
                         <div class="product-img">Photo</div>
                         <div class="product-info">
                             <h3>Potato</h3>
                             <p class="species">Crested Gecko (Correlophus ciliatus)</p>
-                            <span class="price">TBD</span><br>
+                            <span class="price">$200</span><br>
                             <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Potato" class="inquire">Inquire</a>
                         </div>
                     </div>
@@ -1395,10 +1468,8 @@
                         <p>We are proud to be a <strong style="color:var(--white);">woman, Veteran, Hispanic, and Native American owned</strong> company.</p>
                         <p>The joy we get from seeing pets with their caretakers is part of why we started our business. We want as many people as possible to feel the way we do about animals. We work with our customers to educate and provide them with everything they and their scaled friends need for a great life together.</p>
                     </div>
-                    <div>
-                        <div class="img-placeholder" style="background:#333;color:#777;height:350px;">
-                            Add your team photo here
-                        </div>
+                    <div style="text-align:center;">
+                        <img src="images/Logo.svg" alt="Red Rocks Exotic Reptiles Logo" style="max-width:100%;border-radius:var(--radius);">
                     </div>
                 </div>
             </section>
@@ -1495,13 +1566,13 @@
                     <div class="social-icon" style="background:#000;">&#9654;</div>
                     <h3>TikTok</h3>
                     <p>Short-form videos, reptile clips, and behind-the-scenes content!</p>
-                    <a href="https://www.tiktok.com/@red_rocks_reptiles" target="_blank" rel="noopener" class="btn btn-accent">@red_rocks_reptiles</a>
+                    <a href="https://www.tiktok.com/@redrocks_exotic_reptiles" target="_blank" rel="noopener" class="btn btn-accent">@redrocks_exotic_reptiles</a>
                 </div>
                 <div class="social-card">
                     <div class="social-icon" style="background:#ff0000;">&#9654;</div>
                     <h3>YouTube</h3>
                     <p>Unboxing videos, convention tours, and more! Follow our other socials to stay updated on new releases.</p>
-                    <a href="https://www.youtube.com/@RREReptiles" target="_blank" rel="noopener" class="btn btn-accent">RRE Reptiles</a>
+                    <a href="https://www.youtube.com/@RedRocksExoticReptiles" target="_blank" rel="noopener" class="btn btn-accent">RRE Reptiles</a>
                 </div>
                 <div class="social-card">
                     <div class="social-icon" style="background:#4ea24e;">&#129422;</div>
@@ -1518,7 +1589,8 @@
     <!-- ================================================================= -->
     <div class="page" id="page-reptilog">
         <div class="reptilog-hero">
-            <h2>&#128221; ReptiLog</h2>
+            <img src="images/ReptiLog%20Icon.png" alt="ReptiLog App Icon" class="reptilog-app-icon">
+            <h2>ReptiLog</h2>
             <p style="font-size:1.2rem;font-weight:600;margin-bottom:.5rem;">A Personal Husbandry Planner, Tracker &amp; Logger in Your Pocket!</p>
             <p>Sometimes life gets busy and trying to remember your critter's schedules can be difficult! Whether you're a breeder or a hobbyist &mdash; have one reptile or fifty &mdash; being organized and thorough in your care is always helpful not only for you, but for your critter's benefit as well.</p>
             <p style="max-width:650px;margin:0 auto 2rem;opacity:.9;">We at Red Rocks Reptiles completely understand all these challenges. We want to make sure we are properly tracking all the ins and outs of our reptiles, but it can be cumbersome. And thus, a great idea was born &mdash; <strong>ReptiLog!</strong></p>
@@ -1549,8 +1621,12 @@
             <h2 class="section-title">Interested in <span class="accent">ReptiLog</span>?</h2>
             <div class="divider" style="margin:0 auto 1rem;"></div>
             <p class="section-subtitle mx-auto">ReptiLog is a convenient reptile tracking app that helps you take back control of your caretaking schedules and organize your care in a more efficient way so you can spend more time on what matters &mdash; interacting with and admiring your reptiles!</p>
-            <p class="section-subtitle mx-auto" style="margin-bottom:2rem;">The app also has a premium functionality that allows you to sync your data to the cloud and access it from any device! If this sounds appealing to you, reach out and we will promptly send you a link to test the app for free!</p>
-            <a href="mailto:rrereptiles@gmail.com?subject=ReptiLog%20Interest" class="btn btn-accent">&#128231; Get Early Access</a>
+            <p class="section-subtitle mx-auto" style="margin-bottom:2rem;">The app also has a premium functionality that allows you to sync your data to the cloud and access it from any device!</p>
+            <a href="https://play.google.com/store/apps/details?id=com.reptilog.app&pcampaignid=web_share" target="_blank" rel="noopener" class="btn btn-accent" style="margin-bottom:.8rem;">&#9654; Download on Google Play</a>
+            <br>
+            <a href="https://play.google.com/store/apps/details?id=com.reptilog.app&pcampaignid=web_share" target="_blank" rel="noopener" class="google-play-badge">
+                <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play">
+            </a>
         </section>
     </div>
 
@@ -1719,9 +1795,70 @@
                     <span class="faq-arrow">&#9660;</span>
                 </button>
                 <div class="faq-answer">
-                    <p>ReptiLog is a reptile husbandry tracking app we are developing. It helps you log feedings, sheds, weights, and other care tasks with calendars, reminders, and cloud sync. Visit our <a href="#" data-page="reptilog">ReptiLog page</a> to learn more.</p>
+                    <p>ReptiLog is a reptile husbandry tracking app available on Android! It helps you log feedings, sheds, weights, and other care tasks with calendars, reminders, and cloud sync. <a href="https://play.google.com/store/apps/details?id=com.reptilog.app&pcampaignid=web_share" target="_blank" rel="noopener">Download it on Google Play</a> or visit our <a href="#" data-page="reptilog">ReptiLog page</a> to learn more.</p>
                 </div>
             </div>
+        </section>
+
+        <!-- Store Policies & Terms -->
+        <section class="policy-section" id="store-policies">
+            <h3>Store Policies &amp; Terms</h3>
+            <p style="font-weight:600;margin-bottom:1.5rem;">Please read the below policies before making a purchase.</p>
+
+            <h4>Shipping and Liability Policy</h4>
+            <ol>
+                <li><strong>Responsibility After Delivery:</strong> Upon delivery of a reptile purchased from Red Rocks Exotic Reptiles LLC (DBA Red Rocks Exotic Reptiles) and affiliates, the customer assumes full responsibility for the well-being, care, and safety of the reptile. Red Rocks Exotic Reptiles and affiliates are not liable for any loss, damage, or death of the reptile that may occur after the package is marked as &ldquo;Delivered&rdquo; by the shipping carrier (e.g., UPS). It is the customer&rsquo;s responsibility to ensure the reptile&rsquo;s welfare and follow appropriate care practices.</li>
+                <li><strong>Assumed Health and Vitality:</strong> All reptiles offered for sale by Red Rocks Exotic Reptiles and affiliates are assumed to be in good health and alive when they are shipped. We take great care to ensure the health and well-being of the reptiles we sell, conducting thorough health assessments and following established breeding and care standards.</li>
+                <li><strong>Carrier Responsibility:</strong> Shipping of reptiles is carried out using reputable and established shipping carriers such as UPS, FedEx, etc. Any issues related to the handling, delays, or condition of the shipment should be directed to the shipping carrier. Red Rocks Exotic Reptiles and affiliates will assist customers in navigating the shipping carrier&rsquo;s policies and procedures.</li>
+                <li><strong>Inspection Upon Delivery:</strong> Customers are strongly advised to inspect the reptile and its packaging immediately upon delivery. In the event of any concerns or issues, customers should document the condition and take clear photographs as evidence.</li>
+                <li><strong>Reporting Issues:</strong> Any issues related to the reptile&rsquo;s health, condition, or well-being upon delivery should be reported to Red Rocks Exotic Reptiles and affiliates within 24 hours of the package being marked as &ldquo;Delivered&rdquo; by the shipping carrier. Timely notification allows Red Rocks Exotic Reptiles and affiliates to address any immediate concerns and provide guidance.</li>
+                <li><strong>Customer Care Support:</strong> Red Rocks Exotic Reptiles and affiliates are committed to customer satisfaction and will provide guidance and support as needed. We value our customers and are here to assist with any questions or concerns within the scope of our policies and responsibilities.</li>
+                <li><strong>Policy Updates:</strong> Red Rocks Exotic Reptiles and affiliates reserve the right to update and modify this shipping and liability policy as needed. Customers are encouraged to review this policy regularly to stay informed about any changes.</li>
+                <li><strong>Sales Policy:</strong> All sales are final, no refunds or returns permitted unless stated otherwise directly from Red Rocks Exotic Reptiles. Should a refund be granted, buyer is subject to a 25% fee based off the purchase price and buyer relinquishes their ownership of the reptile back to Red Rocks Exotic Reptiles thereafter. Red Rocks Exotic Reptiles reserves the right to ban customers that abuse this policy.</li>
+                <li><strong>Boarding &amp; Hold Policy:</strong> If buyer requests a later delivery date, Red Rocks Exotic Reptiles will coordinate with buyer to board purchased reptile for a specified period of time, and a non-refundable fee may apply based on boarding duration. Any duration beyond two weeks is subject to this fee.</li>
+                <li><strong>Customer Agreement:</strong> By purchasing a reptile from Red Rocks Exotic Reptiles LLC and affiliates, the customer acknowledges and agrees to this shipping and liability policy. This agreement includes the understanding that Red Rocks Exotic Reptiles and affiliates are not responsible for any issues or harm that may arise following the delivery of the reptile. Customers are encouraged to read and understand this policy thoroughly before making a purchase.</li>
+            </ol>
+            <p>By making a purchase from Red Rocks Exotic Reptiles and affiliates, customers acknowledge their agreement to the terms and conditions outlined in this policy.</p>
+            <p>If you have any questions or need further clarification regarding this policy, please feel free to <a href="mailto:rrereptiles@gmail.com">contact us</a>.</p>
+            <p style="margin-top:1rem;font-style:italic;">&mdash; Red Rocks Exotic Reptiles LLC and affiliates</p>
+        </section>
+
+        <!-- Privacy Policy -->
+        <section class="policy-section" id="privacy-policy">
+            <h3>Privacy Policy</h3>
+            <p><strong>Effective Date:</strong> 12/6/25</p>
+            <p>We respect your privacy. We want you to feel confident using our app and website, and we are committed to protecting your information.</p>
+
+            <h4>Information We Collect</h4>
+            <p>ReptiLog can be used entirely offline without creating an account. In this mode, no personal data is collected or transmitted, and all information remains stored locally on your device.</p>
+            <p>If you choose to create an optional account to enable cloud sync features, we collect:</p>
+            <ul>
+                <li>Email address (for account creation and login)</li>
+                <li>Authentication information (securely handled by Supabase Auth)</li>
+                <li>Your synced app data (such as reptiles, groups, logs, and settings)</li>
+            </ul>
+            <p>This information is stored securely on our backend provider, Supabase, which acts solely as a data processor on our behalf.</p>
+
+            <h4>How We Use Your Information</h4>
+            <p>Cloud-synced data is used only to:</p>
+            <ul>
+                <li>Provide account access</li>
+                <li>Sync your data across devices</li>
+                <li>Backup your information securely</li>
+            </ul>
+            <p>We do not sell, share, or use your data for advertising or analytics.</p>
+
+            <h4>Third-Party Services</h4>
+            <p>We use Supabase to provide secure authentication and cloud data storage. Supabase does not use your data for any purpose other than providing these services to us.</p>
+            <p>ReptiLog does not use third-party analytics, advertising networks, or tracking services.</p>
+
+            <h4>Account Deletion</h4>
+            <p>If you have created an account and wish to delete it along with all associated data, you may request deletion at any time.</p>
+            <p>To request account deletion, email us at: <a href="mailto:rrereptiles@gmail.com">rrereptiles@gmail.com</a></p>
+            <p>We will permanently delete your account and all stored data.</p>
+
+            <h4>Changes to This Policy</h4>
+            <p>If our practices change in the future, we will update this Privacy Policy and make it available within the app and on our website.</p>
         </section>
     </div>
 
@@ -1738,7 +1875,9 @@
                 <a href="#" data-page="shop">Shop</a><br>
                 <a href="#" data-page="about">About Us</a><br>
                 <a href="#" data-page="care">Care Guides</a><br>
-                <a href="#" data-page="faq">Shipping/FAQs</a>
+                <a href="#" data-page="faq">Shipping/FAQs</a><br>
+                <a href="#" class="footer-policy-link" data-page="faq" data-scroll="store-policies">Store Policies</a><br>
+                <a href="#" class="footer-policy-link" data-page="faq" data-scroll="privacy-policy">Privacy Policy</a>
             </div>
             <div>
                 <h4>Contact Us</h4>
@@ -1751,8 +1890,8 @@
                 <h4>Follow Us</h4>
                 <a href="https://www.instagram.com/red_rocks_reptiles/" target="_blank" rel="noopener">Instagram</a><br>
                 <a href="https://www.facebook.com/RREReptiles" target="_blank" rel="noopener">Facebook</a><br>
-                <a href="https://www.tiktok.com/@red_rocks_reptiles" target="_blank" rel="noopener">TikTok</a><br>
-                <a href="https://www.youtube.com/@RREReptiles" target="_blank" rel="noopener">YouTube</a><br>
+                <a href="https://www.tiktok.com/@redrocks_exotic_reptiles" target="_blank" rel="noopener">TikTok</a><br>
+                <a href="https://www.youtube.com/@RedRocksExoticReptiles" target="_blank" rel="noopener">YouTube</a><br>
                 <a href="https://www.morphmarket.com/stores/red_rocks_exotic_reptiles/" target="_blank" rel="noopener">MorphMarket</a>
             </div>
         </div>
@@ -1807,6 +1946,21 @@
                 var isOpen = item.classList.contains('open');
                 document.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('open'); });
                 if (!isOpen) item.classList.add('open');
+            });
+        });
+
+        // ---- Footer policy links (navigate to page then scroll to section) ----
+        document.querySelectorAll('.footer-policy-link').forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var pageId = this.getAttribute('data-page');
+                var scrollTarget = this.getAttribute('data-scroll');
+                navigateTo(pageId);
+                setTimeout(function() {
+                    var el = document.getElementById(scrollTarget);
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
             });
         });
     </script>

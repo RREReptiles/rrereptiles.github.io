@@ -592,9 +592,16 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
+            background: var(--white);
+            border: 1px solid #ddd;
             margin: 0 auto 1rem;
-            color: var(--white);
+            padding: 10px;
+        }
+
+        .social-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         .social-card h3 { margin-bottom: .5rem; }
@@ -918,7 +925,7 @@
                 <span class="badge">🎖️ Veteran Owned</span>
                 <span class="badge">🦎 Ethically Bred Reptiles</span>
                 <span class="badge">&#127793; Aquatic & Tropical Plants</span>
-                <span class="badge">🦋 Entymology Art</span>
+                <span class="badge">🦋 Entomology Art</span>
             </div>
             <h1>Red Rocks Exotic Reptiles</h1>
             <p class="tagline">Colorado's source for ethically bred geckos, skinks, arboreal lizards, aquatic plants&nbsp;&amp;&nbsp;reptile supplies.</p>
@@ -934,9 +941,9 @@
                 <div class="text">
                     <div class="divider"></div>
                     <h2>Welcome to <span style="color:var(--accent)">Red Rocks Exotic Reptiles!</span></h2>
-                    <p>We sell all sorts of geckos, skinks, arboreal lizards, and other reptile supplies and insect feeders! We also offer aquatic plants and aquarium keeping goods!</p>
-                    <p>We are always looking to expand our breeding efforts and business, so feel free to reach out to us with trade suggestions or just any comments you may have! We're confident you'll have a great experience working with us and love having conversations with other enthusiasts!</p>
-                    <p>At the moment, we offer geckos of many different morphs and species, Emerald Tree Skinks, Green Keel-Bellied Lizards and Red-Eyed Crocodile Skinks amongst many other reptiles. We are also looking to eventually offer more bug feeders, aquatic plants, shrimp, medication and dry goods &mdash; stay tuned for updates!</p>
+                    <p>We sell all sorts of geckos, skinks, arboreal lizards, and other reptile supplies and insect feeders! We also offer aquatic plants, aquarium keeping goods, and our newest edition: entomology art!</p>
+                    <p>We are always looking to expand our breeding efforts and business, so feel free to reach out to us with trade suggestions or just any comments you may have! We're confident you'll have a great experience working with us.</p>
+                    <p>At the moment, we offer Pictus Geckos, Dune Geckos, Cave Geckos, Crested Geckos, and several other species of gecko. We also carry Emerald Tree Skinks, Green Keel-Bellied Lizards, Gidgee skinks, and Dekay's Brown Snakes, amongst many other reptiles. We also carry bug feeders, aquatic plants, shrimp, medication and dry goods &mdash; stay tuned for new products!</p>
                     <br>
                     <a href="#" class="btn btn-accent" data-page="about">Learn More About Us &rarr;</a>
                 </div>
@@ -1096,14 +1103,14 @@
                 <button class="shop-tab" data-shop="shrimp">Freshwater Shrimp</button>
                 <button class="shop-tab" data-shop="feeders">Insects/Feeders</button>
                 <button class="shop-tab" data-shop="goods">Other Goods</button>
-                <button class="shop-tab" data-shop="goods">Entymology Art</button>
+                <button class="shop-tab" data-shop="goods">Entomology Art</button>
             </div>
 
             <!-- Crested Geckos -->
             <div class="shop-category active" id="shop-geckos-crested">
                 <div class="product-grid">         
                     <div class="product-card">
-                        <div class="product-img">Photo</div>
+                        <img src="images/Potato.jpg" alt="Potato crested gecko" class="product-img">
                         <div class="product-info">
                             <h3>Potato</h3>
                             <p class="species">Crested Gecko (Correlophus ciliatus)</p>
@@ -1119,7 +1126,7 @@
                 <p class="section-subtitle">We are always trying to expand our breeding efforts. If you are looking for a specific reptile, please reach out and we can see if we can locate them for you.</p>
                 <div class="product-grid">
                     <div class="product-card">
-                        <div class="product-img">Photo</div>
+                        <img src="images/Juvenile%20Pictus.jpg" alt="Juvenile Pictus Geckos" class="product-img">
                         <div class="product-info">
                             <h3>Juvenile Pictus Geckos</h3>
                             <p class="species">Paroedura pictus</p>
@@ -1129,7 +1136,7 @@
                         </div>
                     </div>
                     <div class="product-card">
-                        <div class="product-img">Photo</div>
+                        <img src="images/cave%20gecko.jpg" alt="Juvenile Chinese Cave Geckos" class="product-img">
                         <div class="product-info">
                             <h3>Juvenile Chinese Cave Geckos</h3>
                             <p class="species">Goniurosaurus hainanensis</p>
@@ -1138,7 +1145,7 @@
                         </div>
                     </div>
                     <div class="product-card">
-                        <div class="product-img">Photo</div>
+                        <img src="images/Onyx.png" alt="Onyx spear-point leaf tail gecko" class="product-img">
                         <div class="product-info">
                             <h3>Onyx &#9794;</h3>
                             <p class="species">Spear-Point Leaf Tail Gecko (Uroplatus ebenaui)</p>
@@ -1317,7 +1324,7 @@
                 </div>
                 <div class="product-grid">
                     <div class="product-card">
-                        <div class="product-img">Photo</div>
+                        <img src="images/Mealworms.jpg" alt="Mealworms" class="product-img">
                         <div class="product-info">
                             <h3>Mealworms</h3>
                             <p class="species">10 / 20 / 50 / 100 count</p>
@@ -1360,7 +1367,7 @@
                 <p class="section-subtitle">Custom-made goods, d&eacute;cor, and misc.&nbsp;items in a wide range of colors for all your reptile and aquatic needs! Have a specific idea or design in mind? Send us a message!</p>
                 <div class="product-grid">
                     <div class="product-card">
-                        <div class="product-img">Photo</div>
+                        <img src="images/Food%20Ledge.jpg" alt="Arboreal cup ledge with suction cup" class="product-img">
                         <div class="product-info">
                             <h3>Arboreal Cup Ledge w/ Suction Cup</h3>
                             <span class="price">$10</span><br>
@@ -1386,7 +1393,7 @@
                         </div>
                     </div>
                     <div class="product-card">
-                        <div class="product-img">Photo</div>
+                        <img src="images/Hygrometer.jpg" alt="Hygrometer with shell suction cup" class="product-img">
                         <div class="product-info">
                             <h3>Hygrometer + Shell w/ Suction Cup</h3>
                             <span class="price">$8</span><br>
@@ -1551,31 +1558,41 @@
             </div>
             <div class="socials-grid">
                 <div class="social-card">
-                    <div class="social-icon" style="background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);">&#128247;</div>
+                    <div class="social-icon">
+                        <img src="https://cdn.simpleicons.org/instagram" alt="Instagram icon">
+                    </div>
                     <h3>Instagram</h3>
                     <p>Our primary platform for updates, photos, and DMs. Follow along for daily content!</p>
                     <a href="https://www.instagram.com/red_rocks_reptiles/" target="_blank" rel="noopener" class="btn btn-accent">@red_rocks_reptiles</a>
                 </div>
                 <div class="social-card">
-                    <div class="social-icon" style="background:#1877f2;">&#128077;</div>
+                    <div class="social-icon">
+                        <img src="https://cdn.simpleicons.org/facebook" alt="Facebook icon">
+                    </div>
                     <h3>Facebook</h3>
                     <p>Follow our Facebook page for community updates, live events, and more!</p>
                     <a href="https://www.facebook.com/RREReptiles" target="_blank" rel="noopener" class="btn btn-accent">RREReptiles</a>
                 </div>
                 <div class="social-card">
-                    <div class="social-icon" style="background:#000;">&#9654;</div>
+                    <div class="social-icon">
+                        <img src="https://cdn.simpleicons.org/tiktok" alt="TikTok icon">
+                    </div>
                     <h3>TikTok</h3>
                     <p>Short-form videos, reptile clips, and behind-the-scenes content!</p>
                     <a href="https://www.tiktok.com/@redrocks_exotic_reptiles" target="_blank" rel="noopener" class="btn btn-accent">@redrocks_exotic_reptiles</a>
                 </div>
                 <div class="social-card">
-                    <div class="social-icon" style="background:#ff0000;">&#9654;</div>
+                    <div class="social-icon">
+                        <img src="https://cdn.simpleicons.org/youtube" alt="YouTube icon">
+                    </div>
                     <h3>YouTube</h3>
                     <p>Unboxing videos, convention tours, and more! Follow our other socials to stay updated on new releases.</p>
                     <a href="https://www.youtube.com/@RedRocksExoticReptiles" target="_blank" rel="noopener" class="btn btn-accent">RRE Reptiles</a>
                 </div>
                 <div class="social-card">
-                    <div class="social-icon" style="background:#4ea24e;">&#129422;</div>
+                    <div class="social-icon">
+                        <img src="https://www.morphmarket.com/favicon.ico" alt="MorphMarket icon">
+                    </div>
                     <h3>MorphMarket</h3>
                     <p>Browse our available reptiles and purchase directly through MorphMarket.</p>
                     <a href="https://www.morphmarket.com/stores/red_rocks_exotic_reptiles/" target="_blank" rel="noopener" class="btn btn-accent">Our Store</a>
@@ -1654,13 +1671,6 @@
                         <p>Gastropholis prasina</p>
                     </div>
                 </a>
-                <a href="https://drive.google.com/file/d/18DmUuReGDJ4nmbpWSINpXZP6zVLhiQhz/view" target="_blank" rel="noopener" class="guide-card" style="color:inherit;">
-                    <div class="guide-icon">&#129422;</div>
-                    <div>
-                        <h4>Red-Eyed Crocodile Skink</h4>
-                        <p>Tribolonotus gracilis</p>
-                    </div>
-                </a>
                 <a href="https://docs.google.com/document/d/1yyZykINGQtH82yxyx6tnni0RtiE5dnryzIih3uIiAOg/edit" target="_blank" rel="noopener" class="guide-card" style="color:inherit;">
                     <div class="guide-icon">&#129422;</div>
                     <div>
@@ -1673,6 +1683,69 @@
                     <div>
                         <h4>Bearded Dragon</h4>
                         <p>Pogona vitticeps</p>
+                    </div>
+                </a>
+                <a href="mailto:rrereptiles@gmail.com?subject=Gidgee%20Skinks%20Care%20Guide" class="guide-card" style="color:inherit;">
+                    <div class="guide-icon">&#129422;</div>
+                    <div>
+                        <h4>Gidgee Skinks</h4>
+                        <p>Egernia stokesii</p>
+                    </div>
+                </a>
+                <a href="mailto:rrereptiles@gmail.com?subject=Chinese%20Cave%20Geckos%20Care%20Guide" class="guide-card" style="color:inherit;">
+                    <div class="guide-icon">&#129422;</div>
+                    <div>
+                        <h4>Chinese Cave Geckos</h4>
+                        <p>Goniurosaurus hainanensis</p>
+                    </div>
+                </a>
+                <a href="mailto:rrereptiles@gmail.com?subject=Sarasinorum%20Geckos%20Care%20Guide" class="guide-card" style="color:inherit;">
+                    <div class="guide-icon">&#129422;</div>
+                    <div>
+                        <h4>Sarasinorum Geckos</h4>
+                        <p>Correlophus sarasinorum</p>
+                    </div>
+                </a>
+                <a href="mailto:rrereptiles@gmail.com?subject=Dune%20Geckos%20Care%20Guide" class="guide-card" style="color:inherit;">
+                    <div class="guide-icon">&#129422;</div>
+                    <div>
+                        <h4>Dune Geckos</h4>
+                        <p>Stenodactylus sthenodactylus</p>
+                    </div>
+                </a>
+                <a href="mailto:rrereptiles@gmail.com?subject=Dekay%27s%20Brown%20Snakes%20Care%20Guide" class="guide-card" style="color:inherit;">
+                    <div class="guide-icon">&#129422;</div>
+                    <div>
+                        <h4>Dekay's Brown Snakes</h4>
+                        <p>Storeria dekayi</p>
+                    </div>
+                </a>
+                <a href="mailto:rrereptiles@gmail.com?subject=Malaysian%20Cat%20Geckos%20Care%20Guide" class="guide-card" style="color:inherit;">
+                    <div class="guide-icon">&#129422;</div>
+                    <div>
+                        <h4>Malaysian Cat Geckos</h4>
+                        <p>Aeluroscalabotes felinus</p>
+                    </div>
+                </a>
+                <a href="mailto:rrereptiles@gmail.com?subject=Pictus%20Geckos%20Care%20Guide" class="guide-card" style="color:inherit;">
+                    <div class="guide-icon">&#129422;</div>
+                    <div>
+                        <h4>Pictus Geckos</h4>
+                        <p>Paroedura pictus</p>
+                    </div>
+                </a>
+                <a href="mailto:rrereptiles@gmail.com?subject=Ebenaui%20Geckos%20Care%20Guide" class="guide-card" style="color:inherit;">
+                    <div class="guide-icon">&#129422;</div>
+                    <div>
+                        <h4>Ebenaui Geckos</h4>
+                        <p>Uroplatus ebenaui</p>
+                    </div>
+                </a>
+                <a href="mailto:rrereptiles@gmail.com?subject=European%20Night%20Lizards%20Care%20Guide" class="guide-card" style="color:inherit;">
+                    <div class="guide-icon">&#129422;</div>
+                    <div>
+                        <h4>European Night Lizards</h4>
+                        <p>Lepidophyma flavimaculatum</p>
                     </div>
                 </a>
             </div>

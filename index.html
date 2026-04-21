@@ -298,6 +298,20 @@
             font-weight: 500;
         }
 
+        .badge-link {
+            color: var(--white);
+            cursor: pointer;
+            font-family: inherit;
+            transition: transform var(--transition), background var(--transition), border-color var(--transition);
+        }
+
+        .badge-link:hover {
+            color: var(--white);
+            transform: translateY(-2px);
+            background: rgba(255,255,255,.22);
+            border-color: rgba(255,255,255,.4);
+        }
+
         .flag-icon {
             width: 1rem;
             height: .75rem;
@@ -936,10 +950,10 @@
     <!-- ===== HEADER ===== -->
     <header>
         <div class="nav-container">
-            <div class="logo">
+            <a href="#" data-page="home" class="logo" aria-label="Go to Home page">
                 <div class="logo-icon"><img src="images/Logo.svg" alt="RRE Logo"></div>
                 <span><span class="accent">Red Rocks</span> Exotic Reptiles</span>
-            </div>
+            </a>
             <nav class="nav-links">
                 <a href="#" data-page="home" class="active">Home</a>
                 <a href="#" data-page="shop">Shop</a>
@@ -973,11 +987,11 @@
         <section class="hero">
             <img src="images/Logo%20Letters.png" alt="Red Rocks Exotic Reptiles" class="hero-logo">
             <div class="hero-badges">
-                <span class="badge"><img src="https://flagcdn.com/w20/us.png" srcset="https://flagcdn.com/w40/us.png 2x" alt="United States flag" class="flag-icon">Colorado Based</span>
-                <span class="badge">🎖️ Veteran Owned</span>
-                <span class="badge">🦎 Ethically Bred Reptiles</span>
-                <span class="badge">&#127793; Aquatic & Tropical Plants</span>
-                <span class="badge">🦋 Entomology Art</span>
+                <button type="button" class="badge badge-link" data-page="about" aria-label="Go to About Us"><img src="https://flagcdn.com/w20/us.png" srcset="https://flagcdn.com/w40/us.png 2x" alt="United States flag" class="flag-icon">Colorado Based</button>
+                <button type="button" class="badge badge-link" data-page="about" aria-label="Go to About Us">🎖️ Veteran Owned</button>
+                <button type="button" class="badge badge-link" data-shop-target="geckos-other" aria-label="Go to Other Geckos in Shop">🦎 Ethically Bred Reptiles</button>
+                <button type="button" class="badge badge-link" data-shop-target="plants" aria-label="Go to Aquatic Plants in Shop">&#127793; Aquatic & Tropical Plants</button>
+                <button type="button" class="badge badge-link" data-shop-target="entomology" aria-label="Go to Entomology Art in Shop">🦋 Entomology Art</button>
             </div>
             <h1>Red Rocks Exotic Reptiles</h1>
             <p class="tagline">Colorado's source for ethically bred geckos, skinks, arboreal lizards, aquatic plants&nbsp;&amp;&nbsp;reptile supplies.</p>
@@ -2266,14 +2280,27 @@
             document.getElementById('mobileNav').classList.toggle('show');
         });
 
+        function setShopCategory(shopKey) {
+            document.querySelectorAll('.shop-tab').forEach(function(t) { t.classList.remove('active'); });
+            document.querySelectorAll('.shop-category').forEach(function(c) { c.classList.remove('active'); });
+            var tab = document.querySelector('.shop-tab[data-shop="' + shopKey + '"]');
+            var category = document.getElementById('shop-' + shopKey);
+            if (tab) tab.classList.add('active');
+            if (category) category.classList.add('active');
+        }
+
         // ---- Shop Sub-tabs ----
         document.querySelectorAll('.shop-tab').forEach(function(tab) {
             tab.addEventListener('click', function() {
-                document.querySelectorAll('.shop-tab').forEach(function(t) { t.classList.remove('active'); });
-                document.querySelectorAll('.shop-category').forEach(function(c) { c.classList.remove('active'); });
-                this.classList.add('active');
-                var target = document.getElementById('shop-' + this.getAttribute('data-shop'));
-                if (target) target.classList.add('active');
+                setShopCategory(this.getAttribute('data-shop'));
+            });
+        });
+
+        // ---- Hero badge links to specific shop categories ----
+        document.querySelectorAll('[data-shop-target]').forEach(function(chip) {
+            chip.addEventListener('click', function() {
+                navigateTo('shop');
+                setShopCategory(this.getAttribute('data-shop-target'));
             });
         });
 

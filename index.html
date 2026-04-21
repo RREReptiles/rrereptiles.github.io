@@ -22,6 +22,9 @@
     <meta name="twitter:description" content="Ethically bred reptiles, aquatic plants, husbandry resources, and reptile supplies from Colorado.">
     <meta name="twitter:image" content="https://rrereptiles.com/images/Logo%20Letters.png">
     <link rel="canonical" href="https://rrereptiles.com/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         /* ===== CSS RESET & VARIABLES ===== */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -914,6 +917,204 @@
         }
 
         .contact-methods a:hover { opacity: .8; color: var(--white); }
+
+        /* ===== DESIGN ENHANCEMENT ===== */
+
+        /* Font upgrade */
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+            background: radial-gradient(ellipse at 25% 0%, #ece7d8 0%, var(--bg) 60%);
+        }
+
+        .section-title,
+        .hero h1,
+        .welcome-grid .text h2,
+        .about-content h2,
+        .reptilog-hero h2,
+        .vm-card h3,
+        .ship-card h3 {
+            font-family: 'Playfair Display', Georgia, serif;
+        }
+
+        /* ===== PAGE ENTER ANIMATION ===== */
+        .page.active {
+            animation: pageIn 0.38s cubic-bezier(.25,.46,.45,.94) both;
+        }
+
+        @keyframes pageIn {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== SCROLL REVEAL ===== */
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(26px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in { opacity: 0; }
+        .fade-in.visible { animation: fadeSlideUp 0.52s ease forwards; }
+
+        /* ===== HERO ENTRANCE ANIMATION ===== */
+        .hero-logo   { animation: heroIn 0.65s ease both; }
+        .hero-badges { animation: heroIn 0.65s 0.10s ease both; }
+        .hero h1     { animation: heroIn 0.65s 0.20s ease both; }
+        .hero .tagline   { animation: heroIn 0.65s 0.28s ease both; }
+        .hero-buttons    { animation: heroIn 0.65s 0.37s ease both; }
+
+        @keyframes heroIn {
+            from { opacity: 0; transform: translateY(22px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== FEATURE CARDS ===== */
+        .feature-card {
+            border-bottom: 3px solid transparent;
+            transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 14px 36px rgba(0,0,0,.12);
+            border-bottom-color: var(--accent);
+        }
+
+        /* ===== PRODUCT CARDS ===== */
+        .product-card {
+            transition: transform .28s ease, box-shadow .28s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 14px 36px rgba(0,0,0,.13);
+        }
+
+        /* ===== PARENT CARDS ===== */
+        .parent-card {
+            transition: transform .28s ease, box-shadow .28s ease;
+        }
+        .parent-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,.13);
+        }
+
+        /* ===== GUIDE CARDS ===== */
+        .guide-card {
+            transition: transform .28s ease, box-shadow .28s ease;
+        }
+        .guide-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 28px rgba(0,0,0,.12), inset 4px 0 0 var(--accent);
+        }
+
+        /* ===== SOCIAL CARDS ===== */
+        .social-card {
+            transition: transform .28s ease, box-shadow .28s ease;
+        }
+        .social-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 14px 36px rgba(0,0,0,.13);
+        }
+        .social-icon { transition: transform .28s ease; }
+        .social-card:hover .social-icon { transform: scale(1.12); }
+
+        /* ===== VALUE CARDS ===== */
+        .value-card {
+            border-top: 4px solid transparent;
+            transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
+        }
+        .value-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 28px rgba(0,0,0,.11);
+            border-top-color: var(--accent);
+        }
+
+        /* ===== SHIP CARDS ===== */
+        .ship-card {
+            transition: transform .28s ease, box-shadow .28s ease;
+        }
+        .ship-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 28px rgba(0,0,0,.11);
+        }
+
+        /* ===== REPTILOG FEATURE TILES ===== */
+        .rl-feature {
+            transition: transform .28s ease, background .28s ease;
+        }
+        .rl-feature:hover {
+            transform: translateY(-5px);
+            background: rgba(255,255,255,.2);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            transition: background .22s ease, transform .2s ease, box-shadow .2s ease, color .2s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(0,0,0,.15);
+        }
+
+        /* ===== INQUIRE BUTTONS ===== */
+        .product-info .inquire {
+            transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
+        }
+        .product-info .inquire:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(158,20,3,.25);
+        }
+
+        /* ===== CONTACT STRIP ===== */
+        .contact-strip {
+            background: linear-gradient(135deg, var(--accent) 0%, #7a1003 100%);
+        }
+
+        /* ===== FAQ ===== */
+        .faq-item.open {
+            box-shadow: 0 4px 20px rgba(0,0,0,.1);
+        }
+        .faq-question {
+            transition: color .2s ease, background .2s ease;
+        }
+        .faq-question:hover {
+            background: #fafaf8;
+        }
+
+        /* ===== PLACEHOLDERS ===== */
+        .img-placeholder {
+            background: linear-gradient(135deg, #e8e3d8 0%, #d4cfc2 100%);
+        }
+        div.product-img {
+            background: linear-gradient(135deg, #ece8de 0%, #d6d1c4 100%);
+            font-size: .78rem;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            color: #aaa;
+            font-weight: 500;
+        }
+
+        /* ===== SECTION TITLE POLISH ===== */
+        .section-title {
+            line-height: 1.15;
+        }
+
+        /* ===== DIVIDER ACCENT ===== */
+        .divider {
+            background: linear-gradient(90deg, var(--accent), #c0392b);
+            box-shadow: 0 1px 6px rgba(158,20,3,.28);
+        }
+
+        /* ===== NAV LINK TRANSITION ===== */
+        .nav-links a {
+            transition: background .2s ease, color .2s ease, transform .15s ease;
+        }
+        .nav-links a:hover {
+            transform: translateY(-1px);
+        }
+
+        /* ===== SHOP NOTICE POLISH ===== */
+        .shop-notice {
+            border-left-width: 5px;
+        }
 
         /* Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
@@ -2328,6 +2529,31 @@
                 }, 100);
             });
         });
+
+        // ---- Scroll Reveal (IntersectionObserver) ----
+        (function() {
+            if (!window.IntersectionObserver) return;
+
+            var selector = '.feature-card, .product-card, .parent-card, .value-card, .guide-card, .social-card, .ship-card, .vm-card, .rl-feature';
+            var cards = document.querySelectorAll(selector);
+
+            var observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (!entry.isIntersecting) return;
+                    var el = entry.target;
+                    var siblings = Array.from(el.parentElement.children);
+                    var idx = siblings.indexOf(el);
+                    el.style.animationDelay = Math.min(idx * 0.07, 0.42) + 's';
+                    el.classList.add('visible');
+                    observer.unobserve(el);
+                });
+            }, { threshold: 0.08, rootMargin: '0px 0px -20px 0px' });
+
+            cards.forEach(function(card) {
+                card.classList.add('fade-in');
+                observer.observe(card);
+            });
+        })();
     </script>
 </body>
 </html>

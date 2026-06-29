@@ -522,6 +522,58 @@
             font-size: .9rem;
         }
 
+        .product-carousel {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            overflow: hidden;
+            background: var(--light-gray);
+        }
+
+        .product-carousel .product-img {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity .25s ease;
+        }
+
+        .product-carousel .product-img.active {
+            opacity: 1;
+        }
+
+        .carousel-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2.1rem;
+            height: 2.1rem;
+            border: 0;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, .55);
+            color: var(--white);
+            font-size: 1.1rem;
+            line-height: 1;
+            cursor: pointer;
+            z-index: 2;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background .2s ease, transform .2s ease, opacity .2s ease;
+            opacity: .92;
+        }
+
+        .carousel-arrow:hover {
+            background: rgba(0, 0, 0, .72);
+        }
+
+        .carousel-arrow:focus-visible {
+            outline: 2px solid var(--white);
+            outline-offset: 2px;
+        }
+
+        .carousel-arrow.prev { left: .65rem; }
+        .carousel-arrow.next { right: .65rem; }
+
         .product-info {
             padding: 1.1rem 1.2rem;
         }
@@ -1728,20 +1780,6 @@
                     </div>
                 </div>
                 <div class="parent-card">
-                    <img src="images/Khan.JPG" alt="Khan Malaysian Cat Gecko" class="parent-img">
-                    <div class="info">
-                        <h4>Khan &#9794;</h4>
-                        <p>Malaysian Cat Gecko (Aeluroscalabotes felinus)</p>
-                    </div>
-                </div>
-                <div class="parent-card">
-                    <div class="img-placeholder" style="height:200px;">Photo</div>
-                    <div class="info">
-                        <h4>Kai &#9794;</h4>
-                        <p>Malaysian Cat Gecko (Aeluroscalabotes felinus)</p>
-                    </div>
-                </div>
-                <div class="parent-card">
                     <img src="images/Midnight.JPG" alt="Midnight Yellow Spotted Night Lizard" class="parent-img">
                     <div class="info">
                         <h4>Midnight</h4>
@@ -1846,7 +1884,8 @@
                 <button class="shop-tab" data-shop="plants">Aquatic Plants</button>
                 <button class="shop-tab" data-shop="shrimp">Freshwater Shrimp</button>
                 <button class="shop-tab" data-shop="feeders">Insects/Feeders</button>
-                <button class="shop-tab" data-shop="goods">Other Goods</button>
+                <button class="shop-tab" data-shop="dietary-supplements">Dietary/Supplements</button>
+                <button class="shop-tab" data-shop="husbandry-supplies">Husbandry Supplies</button>
                 <button class="shop-tab" data-shop="entomology">Entomology Art</button>
             </div>
 
@@ -1889,12 +1928,12 @@
                         </div>
                     </div>
                     <div class="product-card">
-                        <img src="images/Onyx.png" alt="Onyx spear-point leaf tail gecko" class="product-img">
+                        <img src="images/Khan.JPG" alt="Khan Malaysian Cat Gecko" class="product-img">
                         <div class="product-info">
-                            <h3>Onyx &#9794;</h3>
-                            <p class="species">Spear-Point Leaf Tail Gecko (Uroplatus ebenaui)</p>
-                            <span class="price">$400</span><br>
-                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Onyx" class="inquire">Inquire</a>
+                            <h3>Khan &#9794;</h3>
+                            <p class="species">Malaysian Cat Gecko (Aeluroscalabotes felinus)</p>
+                            <span class="price">$275</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Khan" class="inquire">Inquire</a>
                         </div>
                     </div>
                 </div>
@@ -2115,6 +2154,24 @@
                     <div class="product-card">
                         <div class="product-img">Photo</div>
                         <div class="product-info">
+                            <h3>Banded Crickets</h3>
+                            <p class="species">5 / 10 / 20 / 50 / 100 count</p>
+                            <span class="price">Contact for pricing</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Banded%20Crickets" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
+                            <h3>Fruit Fly Cultures</h3>
+                            <p class="species">Per cup</p>
+                            <span class="price">$10</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Fruit%20Fly%20Cultures" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-img">Photo</div>
+                        <div class="product-info">
                             <h3>Dubia Roaches</h3>
                             <p class="species">25 / 50 / 100 count</p>
                             <span class="price">Contact for pricing</span><br>
@@ -2124,8 +2181,54 @@
                 </div>
             </div>
 
-            <!-- Other Goods -->
-            <div class="shop-category" id="shop-goods">
+            <!-- Dietary/Supplements -->
+            <div class="shop-category" id="shop-dietary-supplements">
+                <div class="product-grid">
+                    <div class="product-card">
+                        <img src="images/Lugarti%20Insectivore.jpg" alt="Lugarti Insectivore Gel Diet 6oz" class="product-img" loading="lazy" decoding="async">
+                        <div class="product-info">
+                            <h3>Lugarti Insectivore Gel Diet 6oz</h3>
+                            <span class="price">$20</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Lugarti%20Insectivore%20Gel%20Diet" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <img src="images/lugarti%20calcium.jpg" alt="Lugarti Reptile Calcium with D3 3oz" class="product-img" loading="lazy" decoding="async">
+                        <div class="product-info">
+                            <h3>Lugarti Reptile Calcium with D3 3oz</h3>
+                            <span class="price">$6</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Lugarti%20Reptile%20Calcium%20with%20D3" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <img src="images/lugarti%20vitamin.jpg" alt="Lugarti Vitamin without D3 3oz" class="product-img" loading="lazy" decoding="async">
+                        <div class="product-info">
+                            <h3>Lugarti Vitamin without D3 3oz</h3>
+                            <span class="price">$10</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Lugarti%20Vitamin%20without%20D3" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <img src="images/lugarti%20water%20treatment.jpg" alt="Lugarti Water Dechlorinator 3oz" class="product-img" loading="lazy" decoding="async">
+                        <div class="product-info">
+                            <h3>Lugarti Water Dechlorinator 3oz</h3>
+                            <span class="price">$9</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Lugarti%20Water%20Dechlorinator" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <img src="images/Pollen.jpg" alt="Bee pollen dietary supplement" class="product-img" loading="lazy" decoding="async">
+                        <div class="product-info">
+                            <h3>Bee Pollen</h3>
+                            <span class="price">$5</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Bee%20Pollen" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Husbandry Supplies -->
+            <div class="shop-category" id="shop-husbandry-supplies">
                 <p class="section-subtitle">Custom-made goods, d&eacute;cor, and misc.&nbsp;items in a wide range of colors for all your reptile and aquatic needs! Have a specific idea or design in mind? Send us a message!</p>
                 <div class="product-grid">
                     <div class="product-card">
@@ -2137,12 +2240,48 @@
                         </div>
                     </div>
                     <div class="product-card">
+                        <div class="product-carousel" data-carousel aria-label="Magnetic Food Ledge product images">
+                            <img src="images/mag%20ledge%201.jpg" alt="Magnetic food ledge for reptile enclosures" class="product-img active" loading="lazy" decoding="async">
+                            <img src="images/mag%20ledge%202.jpg" alt="Magnetic food ledge side view" class="product-img" loading="lazy" decoding="async" aria-hidden="true">
+                            <img src="images/mag%20ledge%203.jpg" alt="Magnetic food ledge alternate angle" class="product-img" loading="lazy" decoding="async" aria-hidden="true">
+                            <img src="images/mag%20ledge%204.jpg" alt="Magnetic food ledge detail view" class="product-img" loading="lazy" decoding="async" aria-hidden="true">
+                            <button type="button" class="carousel-arrow prev" aria-label="Previous Magnetic Food Ledge image">&#8249;</button>
+                            <button type="button" class="carousel-arrow next" aria-label="Next Magnetic Food Ledge image">&#8250;</button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Magnetic Food Ledge</h3>
+                            <span class="price">$10</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Magnetic%20Food%20Ledge" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
                         <div class="product-img">Photo</div>
                         <div class="product-info">
                             <h3>Food Bowls</h3>
                             <p class="species">Multiple sizes</p>
                             <span class="price">Contact for pricing</span><br>
                             <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Food%20Bowls" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-carousel" data-carousel aria-label="Plastic Tongs product images">
+                            <img src="images/Plastic%20tong1.jpg" alt="Plastic feeding tongs" class="product-img active" loading="lazy" decoding="async">
+                            <img src="images/Plastic%20tong2.jpg" alt="Plastic feeding tongs alternate view" class="product-img" loading="lazy" decoding="async" aria-hidden="true">
+                            <button type="button" class="carousel-arrow prev" aria-label="Previous Plastic Tongs image">&#8249;</button>
+                            <button type="button" class="carousel-arrow next" aria-label="Next Plastic Tongs image">&#8250;</button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Plastic Tongs</h3>
+                            <span class="price">$4</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Plastic%20Tongs" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <img src="images/Metal%20Tong.jpg" alt="Metal feeding tongs" class="product-img" loading="lazy" decoding="async">
+                        <div class="product-info">
+                            <h3>Metal Tongs</h3>
+                            <span class="price">$6</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Metal%20Tongs" class="inquire">Inquire</a>
                         </div>
                     </div>
                     <div class="product-card">
@@ -2190,6 +2329,14 @@
                         </div>
                     </div>
                     <div class="product-card">
+                        <img src="images/lugarti%20hide.jpg" alt="Lugarti Box Hide medium size" class="product-img" loading="lazy" decoding="async">
+                        <div class="product-info">
+                            <h3>Lugarti Box Hide (M)</h3>
+                            <span class="price">$15</span><br>
+                            <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Lugarti%20Box%20Hide%20M" class="inquire">Inquire</a>
+                        </div>
+                    </div>
+                    <div class="product-card">
                         <div class="product-img">Photo</div>
                         <div class="product-info">
                             <h3>Temporary Arboreal Enclosure Mega Kit</h3>
@@ -2233,7 +2380,7 @@
                     <div class="product-card">
                         <img src="images/Floating-display.jpg" alt="Floating entomology art display with preserved specimen" class="product-img" loading="lazy" decoding="async">
                         <div class="product-info">
-                            <h3>Floating Display</h3>
+                            <h3>Floating Displays</h3>
                             <p class="species">Modern suspended insect specimen presentation</p>
                             <span class="price">$15-$30</span><br>
                             <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Floating%20Display" class="inquire">Request Details</a>
@@ -2242,7 +2389,7 @@
                     <div class="product-card">
                         <img src="images/Shadow-Box.jpg" alt="Shadow box entomology art framed insect display" class="product-img" loading="lazy" decoding="async">
                         <div class="product-info">
-                            <h3>Shadow Box</h3>
+                            <h3>Shadow Box Displays</h3>
                             <p class="species">Framed deep-set entomology piece for wall display</p>
                             <span class="price">$45-$100</span><br>
                             <a href="mailto:rrereptiles@gmail.com?subject=Inquiry%20about%20Shadow%20Box%20Entomology%20Art" class="inquire">Request Details</a>
@@ -2251,7 +2398,7 @@
                     <div class="product-card">
                         <div class="product-img">Custom</div>
                         <div class="product-info">
-                            <h3>Commission Submission</h3>
+                            <h3>Special Requests</h3>
                             <p class="species">Tell us your preferred species, style, and frame size</p>
                             <span class="price">Custom Quote</span><br>
                             <a href="mailto:rrereptiles@gmail.com?subject=Entomology%20Art%20Commission%20Request" class="inquire">Submit Commission Request</a>
@@ -2464,6 +2611,8 @@
             <p class="section-subtitle mx-auto">ReptiLog is a convenient reptile tracking app that helps you take back control of your caretaking schedules and organize your care in a more efficient way so you can spend more time on what matters &mdash; interacting with and admiring your reptiles!</p>
             <p class="section-subtitle mx-auto" style="margin-bottom:2rem;">The app also has a premium functionality that allows you to sync your data to the cloud and access it from any device!</p>
             <a href="https://play.google.com/store/apps/details?id=com.reptilog.app&pcampaignid=web_share" target="_blank" rel="noopener" class="btn btn-accent" style="margin-bottom:.8rem;">&#9654; Download on Google Play</a>
+            <br>
+            <a href="https://reptilog.app/" target="_blank" rel="noopener" class="btn btn-accent" style="margin-bottom:.8rem;">Visit the ReptiLog Website</a>
             <br>
             <a href="https://play.google.com/store/apps/details?id=com.reptilog.app&pcampaignid=web_share" target="_blank" rel="noopener" class="google-play-badge">
                 <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play">
@@ -2892,6 +3041,45 @@
                     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }, 100);
             });
+        });
+
+        // ---- Product image carousels ----
+        document.querySelectorAll('[data-carousel]').forEach(function(carousel) {
+            var slides = Array.from(carousel.querySelectorAll('.product-img'));
+            if (slides.length < 2) return;
+
+            var index = 0;
+            var prev = carousel.querySelector('.carousel-arrow.prev');
+            var next = carousel.querySelector('.carousel-arrow.next');
+
+            function renderCarousel() {
+                slides.forEach(function(slide, slideIndex) {
+                    var isActive = slideIndex === index;
+                    slide.classList.toggle('active', isActive);
+                    slide.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+                });
+            }
+
+            function moveCarousel(step) {
+                index = (index + step + slides.length) % slides.length;
+                renderCarousel();
+            }
+
+            if (prev) {
+                prev.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    moveCarousel(-1);
+                });
+            }
+
+            if (next) {
+                next.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    moveCarousel(1);
+                });
+            }
+
+            renderCarousel();
         });
 
         // ---- Scroll Reveal (IntersectionObserver) ----

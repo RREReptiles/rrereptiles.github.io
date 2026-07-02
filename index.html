@@ -786,6 +786,70 @@
         .guide-card h4 { margin-bottom: .2rem; font-size: 1rem; }
         .guide-card p { color: var(--gray); font-size: .82rem; }
 
+        .care-menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .65rem;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            padding: .85rem;
+            background: rgba(255,255,255,.48);
+            border: 1px solid rgba(158,20,3,.14);
+            border-radius: 999px;
+            box-shadow: 0 6px 24px rgba(0,0,0,.06);
+        }
+
+        .care-tab {
+            border: 1px solid rgba(158,20,3,.28);
+            background: var(--white);
+            color: var(--accent);
+            border-radius: 999px;
+            padding: .62rem 1.05rem;
+            font-family: inherit;
+            font-size: .86rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background var(--transition), color var(--transition), transform var(--transition), box-shadow var(--transition);
+        }
+
+        .care-tab:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 16px rgba(158,20,3,.16);
+        }
+
+        .care-tab.active {
+            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+            color: var(--white);
+            border-color: transparent;
+            box-shadow: 0 6px 18px rgba(158,20,3,.28);
+        }
+
+        .care-tab span {
+            display: inline-block;
+            margin-left: .35rem;
+            opacity: .72;
+            font-size: .78rem;
+        }
+
+        .guide-card[hidden] { display: none; }
+
+        .guide-card.care-card-enter {
+            animation: fadeSlideUp 0.48s ease both;
+        }
+
+        @media (max-width: 640px) {
+            .care-menu {
+                border-radius: var(--radius);
+                justify-content: stretch;
+            }
+
+            .care-tab {
+                flex: 1 1 calc(50% - .65rem);
+                text-align: center;
+                padding-inline: .75rem;
+            }
+        }
+
         /* ===== FAQ ACCORDION ===== */
         .faq-item {
             background: var(--card-bg);
@@ -2649,101 +2713,144 @@
         <section class="section">
             <h2 class="section-title"><span class="accent">Care</span> Guides</h2>
             <div class="divider"></div>
-            <p class="section-subtitle">Care guides are provided with each purchase. Below is a list of care sheets we follow from fellow breeders or reptile resources. Click any card to view the guide.</p>
+            <p class="section-subtitle">Care guides are provided with each purchase. Browse breeder-backed care resources by reptile group.</p>
+
+            <div class="care-menu" aria-label="Care guide categories">
+                <button type="button" class="care-tab active" data-care-filter="geckos" aria-pressed="true">Geckos <span>9</span></button>
+                <button type="button" class="care-tab" data-care-filter="skinks" aria-pressed="false">Skinks <span>5</span></button>
+                <button type="button" class="care-tab" data-care-filter="lizards" aria-pressed="false">Lizards <span>3</span></button>
+                <button type="button" class="care-tab" data-care-filter="snakes" aria-pressed="false">Snakes <span>2</span></button>
+                <button type="button" class="care-tab" data-care-filter="all" aria-pressed="false">All Guides <span>19</span></button>
+            </div>
 
             <div class="guides-grid">
-                <a href="care-guides/emerald-tree-skink.html" class="guide-card" style="color:inherit;">
+                <a href="care-guides/emerald-tree-skink.html" class="guide-card" data-care="skinks" style="color:inherit;" hidden>
                     <div class="guide-icon">&#129422;</div>
                     <div>
                         <h4>Emerald Tree Skink</h4>
                         <p>Lamprolepis smaragdina</p>
                     </div>
                 </a>
-                <a href="care-guides/green-keel-bellied-lizard.html" class="guide-card" style="color:inherit;">
+                <a href="care-guides/green-keel-bellied-lizard.html" class="guide-card" data-care="lizards" style="color:inherit;" hidden>
                     <div class="guide-icon">&#129422;</div>
                     <div>
                         <h4>Green Keel-Bellied Lizard</h4>
                         <p>Gastropholis prasina</p>
                     </div>
                 </a>
-                <a href="care-guides/crested-gecko.html" class="guide-card" style="color:inherit;">
+                <a href="care-guides/crested-gecko.html" class="guide-card" data-care="geckos" style="color:inherit;">
                     <div class="guide-icon">&#129422;</div>
                     <div>
                         <h4>Crested Gecko</h4>
                         <p>Correlophus ciliatus</p>
                     </div>
                 </a>
-                <a href="care-guides/bearded-dragon.html" class="guide-card" style="color:inherit;">
+                <a href="care-guides/bearded-dragon.html" class="guide-card" data-care="lizards" style="color:inherit;" hidden>
                     <div class="guide-icon">&#129422;</div>
                     <div>
                         <h4>Bearded Dragon</h4>
                         <p>Pogona vitticeps</p>
                     </div>
                 </a>
-                <a href="care-guides/gidgee-skink.html" class="guide-card" style="color:inherit;">
+                <a href="care-guides/gidgee-skink.html" class="guide-card" data-care="skinks" style="color:inherit;" hidden>
                     <div class="guide-icon">&#129422;</div>
                     <div>
                         <h4>Gidgee Skinks</h4>
                         <p>Egernia stokesii</p>
                     </div>
                 </a>
-                <a href="care-guides/chinese-cave-gecko.html" class="guide-card" style="color:inherit;">
+                <a href="care-guides/african-five-lined-skink.html" class="guide-card" data-care="skinks" style="color:inherit;" hidden>
+                    <div class="guide-icon">&#129422;</div>
+                    <div>
+                        <h4>African Five-Lined Skinks</h4>
+                        <p>Trachylepis quinquetaeniata</p>
+                    </div>
+                </a>
+                <a href="care-guides/ocellated-skink.html" class="guide-card" data-care="skinks" style="color:inherit;" hidden>
+                    <div class="guide-icon">&#129422;</div>
+                    <div>
+                        <h4>Ocellated Skinks</h4>
+                        <p>Chalcides ocellatus</p>
+                    </div>
+                </a>
+                <a href="care-guides/greers-keeled-water-skink.html" class="guide-card" data-care="skinks" style="color:inherit;" hidden>
+                    <div class="guide-icon">&#129422;</div>
+                    <div>
+                        <h4>Greer's Keeled Water Skinks</h4>
+                        <p>Cophoscincopus greeri</p>
+                    </div>
+                </a>
+                <a href="care-guides/chinese-cave-gecko.html" class="guide-card" data-care="geckos" style="color:inherit;">
                     <div class="guide-icon">&#129422;</div>
                     <div>
                         <h4>Chinese Cave Geckos</h4>
                         <p>Goniurosaurus hainanensis</p>
                     </div>
                 </a>
-                <a href="care-guides/sarasinorum-gecko.html" class="guide-card" style="color:inherit;">
+                <a href="care-guides/sarasinorum-gecko.html" class="guide-card" data-care="geckos" style="color:inherit;">
                     <div class="guide-icon">&#129422;</div>
                     <div>
                         <h4>Sarasinorum Geckos</h4>
                         <p>Correlophus sarasinorum</p>
                     </div>
                 </a>
-                <a href="care-guides/dune-gecko.html" class="guide-card" style="color:inherit;">
+                <a href="care-guides/dune-gecko.html" class="guide-card" data-care="geckos" style="color:inherit;">
                     <div class="guide-icon">&#129422;</div>
                     <div>
                         <h4>Dune Geckos</h4>
                         <p>Stenodactylus sthenodactylus</p>
                     </div>
                 </a>
-                <a href="care-guides/dekays-brown-snake.html" class="guide-card" style="color:inherit;">
+                <a href="care-guides/dekays-brown-snake.html" class="guide-card" data-care="snakes" style="color:inherit;" hidden>
                     <div class="guide-icon">&#129422;</div>
                     <div>
                         <h4>Dekay's Brown Snakes</h4>
                         <p>Storeria dekayi</p>
                     </div>
                 </a>
-                <a href="care-guides/malaysian-cat-gecko.html" class="guide-card" style="color:inherit;">
+                <a href="care-guides/malaysian-cat-gecko.html" class="guide-card" data-care="geckos" style="color:inherit;">
                     <div class="guide-icon">&#129422;</div>
                     <div>
                         <h4>Malaysian Cat Geckos</h4>
                         <p>Aeluroscalabotes felinus</p>
                     </div>
                 </a>
-                <a href="care-guides/pictus-gecko.html" class="guide-card" style="color:inherit;">
+                <a href="care-guides/african-fat-tailed-gecko.html" class="guide-card" data-care="geckos" style="color:inherit;">
+                    <div class="guide-icon">&#129422;</div>
+                    <div>
+                        <h4>African Fat-Tailed Geckos</h4>
+                        <p>Hemitheconyx caudicinctus</p>
+                    </div>
+                </a>
+                <a href="care-guides/moorish-gecko.html" class="guide-card" data-care="geckos" style="color:inherit;">
+                    <div class="guide-icon">&#129422;</div>
+                    <div>
+                        <h4>Moorish Geckos</h4>
+                        <p>Tarentola mauritanica</p>
+                    </div>
+                </a>
+                <a href="care-guides/pictus-gecko.html" class="guide-card" data-care="geckos" style="color:inherit;">
                     <div class="guide-icon">&#129422;</div>
                     <div>
                         <h4>Pictus Geckos</h4>
                         <p>Paroedura pictus</p>
                     </div>
                 </a>
-                <a href="care-guides/ebenaui-gecko.html" class="guide-card" style="color:inherit;">
+                <a href="care-guides/ebenaui-gecko.html" class="guide-card" data-care="geckos" style="color:inherit;">
                     <div class="guide-icon">&#129422;</div>
                     <div>
                         <h4>Ebenaui Geckos</h4>
                         <p>Uroplatus ebenaui</p>
                     </div>
                 </a>
-                <a href="care-guides/european-night-lizard.html" class="guide-card" style="color:inherit;">
+                <a href="care-guides/european-night-lizard.html" class="guide-card" data-care="lizards" style="color:inherit;" hidden>
                     <div class="guide-icon">&#129422;</div>
                     <div>
                         <h4>European Night Lizards</h4>
                         <p>Lepidophyma flavimaculatum</p>
                     </div>
                 </a>
-                <a href="care-guides/rough-green-snake.html" class="guide-card" style="color:inherit;">
+                <a href="care-guides/rough-green-snake.html" class="guide-card" data-care="snakes" style="color:inherit;" hidden>
                     <div class="guide-icon">&#129422;</div>
                     <div>
                         <h4>Rough Green Snakes</h4>
@@ -3037,6 +3144,39 @@
             chip.addEventListener('click', function() {
                 navigateTo('shop');
                 setShopCategory(this.getAttribute('data-shop-target'));
+            });
+        });
+
+        function setCareCategory(careKey) {
+            document.querySelectorAll('.care-tab').forEach(function(tab) {
+                var isActive = tab.getAttribute('data-care-filter') === careKey;
+                tab.classList.toggle('active', isActive);
+                tab.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+            });
+
+            var shownCards = [];
+            document.querySelectorAll('.guide-card[data-care]').forEach(function(card) {
+                var shouldShow = careKey === 'all' || card.getAttribute('data-care') === careKey;
+                card.hidden = !shouldShow;
+                card.classList.remove('care-card-enter');
+                if (shouldShow) {
+                    shownCards.push(card);
+                }
+            });
+
+            requestAnimationFrame(function() {
+                shownCards.forEach(function(card, index) {
+                    card.classList.add('visible');
+                    card.style.animationDelay = Math.min(index * 0.04, 0.28) + 's';
+                    card.classList.add('care-card-enter');
+                });
+            });
+        }
+
+        // ---- Care Guide Category Menu ----
+        document.querySelectorAll('.care-tab').forEach(function(tab) {
+            tab.addEventListener('click', function() {
+                setCareCategory(this.getAttribute('data-care-filter'));
             });
         });
 

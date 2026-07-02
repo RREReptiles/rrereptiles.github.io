@@ -31,6 +31,21 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://rrereptiles.com/care-guides/african-five-lined-skink.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://rrereptiles.com/care-guides/ocellated-skink.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://rrereptiles.com/care-guides/greers-keeled-water-skink.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://rrereptiles.com/care-guides/chinese-cave-gecko.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -52,6 +67,16 @@
   </url>
   <url>
     <loc>https://rrereptiles.com/care-guides/malaysian-cat-gecko.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://rrereptiles.com/care-guides/african-fat-tailed-gecko.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://rrereptiles.com/care-guides/moorish-gecko.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

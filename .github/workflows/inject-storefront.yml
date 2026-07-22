@@ -1,16 +1,37 @@
-name: Inject storefront assets
+name: Validate and inject storefront
 
 on:
   push:
     branches:
       - agent/add-dynamic-storefront
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check storefront JavaScript syntax
+        run: node --check shop/storefront.js
+
+      - name: Check injection script syntax
+        run: python -m py_compile scripts/inject_storefront.py
+
+      - name: Verify storefront references
+        run: |
+          grep -q 'shop/storefront.css' index.html
+          grep -q 'shop/checkout.css' index.html
+          grep -q 'shop/storefront.js' index.html
+
   inject:
-    if: github.actor != 'github-actions[bot]'
+    if: github.event_name == 'push' && github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Check out storefront branch

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#1a1a1a">
+    <title>Order Confirmation | Red Rocks Exotic Reptiles</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicons/favicon-32x32.png">
+    <link rel="stylesheet" href="shop/order-confirmation.css">
+    <script src="shop/order-confirmation.js" defer></script>
+</head>
+<body>
+    <header class="confirmation-header">
+        <a href="/" class="confirmation-brand" aria-label="Red Rocks Exotic Reptiles home">
+            <img src="images/Logo.svg" alt="">
+            <span><strong>Red Rocks</strong> Exotic Reptiles</span>
+        </a>
+    </header>
+
+    <main class="confirmation-main">
+        <section class="confirmation-card" data-confirmation-card>
+            <div class="confirmation-loading" data-confirmation-loading>
+                <div class="confirmation-spinner" aria-hidden="true"></div>
+                <h1>Loading your order…</h1>
+                <p>Confirming the payment and order details.</p>
+            </div>
+
+            <div class="confirmation-error" data-confirmation-error hidden>
+                <div class="confirmation-icon error" aria-hidden="true">!</div>
+                <h1>We could not load this order</h1>
+                <p data-confirmation-error-message>The confirmation link may be incomplete or expired.</p>
+                <a class="confirmation-primary-button" href="/?storefront-preview=1">Return to the shop</a>
+            </div>
+
+            <div class="confirmation-content" data-confirmation-content hidden>
+                <div class="confirmation-success-heading">
+                    <div class="confirmation-icon" aria-hidden="true">✓</div>
+                    <div>
+                        <p class="confirmation-eyebrow">Payment received</p>
+                        <h1>Thank you for your order</h1>
+                        <p class="confirmation-subtitle">Your purchase has been recorded in ReptiTrax.</p>
+                    </div>
+                </div>
+
+                <div class="confirmation-sandbox" data-confirmation-sandbox hidden>
+                    Sandbox test order — no real money was charged.
+                </div>
+
+                <div class="confirmation-order-number">
+                    <span>Order number</span>
+                    <strong data-order-number>—</strong>
+                </div>
+
+                <div class="confirmation-meta-grid">
+                    <div>
+                        <span>Order date</span>
+                        <strong data-order-date>—</strong>
+                    </div>
+                    <div>
+                        <span>Payment status</span>
+                        <strong class="confirmation-paid">Paid</strong>
+                    </div>
+                    <div>
+                        <span>Confirmation email</span>
+                        <strong data-email-status>Pending</strong>
+                    </div>
+                </div>
+
+                <section class="confirmation-section">
+                    <h2>Order summary</h2>
+                    <div class="confirmation-items" data-order-items></div>
+                    <div class="confirmation-totals">
+                        <div><span>Subtotal</span><strong data-order-subtotal>$0.00</strong></div>
+                        <div><span>Shipping</span><strong data-order-shipping>$0.00</strong></div>
+                        <div data-tax-row hidden><span>Tax</span><strong data-order-tax>$0.00</strong></div>
+                        <div class="confirmation-total"><span>Total paid</span><strong data-order-total>$0.00</strong></div>
+                    </div>
+                </section>
+
+                <section class="confirmation-section confirmation-details-grid">
+                    <div>
+                        <h2>Customer</h2>
+                        <p data-customer-name>—</p>
+                        <p data-customer-email>—</p>
+                    </div>
+                    <div data-shipping-section>
+                        <h2>Shipping to</h2>
+                        <address data-shipping-address>—</address>
+                    </div>
+                </section>
+
+                <div class="confirmation-note">
+                    Keep this page or your order number for reference. We will contact you if anything is needed before fulfillment.
+                </div>
+
+                <div class="confirmation-actions">
+                    <button type="button" class="confirmation-secondary-button" data-print-order>Print confirmation</button>
+                    <a class="confirmation-primary-button" href="/">Return to Red Rocks</a>
+                </div>
+            </div>
+        </section>
+
+        <p class="confirmation-help">Questions about an order? Email <a href="mailto:rrereptiles@gmail.com">rrereptiles@gmail.com</a> or call <a href="tel:9704001278">970-400-1278</a>.</p>
+    </main>
+</body>
+</html>

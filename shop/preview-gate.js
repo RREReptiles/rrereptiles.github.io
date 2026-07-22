@@ -10,10 +10,16 @@
 
     const shopPage = document.getElementById('page-shop');
     const onlineCategory = document.getElementById('shop-online-store');
-    if (!shopPage || !onlineCategory) return;
+    const onlineTab = document.querySelector('.storefront-tab');
+    if (!shopPage || !onlineCategory || !onlineTab) return;
 
     const notice = document.createElement('div');
     notice.className = 'storefront-preview-notice';
     notice.textContent = 'Sandbox preview: PayPal uses test accounts and does not create a real charge.';
     onlineCategory.prepend(notice);
+
+    const shopLink = document.querySelector('.nav-links [data-page="shop"]')
+        || document.querySelector('[data-page="shop"]');
+    shopLink?.click();
+    onlineTab.click();
 })();

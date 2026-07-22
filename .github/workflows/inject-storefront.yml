@@ -1,0 +1,35 @@
+name: Inject storefront assets
+
+on:
+  push:
+    branches:
+      - agent/add-dynamic-storefront
+
+permissions:
+  contents: write
+
+jobs:
+  inject:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out storefront branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/add-dynamic-storefront
+          fetch-depth: 0
+
+      - name: Inject storefront references
+        run: python scripts/inject_storefront.py
+
+      - name: Commit generated index update
+        run: |
+          if git diff --quiet -- index.html; then
+            echo "No index.html changes needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Load dynamic storefront assets"
+          git push origin HEAD:agent/add-dynamic-storefront

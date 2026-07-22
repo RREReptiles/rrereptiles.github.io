@@ -1,0 +1,35 @@
+.storefront-checkout-status {
+    margin: 0 0 .8rem;
+    padding: .7rem .8rem;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, .045);
+    color: var(--gray);
+    font-size: .78rem;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.storefront-checkout-status.success {
+    background: rgba(35, 125, 70, .12);
+    color: #1f6f3e;
+    font-weight: 700;
+}
+
+.storefront-checkout-status.error {
+    background: rgba(158, 20, 3, .10);
+    color: var(--accent);
+    font-weight: 700;
+}
+
+.storefront-paypal-buttons[hidden] {
+    display: none;
+}
+
+.storefront-paypal-buttons {
+    min-height: 45px;
+}
+
+.storefront-cart-footer {
+    max-height: 46vh;
+    overflow-y: auto;
+}

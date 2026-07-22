@@ -466,7 +466,11 @@
                     renderCart();
                     await fetchCatalog();
                     const name = completed.payerName ? `, ${completed.payerName}` : '';
-                    setCheckoutStatus(`Payment complete${name}. Your order has been recorded.`, 'success');
+                    setCheckoutStatus(`Payment complete${name}. Redirecting to order ${completed.orderNumber || ''}…`, 'success');
+                    if (completed.confirmationUrl) {
+                        window.location.assign(completed.confirmationUrl);
+                        return;
+                    }
                 } catch (error) {
                     console.error('[storefront] capture error', error);
                     setCheckoutStatus(error.message || 'Payment could not be completed. No inventory was deducted.', 'error');

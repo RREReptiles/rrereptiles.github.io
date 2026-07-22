@@ -1,7 +1,10 @@
 from pathlib import Path
 
 INDEX_PATH = Path("index.html")
-STYLESHEET = '    <link rel="stylesheet" href="shop/storefront.css">\n'
+STYLESHEETS = (
+    '    <link rel="stylesheet" href="shop/storefront.css">\n',
+    '    <link rel="stylesheet" href="shop/checkout.css">\n',
+)
 SCRIPT = '    <script src="shop/storefront.js" defer></script>\n'
 
 
@@ -9,10 +12,12 @@ def main() -> None:
     html = INDEX_PATH.read_text(encoding="utf-8")
     original = html
 
-    if 'href="shop/storefront.css"' not in html:
-        if "</head>" not in html:
-            raise RuntimeError("Could not find </head> in index.html")
-        html = html.replace("</head>", f"{STYLESHEET}</head>", 1)
+    for stylesheet in STYLESHEETS:
+        href = stylesheet.split('href="', 1)[1].split('"', 1)[0]
+        if f'href="{href}"' not in html:
+            if "</head>" not in html:
+                raise RuntimeError("Could not find </head> in index.html")
+            html = html.replace("</head>", f"{stylesheet}</head>", 1)
 
     if 'src="shop/storefront.js"' not in html:
         if "</body>" not in html:

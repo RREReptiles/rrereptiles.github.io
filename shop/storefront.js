@@ -4,6 +4,7 @@
     const SUPABASE_URL = 'https://zezpkoulxjagljjbyhhk.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_w1szxATkVRFs2JBQOyG8rg_ULipgOPv';
     const CATALOG_URL = `${SUPABASE_URL}/rest/v1/rpc/get_storefront_catalog`;
+    const FUNCTIONS_URL = `${SUPABASE_URL}/functions/v1`;
     const CART_STORAGE_KEY = 'rre-storefront-cart-v1';
     const currency = new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -13,7 +14,10 @@
     const state = {
         products: new Map(),
         cart: loadCart(),
-        loaded: false
+        loaded: false,
+        paypalReady: false,
+        paypalButtonsRendered: false,
+        activePayPalOrderId: null
     };
 
     function loadCart() {
@@ -54,6 +58,13 @@
             const product = state.products.get(item.itemId);
             return product ? sum + Number(product.price) * item.quantity : sum;
         }, 0);
+    }
+
+    function checkoutCart() {
+        return state.cart.map(item => ({
+            itemId: item.itemId,
+            quantity: item.quantity
+        }));
     }
 
     function normalizeCartAgainstCatalog() {
@@ -144,10 +155,9 @@
                         <span>Subtotal</span>
                         <span data-storefront-cart-subtotal>$0.00</span>
                     </div>
-                    <p class="storefront-checkout-note">Shipping and any applicable taxes will be calculated during checkout.</p>
-                    <button type="button" class="storefront-checkout-button" disabled data-storefront-checkout>
-                        PayPal checkout setup in progress
-                    </button>
+                    <p class="storefront-checkout-note">Shipping and any applicable taxes are confirmed before payment is completed.</p>
+                    <div class="storefront-checkout-status" data-storefront-checkout-status aria-live="polite">Loading secure checkout…</div>
+                    <div class="storefront-paypal-buttons" id="storefront-paypal-buttons" hidden></div>
                 </div>
             </aside>
         `;
@@ -162,6 +172,23 @@
         document.body.appendChild(overlay);
     }
 
+    async function requestJson(url, options = {}) {
+        const response = await fetch(url, {
+            ...options,
+            headers: {
+                apikey: SUPABASE_PUBLISHABLE_KEY,
+                'Content-Type': 'application/json',
+                ...(options.headers || {})
+            }
+        });
+
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) {
+            throw new Error(payload.error || payload.message || `Request failed (${response.status})`);
+        }
+        return payload;
+    }
+
     async function fetchCatalog() {
         const status = document.querySelector('[data-storefront-status]');
         const grid = document.querySelector('[data-storefront-grid]');
@@ -172,20 +199,10 @@
         grid.hidden = true;
 
         try {
-            const response = await fetch(CATALOG_URL, {
+            const products = await requestJson(CATALOG_URL, {
                 method: 'POST',
-                headers: {
-                    apikey: SUPABASE_PUBLISHABLE_KEY,
-                    'Content-Type': 'application/json'
-                },
                 body: '{}'
             });
-
-            if (!response.ok) {
-                throw new Error(`Catalog request failed (${response.status})`);
-            }
-
-            const products = await response.json();
             if (!Array.isArray(products)) throw new Error('Catalog response was invalid.');
 
             state.products = new Map(products.map(product => [Number(product.item_id), product]));
@@ -349,6 +366,137 @@
         });
 
         subtotalElement.textContent = currency.format(cartSubtotal());
+        updateCheckoutVisibility();
+    }
+
+    function setCheckoutStatus(message, type = '') {
+        const status = document.querySelector('[data-storefront-checkout-status]');
+        if (!status) return;
+        status.textContent = message;
+        status.className = `storefront-checkout-status ${type}`.trim();
+    }
+
+    function updateCheckoutVisibility() {
+        const container = document.getElementById('storefront-paypal-buttons');
+        if (!container) return;
+
+        const hasItems = state.cart.some(item => state.products.has(item.itemId));
+        container.hidden = !hasItems || !state.paypalReady;
+
+        if (!hasItems) {
+            setCheckoutStatus('Add an item to begin checkout.');
+        } else if (!state.paypalReady) {
+            setCheckoutStatus('Loading secure checkout…');
+        } else {
+            setCheckoutStatus('Pay securely with PayPal, Venmo, or an eligible card.');
+        }
+    }
+
+    async function initializeCheckout() {
+        try {
+            const config = await requestJson(`${FUNCTIONS_URL}/storefront-config`, { method: 'GET' });
+            if (!config.checkoutEnabled || !config.paypalClientId) {
+                throw new Error('Online checkout is not enabled.');
+            }
+
+            await loadPayPalSdk(config.paypalClientId, config.currency || 'USD');
+            state.paypalReady = true;
+            renderPayPalButtons();
+            updateCheckoutVisibility();
+        } catch (error) {
+            console.error('[storefront] checkout initialization error', error);
+            setCheckoutStatus('Checkout is temporarily unavailable. Please contact us to order.', 'error');
+        }
+    }
+
+    function loadPayPalSdk(clientId, checkoutCurrency) {
+        if (window.paypal) return Promise.resolve();
+
+        return new Promise((resolve, reject) => {
+            const existing = document.querySelector('script[data-rre-paypal-sdk]');
+            if (existing) {
+                existing.addEventListener('load', resolve, { once: true });
+                existing.addEventListener('error', () => reject(new Error('PayPal checkout failed to load')), { once: true });
+                return;
+            }
+
+            const script = document.createElement('script');
+            script.dataset.rrePaypalSdk = '';
+            script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(clientId)}&currency=${encodeURIComponent(checkoutCurrency)}&intent=capture&components=buttons`;
+            script.async = true;
+            script.addEventListener('load', resolve, { once: true });
+            script.addEventListener('error', () => reject(new Error('PayPal checkout failed to load')), { once: true });
+            document.head.appendChild(script);
+        });
+    }
+
+    function renderPayPalButtons() {
+        const container = document.getElementById('storefront-paypal-buttons');
+        if (!container || !window.paypal || state.paypalButtonsRendered) return;
+
+        state.paypalButtonsRendered = true;
+        window.paypal.Buttons({
+            style: {
+                layout: 'vertical',
+                shape: 'rect',
+                label: 'paypal'
+            },
+            async createOrder() {
+                if (state.cart.length === 0) throw new Error('Your cart is empty.');
+                setCheckoutStatus('Confirming current price and availability…');
+
+                const order = await requestJson(`${FUNCTIONS_URL}/create-paypal-order`, {
+                    method: 'POST',
+                    body: JSON.stringify({ cart: checkoutCart() })
+                });
+                state.activePayPalOrderId = order.id;
+                return order.id;
+            },
+            async onApprove(data) {
+                setCheckoutStatus('Completing payment and updating inventory…');
+                try {
+                    const completed = await requestJson(`${FUNCTIONS_URL}/capture-paypal-order`, {
+                        method: 'POST',
+                        body: JSON.stringify({ orderID: data.orderID })
+                    });
+
+                    state.activePayPalOrderId = null;
+                    state.cart = [];
+                    saveCart();
+                    renderCart();
+                    await fetchCatalog();
+                    const name = completed.payerName ? `, ${completed.payerName}` : '';
+                    setCheckoutStatus(`Payment complete${name}. Your order has been recorded.`, 'success');
+                } catch (error) {
+                    console.error('[storefront] capture error', error);
+                    setCheckoutStatus(error.message || 'Payment could not be completed. No inventory was deducted.', 'error');
+                    throw error;
+                }
+            },
+            async onCancel(data) {
+                const orderId = data?.orderID || state.activePayPalOrderId;
+                state.activePayPalOrderId = null;
+                setCheckoutStatus('Checkout was cancelled. Your cart is still available.');
+                if (!orderId) return;
+
+                try {
+                    await requestJson(`${FUNCTIONS_URL}/cancel-paypal-order`, {
+                        method: 'POST',
+                        body: JSON.stringify({ orderID: orderId })
+                    });
+                } catch (error) {
+                    console.warn('[storefront] cancellation cleanup failed', error);
+                }
+            },
+            onError(error) {
+                console.error('[storefront] PayPal error', error);
+                setCheckoutStatus('PayPal checkout encountered an error. Please try again.', 'error');
+            }
+        }).render('#storefront-paypal-buttons').catch(error => {
+            console.error('[storefront] PayPal button render error', error);
+            state.paypalButtonsRendered = false;
+            setCheckoutStatus('Checkout could not be displayed. Please contact us to order.', 'error');
+        });
     }
 
     function openCart() {
@@ -372,6 +520,7 @@
         buildCartDrawer();
         renderCart();
         fetchCatalog();
+        initializeCheckout();
     }
 
     window.RREStorefront = {

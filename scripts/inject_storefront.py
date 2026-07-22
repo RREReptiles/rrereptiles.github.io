@@ -5,7 +5,10 @@ STYLESHEETS = (
     '    <link rel="stylesheet" href="shop/storefront.css">\n',
     '    <link rel="stylesheet" href="shop/checkout.css">\n',
 )
-SCRIPT = '    <script src="shop/storefront.js" defer></script>\n'
+SCRIPTS = (
+    '    <script src="shop/storefront.js" defer></script>\n',
+    '    <script src="shop/preview-gate.js" defer></script>\n',
+)
 
 
 def main() -> None:
@@ -19,10 +22,12 @@ def main() -> None:
                 raise RuntimeError("Could not find </head> in index.html")
             html = html.replace("</head>", f"{stylesheet}</head>", 1)
 
-    if 'src="shop/storefront.js"' not in html:
-        if "</body>" not in html:
-            raise RuntimeError("Could not find </body> in index.html")
-        html = html.replace("</body>", f"{SCRIPT}</body>", 1)
+    for script in SCRIPTS:
+        src = script.split('src="', 1)[1].split('"', 1)[0]
+        if f'src="{src}"' not in html:
+            if "</body>" not in html:
+                raise RuntimeError("Could not find </body> in index.html")
+            html = html.replace("</body>", f"{script}</body>", 1)
 
     if html != original:
         INDEX_PATH.write_text(html, encoding="utf-8")

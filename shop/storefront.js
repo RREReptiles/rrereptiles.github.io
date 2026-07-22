@@ -422,7 +422,7 @@
 
             const script = document.createElement('script');
             script.dataset.rrePaypalSdk = '';
-            script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(clientId)}&currency=${encodeURIComponent(checkoutCurrency)}&intent=capture&components=buttons`;
+            script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(clientId)}&currency=${encodeURIComponent(checkoutCurrency)}&intent=capture&components=buttons&commit=false`;
             script.async = true;
             script.addEventListener('load', resolve, { once: true });
             script.addEventListener('error', () => reject(new Error('PayPal checkout failed to load')), { once: true });
@@ -451,6 +451,30 @@
                 });
                 state.activePayPalOrderId = order.id;
                 return order.id;
+            },
+            async onShippingAddressChange(data, actions) {
+                if (data.shippingAddress?.countryCode !== 'US') {
+                    setCheckoutStatus('Online checkout currently supports United States addresses only.', 'error');
+                    return actions.reject(data.errors.COUNTRY_ERROR);
+                }
+
+                setCheckoutStatus('Calculating USPS shipping for this address…');
+                try {
+                    const quote = await requestJson(`${FUNCTIONS_URL}/update-paypal-shipping`, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            orderID: data.orderID,
+                            shippingAddress: data.shippingAddress
+                        })
+                    });
+                    setCheckoutStatus(
+                        `${quote.service}: ${currency.format(Number(quote.shippingTotal))}. Order total: ${currency.format(Number(quote.orderTotal))}.`
+                    );
+                } catch (error) {
+                    console.error('[storefront] shipping quote error', error);
+                    setCheckoutStatus(error.message || 'Shipping could not be calculated for this address.', 'error');
+                    return actions.reject(data.errors.ZIP_ERROR || data.errors.ADDRESS_ERROR);
+                }
             },
             async onApprove(data) {
                 setCheckoutStatus('Completing payment and updating inventory…');

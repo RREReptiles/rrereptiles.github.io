@@ -1,0 +1,55 @@
+.storefront-tab {
+    display: none;
+}
+
+body.storefront-preview-enabled .storefront-tab {
+    display: inline-block;
+}
+
+.storefront-preview-notice {
+    margin: 0 0 1rem;
+    padding: .75rem 1rem;
+    border: 1px solid rgba(158, 20, 3, .24);
+    border-radius: 8px;
+    background: rgba(158, 20, 3, .08);
+    color: var(--accent);
+    font-size: .82rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.storefront-checkout-status {
+    margin: 0 0 .8rem;
+    padding: .7rem .8rem;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, .045);
+    color: var(--gray);
+    font-size: .78rem;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.storefront-checkout-status.success {
+    background: rgba(35, 125, 70, .12);
+    color: #1f6f3e;
+    font-weight: 700;
+}
+
+.storefront-checkout-status.error {
+    background: rgba(158, 20, 3, .10);
+    color: var(--accent);
+    font-weight: 700;
+}
+
+.storefront-paypal-buttons[hidden] {
+    display: none;
+}
+
+.storefront-paypal-buttons {
+    min-height: 45px;
+}
+
+.storefront-cart-footer {
+    max-height: 46vh;
+    overflow-y: auto;
+}

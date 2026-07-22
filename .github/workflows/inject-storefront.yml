@@ -1,0 +1,60 @@
+name: Validate and inject storefront
+
+on:
+  push:
+    branches:
+      - agent/add-dynamic-storefront
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check storefront JavaScript syntax
+        run: |
+          for file in shop/*.js; do
+            node --check "$file"
+          done
+
+      - name: Check injection script syntax
+        run: python -m py_compile scripts/inject_storefront.py
+
+      - name: Verify storefront references
+        run: |
+          grep -q 'shop/storefront.css' index.html
+          grep -q 'shop/checkout.css' index.html
+          grep -q 'shop/storefront.js' index.html
+          grep -q 'shop/preview-gate.js' index.html
+
+  inject:
+    if: github.event_name == 'push' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out storefront branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/add-dynamic-storefront
+          fetch-depth: 0
+
+      - name: Inject storefront references
+        run: python scripts/inject_storefront.py
+
+      - name: Commit generated index update
+        run: |
+          if git diff --quiet -- index.html; then
+            echo "No index.html changes needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Load dynamic storefront assets"
+          git push origin HEAD:agent/add-dynamic-storefront

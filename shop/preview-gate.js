@@ -13,6 +13,15 @@
         document.head.appendChild(stylesheet);
     }
 
+    function loadStorefrontPhotoSync() {
+        if (document.querySelector('script[data-storefront-photo-sync]')) return;
+        const script = document.createElement('script');
+        script.src = 'shop/storefront-photo-sync.js?v=20260724';
+        script.defer = true;
+        script.dataset.storefrontPhotoSync = '';
+        document.head.appendChild(script);
+    }
+
     function updatePurchaseCopy() {
         const shopPage = document.getElementById('page-shop');
         const shopNotice = shopPage?.querySelector('.shop-notice');
@@ -83,5 +92,6 @@
     }
 
     loadStorefrontCardStyles();
+    loadStorefrontPhotoSync();
     initializeStorefrontGate();
 })();

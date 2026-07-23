@@ -1,0 +1,32 @@
+/* Keep dynamic storefront cards consistent with the existing shop catalog. */
+.storefront-grid {
+    grid-template-columns: repeat(auto-fill, minmax(230px, 280px));
+    justify-content: start;
+}
+
+.storefront-product {
+    width: 100%;
+    max-width: 280px;
+}
+
+.storefront-product-image {
+    width: 100%;
+    height: 200px;
+    aspect-ratio: auto;
+    object-fit: contain;
+    padding: .6rem;
+}
+
+@media (max-width: 600px) {
+    .storefront-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .storefront-product {
+        max-width: 100%;
+    }
+
+    .storefront-product-image {
+        height: 220px;
+    }
+}

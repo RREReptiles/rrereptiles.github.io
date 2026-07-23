@@ -41,12 +41,25 @@ body.storefront-preview-enabled .storefront-tab {
     font-weight: 700;
 }
 
-.storefront-paypal-buttons[hidden] {
-    display: none;
+.storefront-checkout-button {
+    width: 100%;
+    min-height: 46px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--accent);
+    color: #fff;
+    font-size: .95rem;
+    font-weight: 800;
+    cursor: pointer;
 }
 
-.storefront-paypal-buttons {
-    min-height: 45px;
+.storefront-checkout-button:hover:not(:disabled) {
+    background: var(--accent-hover);
+}
+
+.storefront-checkout-button:disabled {
+    opacity: .45;
+    cursor: not-allowed;
 }
 
 .storefront-cart-footer {

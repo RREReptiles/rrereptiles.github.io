@@ -3,6 +3,8 @@
 
     const SUPABASE_URL = 'https://zezpkoulxjagljjbyhhk.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_w1szxATkVRFs2JBQOyG8rg_ULipgOPv';
+    const CART_STORAGE_KEY = 'rre-storefront-cart-v1';
+    const SESSION_STORAGE_KEY = 'rre-stripe-checkout-session-v1';
     const currency = new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD'
@@ -34,20 +36,21 @@
 
     function formatAddress(shipping) {
         if (!shipping || typeof shipping !== 'object') return '';
-
-        const name = shipping.name?.full_name || shipping.name?.given_name || '';
         const address = shipping.address || shipping;
-        const cityLine = [address.admin_area_2, address.admin_area_1, address.postal_code]
-            .filter(Boolean)
-            .join(', ')
-            .replace(', ,', ',');
-
+        const name = typeof shipping.name === 'string'
+            ? shipping.name
+            : (shipping.name?.full_name || shipping.name?.given_name || '');
+        const city = address.city || address.admin_area_2 || '';
+        const state = address.state || address.admin_area_1 || '';
+        const postalCode = address.postal_code || '';
+        const country = address.country || address.country_code || '';
+        const cityLine = [city, state, postalCode].filter(Boolean).join(', ').replace(', ,', ',');
         return [
             name,
-            address.address_line_1,
-            address.address_line_2,
+            address.line1 || address.address_line_1,
+            address.line2 || address.address_line_2,
             cityLine,
-            address.country_code
+            country
         ].filter(Boolean).join('\n');
     }
 
@@ -59,7 +62,13 @@
         text('[data-confirmation-error-message]', message);
     }
 
+    function clearCompletedCheckout() {
+        localStorage.removeItem(CART_STORAGE_KEY);
+        sessionStorage.removeItem(SESSION_STORAGE_KEY);
+    }
+
     function renderOrder(order) {
+        clearCompletedCheckout();
         document.querySelector('[data-confirmation-loading]')?.setAttribute('hidden', '');
         document.querySelector('[data-confirmation-error]')?.setAttribute('hidden', '');
         document.querySelector('[data-confirmation-content]')?.removeAttribute('hidden');
@@ -73,16 +82,17 @@
         text('[data-order-tax]', money(order.taxTotal));
         text('[data-order-total]', money(order.total));
 
+        const testMode = order.stripeLivemode === false;
         const emailStatus = order.receiptEmailSent
-            ? `Sent to ${order.customerEmail || 'your PayPal email'}`
-            : 'PayPal receipt available; store email pending';
+            ? `Sent to ${order.customerEmail || 'the checkout email'}`
+            : (testMode ? 'Not sent for this Stripe test order' : 'Store email pending');
         text('[data-email-status]', emailStatus);
 
         const taxRow = document.querySelector('[data-tax-row]');
         if (Number(order.taxTotal || 0) > 0) taxRow?.removeAttribute('hidden');
+        else taxRow?.setAttribute('hidden', '');
 
-        const sandbox = String(order.customerEmail || '').endsWith('@personal.example.com');
-        if (sandbox) document.querySelector('[data-confirmation-sandbox]')?.removeAttribute('hidden');
+        if (testMode) document.querySelector('[data-confirmation-sandbox]')?.removeAttribute('hidden');
 
         const itemsContainer = document.querySelector('[data-order-items]');
         const items = Array.isArray(order.items) ? order.items : [];
@@ -100,31 +110,60 @@
         }
 
         const address = formatAddress(order.shippingAddress);
-        if (address) {
-            text('[data-shipping-address]', address);
-        } else {
-            document.querySelector('[data-shipping-section]')?.setAttribute('hidden', '');
+        if (address) text('[data-shipping-address]', address);
+        else document.querySelector('[data-shipping-section]')?.setAttribute('hidden', '');
+    }
+
+    async function requestJson(url, options = {}) {
+        const response = await fetch(url, {
+            ...options,
+            headers: {
+                apikey: SUPABASE_PUBLISHABLE_KEY,
+                'Content-Type': 'application/json',
+                ...(options.headers || {})
+            }
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(payload.error || 'The order confirmation could not be loaded.');
+        return payload;
+    }
+
+    async function loadBySession(sessionId) {
+        for (let attempt = 0; attempt < 10; attempt += 1) {
+            const payload = await requestJson(`${SUPABASE_URL}/functions/v1/stripe-session-status`, {
+                method: 'POST',
+                body: JSON.stringify({ sessionId })
+            });
+            if (payload.status === 'complete' && payload.order) {
+                const token = payload.order.confirmationToken;
+                if (token) history.replaceState({}, '', `order-confirmation.html?token=${encodeURIComponent(token)}`);
+                renderOrder(payload.order);
+                return;
+            }
+            await new Promise(resolve => setTimeout(resolve, 1000));
         }
+        throw new Error('Stripe is still confirming this payment. Refresh this page in a moment.');
+    }
+
+    async function loadByToken(token) {
+        const payload = await requestJson(`${SUPABASE_URL}/functions/v1/order-confirmation?token=${encodeURIComponent(token)}`);
+        renderOrder(payload);
     }
 
     async function loadOrder() {
-        const token = new URLSearchParams(window.location.search).get('token')?.trim() || '';
-        if (!/^[0-9a-f-]{36}$/i.test(token)) {
-            showError('This confirmation link is missing its order token.');
-            return;
-        }
-
+        const params = new URLSearchParams(window.location.search);
+        const sessionId = params.get('session_id')?.trim() || '';
+        const token = params.get('token')?.trim() || '';
         try {
-            const response = await fetch(`${SUPABASE_URL}/functions/v1/order-confirmation?token=${encodeURIComponent(token)}`, {
-                headers: {
-                    apikey: SUPABASE_PUBLISHABLE_KEY
-                }
-            });
-            const payload = await response.json().catch(() => ({}));
-            if (!response.ok) {
-                throw new Error(payload.error || 'The order confirmation could not be loaded.');
+            if (/^cs_(test_|live_)?[A-Za-z0-9_]+$/.test(sessionId)) {
+                await loadBySession(sessionId);
+                return;
             }
-            renderOrder(payload);
+            if (/^[0-9a-f-]{36}$/i.test(token)) {
+                await loadByToken(token);
+                return;
+            }
+            showError('This confirmation link is missing its Stripe session or order token.');
         } catch (error) {
             console.error('[order-confirmation]', error);
             showError(error.message || 'The order confirmation could not be loaded.');

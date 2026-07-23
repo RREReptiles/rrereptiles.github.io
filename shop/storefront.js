@@ -4,7 +4,6 @@
     const SUPABASE_URL = 'https://zezpkoulxjagljjbyhhk.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_w1szxATkVRFs2JBQOyG8rg_ULipgOPv';
     const CATALOG_URL = `${SUPABASE_URL}/rest/v1/rpc/get_storefront_catalog`;
-    const FUNCTIONS_URL = `${SUPABASE_URL}/functions/v1`;
     const CART_STORAGE_KEY = 'rre-storefront-cart-v1';
     const currency = new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -14,10 +13,7 @@
     const state = {
         products: new Map(),
         cart: loadCart(),
-        loaded: false,
-        paypalReady: false,
-        paypalButtonsRendered: false,
-        activePayPalOrderId: null
+        loaded: false
     };
 
     function loadCart() {
@@ -60,18 +56,10 @@
         }, 0);
     }
 
-    function checkoutCart() {
-        return state.cart.map(item => ({
-            itemId: item.itemId,
-            quantity: item.quantity
-        }));
-    }
-
     function normalizeCartAgainstCatalog() {
         state.cart = state.cart.flatMap(item => {
             const product = state.products.get(item.itemId);
             if (!product || !product.in_stock || product.purchase_mode !== 'checkout') return [];
-
             const available = Math.max(0, Number(product.available_quantity || 0));
             const configuredMax = product.max_per_order == null
                 ? available
@@ -86,9 +74,7 @@
         const shopPage = document.getElementById('page-shop');
         const tabs = shopPage?.querySelector('.shop-tabs');
         const firstCategory = shopPage?.querySelector('.shop-category');
-        if (!shopPage || !tabs || !firstCategory || document.getElementById('shop-online-store')) {
-            return null;
-        }
+        if (!shopPage || !tabs || !firstCategory || document.getElementById('shop-online-store')) return null;
 
         const tab = document.createElement('button');
         tab.type = 'button';
@@ -131,15 +117,12 @@
             }
         });
 
-        category.querySelector('[data-storefront-open-cart]')
-            .addEventListener('click', openCart);
-
+        category.querySelector('[data-storefront-open-cart]').addEventListener('click', openCart);
         return category;
     }
 
     function buildCartDrawer() {
         if (document.querySelector('[data-storefront-cart-overlay]')) return;
-
         const overlay = document.createElement('div');
         overlay.className = 'storefront-cart-overlay';
         overlay.dataset.storefrontCartOverlay = '';
@@ -155,9 +138,11 @@
                         <span>Subtotal</span>
                         <span data-storefront-cart-subtotal>$0.00</span>
                     </div>
-                    <p class="storefront-checkout-note">Shipping and any applicable taxes are confirmed before payment is completed.</p>
-                    <div class="storefront-checkout-status" data-storefront-checkout-status aria-live="polite">Loading secure checkout…</div>
-                    <div class="storefront-paypal-buttons" id="storefront-paypal-buttons" hidden></div>
+                    <p class="storefront-checkout-note">USPS shipping and applicable sales tax are calculated from the delivery address during secure Stripe checkout.</p>
+                    <div class="storefront-checkout-status" data-storefront-checkout-status aria-live="polite"></div>
+                    <button type="button" class="storefront-add-button storefront-checkout-button" data-storefront-checkout disabled>
+                        Secure Checkout
+                    </button>
                 </div>
             </aside>
         `;
@@ -166,6 +151,7 @@
             if (event.target === overlay) closeCart();
         });
         overlay.querySelector('[data-storefront-close-cart]').addEventListener('click', closeCart);
+        overlay.querySelector('[data-storefront-checkout]').addEventListener('click', beginCheckout);
         document.addEventListener('keydown', event => {
             if (event.key === 'Escape' && overlay.classList.contains('open')) closeCart();
         });
@@ -181,11 +167,8 @@
                 ...(options.headers || {})
             }
         });
-
         const payload = await response.json().catch(() => ({}));
-        if (!response.ok) {
-            throw new Error(payload.error || payload.message || `Request failed (${response.status})`);
-        }
+        if (!response.ok) throw new Error(payload.error || payload.message || `Request failed (${response.status})`);
         return payload;
     }
 
@@ -193,18 +176,13 @@
         const status = document.querySelector('[data-storefront-status]');
         const grid = document.querySelector('[data-storefront-grid]');
         if (!status || !grid) return;
-
         status.hidden = false;
         status.textContent = 'Loading current inventory…';
         grid.hidden = true;
 
         try {
-            const products = await requestJson(CATALOG_URL, {
-                method: 'POST',
-                body: '{}'
-            });
+            const products = await requestJson(CATALOG_URL, { method: 'POST', body: '{}' });
             if (!Array.isArray(products)) throw new Error('Catalog response was invalid.');
-
             state.products = new Map(products.map(product => [Number(product.item_id), product]));
             state.loaded = true;
             normalizeCartAgainstCatalog();
@@ -222,18 +200,15 @@
         const status = document.querySelector('[data-storefront-status]');
         const grid = document.querySelector('[data-storefront-grid]');
         if (!status || !grid) return;
-
         if (products.length === 0) {
             status.hidden = false;
             status.textContent = 'Online checkout products are being prepared. Our existing inquiry catalog remains available in the other tabs.';
             grid.hidden = true;
             return;
         }
-
         status.hidden = true;
         grid.hidden = false;
         grid.innerHTML = products.map(productCardHtml).join('');
-
         grid.querySelectorAll('[data-storefront-add]').forEach(button => {
             button.addEventListener('click', () => addToCart(Number(button.dataset.storefrontAdd)));
         });
@@ -247,7 +222,6 @@
         const description = escapeHtml(product.short_description || product.description || '');
         const image = escapeHtml(productImage(product));
         const price = currency.format(Number(product.price || 0));
-
         let action;
         if (product.purchase_mode === 'inquiry') {
             action = `<a class="storefront-inquiry-button" href="mailto:rrereptiles@gmail.com?subject=${encodeURIComponent(`Inquiry about ${product.public_name}`)}">Inquire</a>`;
@@ -258,11 +232,7 @@
         } else {
             action = `<button class="storefront-add-button" type="button" data-storefront-add="${itemId}" ${product.in_stock ? '' : 'disabled'}>${product.in_stock ? 'Add to Cart' : 'Sold Out'}</button>`;
         }
-
-        const stockLabel = product.show_quantity
-            ? `${available} available`
-            : (product.in_stock ? 'In stock' : 'Sold out');
-
+        const stockLabel = product.show_quantity ? `${available} available` : (product.in_stock ? 'In stock' : 'Sold out');
         return `
             <article class="storefront-product">
                 <img class="storefront-product-image" src="${image}" alt="${name}" loading="lazy" decoding="async">
@@ -282,19 +252,11 @@
     function addToCart(itemId) {
         const product = state.products.get(itemId);
         if (!product || !product.in_stock || product.purchase_mode !== 'checkout') return;
-
         const available = Math.max(0, Number(product.available_quantity || 0));
-        const maxPerOrder = product.max_per_order == null
-            ? available
-            : Math.min(available, Number(product.max_per_order));
+        const maxPerOrder = product.max_per_order == null ? available : Math.min(available, Number(product.max_per_order));
         const existing = state.cart.find(item => item.itemId === itemId);
-
-        if (existing) {
-            existing.quantity = Math.min(existing.quantity + 1, maxPerOrder);
-        } else if (maxPerOrder > 0) {
-            state.cart.push({ itemId, quantity: 1 });
-        }
-
+        if (existing) existing.quantity = Math.min(existing.quantity + 1, maxPerOrder);
+        else if (maxPerOrder > 0) state.cart.push({ itemId, quantity: 1 });
         saveCart();
         renderCart();
         openCart();
@@ -304,14 +266,10 @@
         const item = state.cart.find(entry => entry.itemId === itemId);
         const product = state.products.get(itemId);
         if (!item || !product) return;
-
         const available = Math.max(0, Number(product.available_quantity || 0));
-        const maxPerOrder = product.max_per_order == null
-            ? available
-            : Math.min(available, Number(product.max_per_order));
+        const maxPerOrder = product.max_per_order == null ? available : Math.min(available, Number(product.max_per_order));
         item.quantity = Math.max(0, Math.min(item.quantity + delta, maxPerOrder));
         if (item.quantity === 0) state.cart = state.cart.filter(entry => entry.itemId !== itemId);
-
         saveCart();
         renderCart();
     }
@@ -326,11 +284,9 @@
         document.querySelectorAll('[data-storefront-cart-count]').forEach(element => {
             element.textContent = String(totalCartQuantity());
         });
-
         const itemsContainer = document.querySelector('[data-storefront-cart-items]');
         const subtotalElement = document.querySelector('[data-storefront-cart-subtotal]');
         if (!itemsContainer || !subtotalElement) return;
-
         const validItems = state.cart.filter(item => state.products.has(item.itemId));
         if (validItems.length === 0) {
             itemsContainer.innerHTML = '<div class="storefront-cart-empty">Your cart is empty.</div>';
@@ -354,7 +310,6 @@
                 `;
             }).join('');
         }
-
         itemsContainer.querySelectorAll('[data-storefront-decrease]').forEach(button => {
             button.addEventListener('click', () => updateQuantity(Number(button.dataset.storefrontDecrease), -1));
         });
@@ -364,7 +319,6 @@
         itemsContainer.querySelectorAll('[data-storefront-remove]').forEach(button => {
             button.addEventListener('click', () => removeFromCart(Number(button.dataset.storefrontRemove)));
         });
-
         subtotalElement.textContent = currency.format(cartSubtotal());
         updateCheckoutVisibility();
     }
@@ -377,154 +331,19 @@
     }
 
     function updateCheckoutVisibility() {
-        const container = document.getElementById('storefront-paypal-buttons');
-        if (!container) return;
-
+        const button = document.querySelector('[data-storefront-checkout]');
+        if (!button) return;
         const hasItems = state.cart.some(item => state.products.has(item.itemId));
-        container.hidden = !hasItems || !state.paypalReady;
-
-        if (!hasItems) {
-            setCheckoutStatus('Add an item to begin checkout.');
-        } else if (!state.paypalReady) {
-            setCheckoutStatus('Loading secure checkout…');
-        } else {
-            setCheckoutStatus('Pay securely with PayPal, Venmo, or an eligible card.');
-        }
+        button.disabled = !hasItems;
+        setCheckoutStatus(hasItems
+            ? 'Secure card and wallet payments are processed by Stripe.'
+            : 'Add an item to begin checkout.');
     }
 
-    async function initializeCheckout() {
-        try {
-            const config = await requestJson(`${FUNCTIONS_URL}/storefront-config`, { method: 'GET' });
-            if (!config.checkoutEnabled || !config.paypalClientId) {
-                throw new Error('Online checkout is not enabled.');
-            }
-
-            await loadPayPalSdk(config.paypalClientId, config.currency || 'USD');
-            state.paypalReady = true;
-            renderPayPalButtons();
-            updateCheckoutVisibility();
-        } catch (error) {
-            console.error('[storefront] checkout initialization error', error);
-            setCheckoutStatus('Checkout is temporarily unavailable. Please contact us to order.', 'error');
-        }
-    }
-
-    function loadPayPalSdk(clientId, checkoutCurrency) {
-        if (window.paypal) return Promise.resolve();
-
-        return new Promise((resolve, reject) => {
-            const existing = document.querySelector('script[data-rre-paypal-sdk]');
-            if (existing) {
-                existing.addEventListener('load', resolve, { once: true });
-                existing.addEventListener('error', () => reject(new Error('PayPal checkout failed to load')), { once: true });
-                return;
-            }
-
-            const script = document.createElement('script');
-            script.dataset.rrePaypalSdk = '';
-            script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(clientId)}&currency=${encodeURIComponent(checkoutCurrency)}&intent=capture&components=buttons&commit=false`;
-            script.async = true;
-            script.addEventListener('load', resolve, { once: true });
-            script.addEventListener('error', () => reject(new Error('PayPal checkout failed to load')), { once: true });
-            document.head.appendChild(script);
-        });
-    }
-
-    function renderPayPalButtons() {
-        const container = document.getElementById('storefront-paypal-buttons');
-        if (!container || !window.paypal || state.paypalButtonsRendered) return;
-
-        state.paypalButtonsRendered = true;
-        window.paypal.Buttons({
-            style: {
-                layout: 'vertical',
-                shape: 'rect',
-                label: 'paypal'
-            },
-            async createOrder() {
-                if (state.cart.length === 0) throw new Error('Your cart is empty.');
-                setCheckoutStatus('Confirming current price and availability…');
-
-                const order = await requestJson(`${FUNCTIONS_URL}/create-paypal-order`, {
-                    method: 'POST',
-                    body: JSON.stringify({ cart: checkoutCart() })
-                });
-                state.activePayPalOrderId = order.id;
-                return order.id;
-            },
-            async onShippingAddressChange(data, actions) {
-                if (data.shippingAddress?.countryCode !== 'US') {
-                    setCheckoutStatus('Online checkout currently supports United States addresses only.', 'error');
-                    return actions.reject(data.errors.COUNTRY_ERROR);
-                }
-
-                setCheckoutStatus('Calculating USPS shipping for this address…');
-                try {
-                    const quote = await requestJson(`${FUNCTIONS_URL}/update-paypal-shipping`, {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            orderID: data.orderID,
-                            shippingAddress: data.shippingAddress
-                        })
-                    });
-                    setCheckoutStatus(
-                        `${quote.service}: ${currency.format(Number(quote.shippingTotal))}. Order total: ${currency.format(Number(quote.orderTotal))}.`
-                    );
-                } catch (error) {
-                    console.error('[storefront] shipping quote error', error);
-                    setCheckoutStatus(error.message || 'Shipping could not be calculated for this address.', 'error');
-                    return actions.reject(data.errors.ZIP_ERROR || data.errors.ADDRESS_ERROR);
-                }
-            },
-            async onApprove(data) {
-                setCheckoutStatus('Completing payment and updating inventory…');
-                try {
-                    const completed = await requestJson(`${FUNCTIONS_URL}/capture-paypal-order`, {
-                        method: 'POST',
-                        body: JSON.stringify({ orderID: data.orderID })
-                    });
-
-                    state.activePayPalOrderId = null;
-                    state.cart = [];
-                    saveCart();
-                    renderCart();
-                    await fetchCatalog();
-                    const name = completed.payerName ? `, ${completed.payerName}` : '';
-                    setCheckoutStatus(`Payment complete${name}. Redirecting to order ${completed.orderNumber || ''}…`, 'success');
-                    if (completed.confirmationUrl) {
-                        window.location.assign(completed.confirmationUrl);
-                        return;
-                    }
-                } catch (error) {
-                    console.error('[storefront] capture error', error);
-                    setCheckoutStatus(error.message || 'Payment could not be completed. No inventory was deducted.', 'error');
-                    throw error;
-                }
-            },
-            async onCancel(data) {
-                const orderId = data?.orderID || state.activePayPalOrderId;
-                state.activePayPalOrderId = null;
-                setCheckoutStatus('Checkout was cancelled. Your cart is still available.');
-                if (!orderId) return;
-
-                try {
-                    await requestJson(`${FUNCTIONS_URL}/cancel-paypal-order`, {
-                        method: 'POST',
-                        body: JSON.stringify({ orderID: orderId })
-                    });
-                } catch (error) {
-                    console.warn('[storefront] cancellation cleanup failed', error);
-                }
-            },
-            onError(error) {
-                console.error('[storefront] PayPal error', error);
-                setCheckoutStatus('PayPal checkout encountered an error. Please try again.', 'error');
-            }
-        }).render('#storefront-paypal-buttons').catch(error => {
-            console.error('[storefront] PayPal button render error', error);
-            state.paypalButtonsRendered = false;
-            setCheckoutStatus('Checkout could not be displayed. Please contact us to order.', 'error');
-        });
+    function beginCheckout() {
+        if (state.cart.length === 0) return;
+        const preview = new URLSearchParams(window.location.search).get('storefront-preview') === '1';
+        window.location.assign(`/checkout.html${preview ? '?storefront-preview=1' : ''}`);
     }
 
     function openCart() {
@@ -548,17 +367,9 @@
         buildCartDrawer();
         renderCart();
         fetchCatalog();
-        initializeCheckout();
     }
 
-    window.RREStorefront = {
-        refresh: fetchCatalog,
-        openCart
-    };
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init, { once: true });
-    } else {
-        init();
-    }
+    window.RREStorefront = { refresh: fetchCatalog, openCart };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
+    else init();
 })();

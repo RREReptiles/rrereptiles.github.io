@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#1a1a1a">
+    <title>Secure Checkout | Red Rocks Exotic Reptiles</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicons/favicon-32x32.png">
+    <link rel="stylesheet" href="shop/stripe-checkout.css">
+    <script src="https://js.stripe.com/clover/stripe.js"></script>
+    <script src="shop/stripe-checkout.js" defer></script>
+</head>
+<body>
+    <header class="checkout-header">
+        <a href="/?storefront-preview=1" class="checkout-brand" aria-label="Red Rocks Exotic Reptiles shop">
+            <img src="images/Logo.svg" alt="">
+            <span><strong>Red Rocks</strong> Exotic Reptiles</span>
+        </a>
+    </header>
+
+    <main class="checkout-main">
+        <div class="checkout-heading">
+            <div>
+                <p class="checkout-eyebrow">Secure checkout</p>
+                <h1>Complete your order</h1>
+                <p>USPS shipping and applicable sales tax update after you enter the delivery address.</p>
+            </div>
+            <button type="button" class="checkout-back" data-cancel-checkout>Return to cart</button>
+        </div>
+
+        <div class="checkout-sandbox" data-checkout-sandbox hidden>
+            Stripe test mode — use a Stripe test card. No real money will be charged.
+        </div>
+
+        <div class="checkout-error" data-checkout-error hidden>
+            <h2>Checkout could not start</h2>
+            <p data-checkout-error-message>Please return to the shop and try again.</p>
+            <a href="/?storefront-preview=1">Return to the shop</a>
+        </div>
+
+        <div class="checkout-layout" data-checkout-layout hidden>
+            <aside class="checkout-summary">
+                <h2>Order summary</h2>
+                <div data-checkout-items></div>
+                <div class="checkout-subtotal">
+                    <span>Merchandise subtotal</span>
+                    <strong data-checkout-subtotal>$0.00</strong>
+                </div>
+                <p>Final shipping and tax appear in the secure checkout form.</p>
+            </aside>
+
+            <section class="checkout-form-card" aria-label="Stripe payment form">
+                <div class="checkout-loading" data-checkout-loading>
+                    <div class="checkout-spinner" aria-hidden="true"></div>
+                    <p>Loading secure Stripe checkout…</p>
+                </div>
+                <div id="checkout"></div>
+            </section>
+        </div>
+    </main>
+</body>
+</html>

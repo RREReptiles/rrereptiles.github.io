@@ -10,6 +10,11 @@
         currency: 'USD'
     });
 
+    const STATIC_NAME_ALIASES = new Map([
+        ['small metal tongs', 'metal tongs'],
+        ['round flat hide', 'flat hides']
+    ]);
+
     const state = {
         products: new Map(),
         cart: loadCart(),
@@ -41,8 +46,27 @@
             .replaceAll("'", '&#039;');
     }
 
+    function normalizeName(value) {
+        return String(value || '')
+            .toLowerCase()
+            .replaceAll('&', 'and')
+            .replace(/[^a-z0-9]+/g, ' ')
+            .trim();
+    }
+
+    function matchingName(value) {
+        const normalized = normalizeName(value);
+        return STATIC_NAME_ALIASES.get(normalized) || normalized;
+    }
+
     function productImage(product) {
         return product.image_url || 'images/Logo.svg';
+    }
+
+    function productPrice(product) {
+        const display = String(product.display_price_text || '').trim();
+        if (display) return display.replace(/\.00(?=\s|$)/, '');
+        return currency.format(Number(product.price || 0));
     }
 
     function totalCartQuantity() {
@@ -72,53 +96,41 @@
 
     function buildStorefrontShell() {
         const shopPage = document.getElementById('page-shop');
-        const tabs = shopPage?.querySelector('.shop-tabs');
-        const firstCategory = shopPage?.querySelector('.shop-category');
-        if (!shopPage || !tabs || !firstCategory || document.getElementById('shop-online-store')) return null;
+        const section = shopPage?.querySelector(':scope > .section');
+        const tabs = section?.querySelector('.shop-tabs');
+        if (!shopPage || !section || !tabs) return null;
 
-        const tab = document.createElement('button');
-        tab.type = 'button';
-        tab.className = 'shop-tab storefront-tab';
-        tab.dataset.shop = 'online-store';
-        tab.textContent = 'Online Store';
-        tabs.prepend(tab);
+        document.querySelector('.storefront-tab')?.remove();
+        document.getElementById('shop-online-store')?.remove();
 
-        const category = document.createElement('div');
-        category.className = 'shop-category';
-        category.id = 'shop-online-store';
-        category.innerHTML = `
-            <div class="storefront-header">
+        let header = section.querySelector('[data-storefront-header]');
+        if (!header) {
+            header = document.createElement('div');
+            header.className = 'storefront-header';
+            header.dataset.storefrontHeader = '';
+            header.innerHTML = `
                 <div>
                     <h3>Shop Current Inventory</h3>
-                    <p>Availability and pricing are pulled directly from our ReptiTrax inventory.</p>
+                    <p>Products and pricing are managed through ReptiTrax. Items remain unavailable online until their inventory and shipping details are verified.</p>
                 </div>
                 <button type="button" class="storefront-cart-button" data-storefront-open-cart>
                     Cart <span class="storefront-cart-count" data-storefront-cart-count>0</span>
                 </button>
-            </div>
-            <div class="storefront-status" data-storefront-status>Loading current inventory…</div>
-            <div class="storefront-grid" data-storefront-grid hidden></div>
-        `;
-        firstCategory.parentNode.insertBefore(category, firstCategory);
+            `;
+            tabs.parentNode.insertBefore(header, tabs);
+        }
 
-        tab.addEventListener('click', () => {
-            shopPage.querySelectorAll('.shop-tab').forEach(button => button.classList.remove('active'));
-            shopPage.querySelectorAll('.shop-category').forEach(panel => panel.classList.remove('active'));
-            tab.classList.add('active');
-            category.classList.add('active');
-            if (!state.loaded) fetchCatalog();
-        });
+        let status = section.querySelector('[data-storefront-status]');
+        if (!status) {
+            status = document.createElement('div');
+            status.className = 'storefront-status';
+            status.dataset.storefrontStatus = '';
+            status.textContent = 'Loading current inventory…';
+            tabs.insertAdjacentElement('afterend', status);
+        }
 
-        tabs.addEventListener('click', event => {
-            const clickedTab = event.target.closest('.shop-tab');
-            if (clickedTab && clickedTab !== tab) {
-                tab.classList.remove('active');
-                category.classList.remove('active');
-            }
-        });
-
-        category.querySelector('[data-storefront-open-cart]').addEventListener('click', openCart);
-        return category;
+        header.querySelector('[data-storefront-open-cart]')?.addEventListener('click', openCart);
+        return section;
     }
 
     function buildCartDrawer() {
@@ -174,11 +186,9 @@
 
     async function fetchCatalog() {
         const status = document.querySelector('[data-storefront-status]');
-        const grid = document.querySelector('[data-storefront-grid]');
-        if (!status || !grid) return;
+        if (!status) return;
         status.hidden = false;
         status.textContent = 'Loading current inventory…';
-        grid.hidden = true;
 
         try {
             const products = await requestJson(CATALOG_URL, { method: 'POST', body: '{}' });
@@ -188,65 +198,118 @@
             normalizeCartAgainstCatalog();
             renderProducts(products);
             renderCart();
+            status.hidden = true;
         } catch (error) {
             console.error('[storefront] catalog error', error);
             status.hidden = false;
             status.innerHTML = 'We could not load current inventory. Please refresh or <a href="mailto:rrereptiles@gmail.com">contact us</a>.';
-            grid.hidden = true;
         }
+    }
+
+    function findStaticCard(panel, product) {
+        const target = matchingName(product.public_name);
+        return Array.from(panel.querySelectorAll('.product-card:not([data-storefront-generated])')).find(card => {
+            const title = card.querySelector('.product-info h3, h3');
+            return matchingName(title?.textContent) === target;
+        }) || null;
+    }
+
+    function markCardAvailability(card, product = null) {
+        const info = card.querySelector('.product-info') || card;
+        const price = info.querySelector('.price');
+        if (price && product) price.textContent = productPrice(product);
+
+        info.querySelectorAll('.inquire, [data-storefront-action], [data-storefront-stock-label]').forEach(element => element.remove());
+
+        const stock = document.createElement('p');
+        stock.className = 'storefront-stock';
+        stock.dataset.storefrontStockLabel = '';
+        stock.textContent = product?.in_stock ? 'In stock' : 'Out of stock';
+        info.appendChild(stock);
+
+        if (product?.in_stock && product.purchase_mode === 'checkout') {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'storefront-add-button';
+            button.dataset.storefrontAction = '';
+            button.dataset.storefrontAdd = String(product.item_id);
+            button.textContent = 'Add to Cart';
+            info.appendChild(button);
+            return;
+        }
+
+        if (product?.in_stock && product.purchase_mode === 'inquiry') {
+            const link = document.createElement('a');
+            link.className = 'storefront-inquiry-button';
+            link.dataset.storefrontAction = '';
+            link.href = `mailto:rrereptiles@gmail.com?subject=${encodeURIComponent(`Inquiry about ${product.public_name}`)}`;
+            link.textContent = 'Inquire';
+            info.appendChild(link);
+            return;
+        }
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'storefront-add-button';
+        button.dataset.storefrontAction = '';
+        button.disabled = true;
+        button.textContent = 'Out of Stock';
+        info.appendChild(button);
+    }
+
+    function generatedCard(product) {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.dataset.storefrontGenerated = 'true';
+        card.dataset.storefrontItemId = String(product.item_id);
+        const description = product.short_description || product.description || '';
+        card.innerHTML = `
+            <img src="${escapeHtml(productImage(product))}" alt="${escapeHtml(product.public_name)}" class="product-img" loading="lazy" decoding="async">
+            <div class="product-info">
+                <h3>${escapeHtml(product.public_name)}</h3>
+                ${description ? `<p class="species">${escapeHtml(description)}</p>` : ''}
+                <span class="price">${escapeHtml(productPrice(product))}</span>
+            </div>
+        `;
+        markCardAvailability(card, product);
+        return card;
     }
 
     function renderProducts(products) {
-        const status = document.querySelector('[data-storefront-status]');
-        const grid = document.querySelector('[data-storefront-grid]');
-        if (!status || !grid) return;
-        if (products.length === 0) {
-            status.hidden = false;
-            status.textContent = 'Online checkout products are being prepared. Our existing inquiry catalog remains available in the other tabs.';
-            grid.hidden = true;
-            return;
-        }
-        status.hidden = true;
-        grid.hidden = false;
-        grid.innerHTML = products.map(productCardHtml).join('');
-        grid.querySelectorAll('[data-storefront-add]').forEach(button => {
+        document.querySelectorAll('.product-card[data-storefront-generated]').forEach(card => card.remove());
+
+        const staticCards = document.querySelectorAll('#page-shop .shop-category .product-card');
+        staticCards.forEach(card => markCardAvailability(card));
+
+        products.forEach(product => {
+            const category = product.store_category || 'husbandry-supplies';
+            const panel = document.getElementById(`shop-${category}`)
+                || document.getElementById('shop-husbandry-supplies');
+            const grid = panel?.querySelector('.product-grid');
+            if (!panel || !grid) return;
+
+            const existing = findStaticCard(panel, product);
+            if (existing) {
+                existing.dataset.storefrontItemId = String(product.item_id);
+                const placeholder = existing.querySelector('div.product-img');
+                if (placeholder && product.image_url) {
+                    const image = document.createElement('img');
+                    image.src = product.image_url;
+                    image.alt = product.public_name;
+                    image.className = 'product-img';
+                    image.loading = 'lazy';
+                    image.decoding = 'async';
+                    placeholder.replaceWith(image);
+                }
+                markCardAvailability(existing, product);
+            } else {
+                grid.appendChild(generatedCard(product));
+            }
+        });
+
+        document.querySelectorAll('[data-storefront-add]').forEach(button => {
             button.addEventListener('click', () => addToCart(Number(button.dataset.storefrontAdd)));
         });
-    }
-
-    function productCardHtml(product) {
-        const itemId = Number(product.item_id);
-        const available = Math.max(0, Number(product.available_quantity || 0));
-        const lowStock = available > 0 && available <= 3;
-        const name = escapeHtml(product.public_name);
-        const description = escapeHtml(product.short_description || product.description || '');
-        const image = escapeHtml(productImage(product));
-        const price = currency.format(Number(product.price || 0));
-        let action;
-        if (product.purchase_mode === 'inquiry') {
-            action = `<a class="storefront-inquiry-button" href="mailto:rrereptiles@gmail.com?subject=${encodeURIComponent(`Inquiry about ${product.public_name}`)}">Inquire</a>`;
-        } else if (product.purchase_mode === 'local_only') {
-            action = `<a class="storefront-inquiry-button" href="mailto:rrereptiles@gmail.com?subject=${encodeURIComponent(`Local pickup inquiry: ${product.public_name}`)}">Ask About Pickup</a>`;
-        } else if (product.purchase_mode === 'coming_soon') {
-            action = '<button class="storefront-add-button" type="button" disabled>Coming Soon</button>';
-        } else {
-            action = `<button class="storefront-add-button" type="button" data-storefront-add="${itemId}" ${product.in_stock ? '' : 'disabled'}>${product.in_stock ? 'Add to Cart' : 'Sold Out'}</button>`;
-        }
-        const stockLabel = product.show_quantity ? `${available} available` : (product.in_stock ? 'In stock' : 'Sold out');
-        return `
-            <article class="storefront-product">
-                <img class="storefront-product-image" src="${image}" alt="${name}" loading="lazy" decoding="async">
-                <div class="storefront-product-body">
-                    <h3>${name}</h3>
-                    <p class="storefront-product-description">${description}</p>
-                    <div class="storefront-product-meta">
-                        <span class="storefront-price">${price}</span>
-                        <span class="storefront-stock ${lowStock ? 'low' : ''}">${escapeHtml(stockLabel)}</span>
-                    </div>
-                    ${action}
-                </div>
-            </article>
-        `;
     }
 
     function addToCart(itemId) {
@@ -337,7 +400,7 @@
         button.disabled = !hasItems;
         setCheckoutStatus(hasItems
             ? 'Secure card and wallet payments are processed by Stripe.'
-            : 'Add an item to begin checkout.');
+            : 'Products will become purchasable as their shipping details are verified.');
     }
 
     function beginCheckout() {
@@ -362,8 +425,8 @@
     }
 
     function init() {
-        const category = buildStorefrontShell();
-        if (!category) return;
+        const shell = buildStorefrontShell();
+        if (!shell) return;
         buildCartDrawer();
         renderCart();
         fetchCatalog();

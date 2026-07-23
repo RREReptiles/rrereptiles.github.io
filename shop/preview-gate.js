@@ -4,6 +4,15 @@
     const SUPABASE_URL = 'https://zezpkoulxjagljjbyhhk.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_w1szxATkVRFs2JBQOyG8rg_ULipgOPv';
 
+    function loadStorefrontCardStyles() {
+        if (document.querySelector('link[data-storefront-card-sizing]')) return;
+        const stylesheet = document.createElement('link');
+        stylesheet.rel = 'stylesheet';
+        stylesheet.href = 'shop/storefront-card-sizing.css?v=20260723';
+        stylesheet.dataset.storefrontCardSizing = '';
+        document.head.appendChild(stylesheet);
+    }
+
     function updatePurchaseCopy() {
         const shopPage = document.getElementById('page-shop');
         const shopNotice = shopPage?.querySelector('.shop-notice');
@@ -76,5 +85,6 @@
         }
     }
 
+    loadStorefrontCardStyles();
     initializeStorefrontGate();
 })();

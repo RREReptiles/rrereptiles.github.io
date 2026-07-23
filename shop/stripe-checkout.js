@@ -123,9 +123,13 @@
             ]);
             renderSummary(products, items);
             if (!config.checkoutEnabled || !config.stripePublishableKey) throw new Error('Stripe checkout is not configured.');
-            if (String(config.stripeEnvironment).toLowerCase() !== 'live') {
-                document.querySelector('[data-checkout-sandbox]')?.removeAttribute('hidden');
+
+            const previewEnabled = new URLSearchParams(window.location.search).get('storefront-preview') === '1';
+            const liveMode = String(config.stripeEnvironment).toLowerCase() === 'live';
+            if (liveMode && !config.publicStorefrontEnabled && !previewEnabled) {
+                throw new Error('Online checkout is not open to the public yet.');
             }
+            if (!liveMode) document.querySelector('[data-checkout-sandbox]')?.removeAttribute('hidden');
 
             const currentHash = cartHash(items);
             if (activeSession && (activeSession.cartHash !== currentHash || Number(activeSession.expiresAt || 0) * 1000 <= Date.now() + 60000)) {

@@ -4,6 +4,7 @@
     const SUPABASE_URL = 'https://zezpkoulxjagljjbyhhk.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_w1szxATkVRFs2JBQOyG8rg_ULipgOPv';
     const CATALOG_URL = `${SUPABASE_URL}/rest/v1/rpc/get_storefront_catalog`;
+    const PLACEHOLDER_IMAGE = 'images/Logo.svg';
 
     let photosByItemId = new Map();
     let applyTimer = null;
@@ -13,19 +14,47 @@
         applyTimer = window.setTimeout(applyPhotos, 40);
     }
 
+    function replaceCarouselWithImage(card, src, alt) {
+        const carousel = card.querySelector('.product-carousel');
+        if (!carousel) return null;
+
+        const image = document.createElement('img');
+        image.src = src;
+        image.alt = alt;
+        image.className = 'product-img';
+        image.loading = 'lazy';
+        image.decoding = 'async';
+        carousel.replaceWith(image);
+        return image;
+    }
+
     function applyPhotos() {
         document.querySelectorAll('#page-shop [data-storefront-item-id]').forEach(card => {
             const itemId = Number(card.dataset.storefrontItemId);
             const product = photosByItemId.get(itemId);
-            const photoUrl = String(product?.image_url || '').trim();
-            if (!photoUrl) return;
+            if (!product) return;
 
-            const existingImage = card.querySelector('img.product-img');
+            const photoUrl = String(product.image_url || '').trim();
+            const alt = product.public_name || 'Product photo';
+            let existingImage = card.querySelector('img.product-img');
+
+            if (!photoUrl) {
+                existingImage = replaceCarouselWithImage(card, PLACEHOLDER_IMAGE, alt)
+                    || existingImage;
+                if (existingImage && existingImage.getAttribute('src') !== PLACEHOLDER_IMAGE) {
+                    existingImage.src = PLACEHOLDER_IMAGE;
+                    existingImage.alt = alt;
+                }
+                return;
+            }
+
+            existingImage = replaceCarouselWithImage(card, photoUrl, alt)
+                || existingImage;
             if (existingImage) {
                 if (existingImage.getAttribute('src') !== photoUrl) {
                     existingImage.src = photoUrl;
                 }
-                existingImage.alt = product.public_name || existingImage.alt || 'Product photo';
+                existingImage.alt = alt;
                 return;
             }
 
@@ -34,7 +63,7 @@
 
             const image = document.createElement('img');
             image.src = photoUrl;
-            image.alt = product.public_name || 'Product photo';
+            image.alt = alt;
             image.className = 'product-img';
             image.loading = 'lazy';
             image.decoding = 'async';

@@ -15,7 +15,7 @@
 
     const notice = document.createElement('div');
     notice.className = 'storefront-preview-notice';
-    notice.textContent = 'Sandbox preview: PayPal uses test accounts and does not create a real charge.';
+    notice.textContent = 'Sandbox preview: Stripe uses test cards and does not create a real charge.';
     onlineCategory.prepend(notice);
 
     const shopLink = document.querySelector('.nav-links [data-page="shop"]')

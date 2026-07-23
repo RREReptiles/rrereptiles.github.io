@@ -14,12 +14,6 @@
     }
 
     function updatePurchaseCopy() {
-        const shopPage = document.getElementById('page-shop');
-        const shopNotice = shopPage?.querySelector('.shop-notice');
-        if (shopNotice) {
-            shopNotice.innerHTML = '<strong>How to Purchase:</strong> Eligible dry goods can be purchased securely through our online Stripe checkout. Live-animal sales and special-order items are handled by direct inquiry or MorphMarket.';
-        }
-
         document.querySelectorAll('.ship-card').forEach(card => {
             const heading = card.querySelector('h3')?.textContent || '';
             if (!heading.includes('Payment Methods')) return;
@@ -44,6 +38,63 @@
         });
     }
 
+    function waitForStorefrontShell(timeoutMs = 5000) {
+        const existing = document.getElementById('shop-online-store');
+        if (existing) return Promise.resolve(existing);
+
+        return new Promise(resolve => {
+            const observer = new MutationObserver(() => {
+                const shell = document.getElementById('shop-online-store');
+                if (!shell) return;
+                clearTimeout(timer);
+                observer.disconnect();
+                resolve(shell);
+            });
+            const timer = setTimeout(() => {
+                observer.disconnect();
+                resolve(null);
+            }, timeoutMs);
+            observer.observe(document.documentElement, { childList: true, subtree: true });
+        });
+    }
+
+    function promoteStorefrontToShopPage(onlineCategory, previewEnabled, config) {
+        const shopPage = document.getElementById('page-shop');
+        const section = shopPage?.querySelector(':scope > .section');
+        if (!shopPage || !section || !onlineCategory) return;
+
+        const intro = document.createElement('div');
+        intro.className = 'storefront-page-intro';
+        intro.innerHTML = `
+            <h2 class="section-title">Our <span class="accent">Shop</span></h2>
+            <div class="divider"></div>
+            <p class="section-subtitle">Browse products managed through our live ReptiTrax catalog. Pricing is current; products marked out of stock are still being prepared for online shipping.</p>
+        `;
+
+        onlineCategory.classList.remove('shop-category', 'active');
+        onlineCategory.classList.add('storefront-page-content');
+
+        if (previewEnabled && !onlineCategory.querySelector('.storefront-preview-notice')) {
+            const notice = document.createElement('div');
+            notice.className = 'storefront-preview-notice';
+            const testMode = String(config?.stripeEnvironment || 'test').toLowerCase() !== 'live';
+            notice.textContent = testMode
+                ? 'Sandbox preview: Stripe uses test cards and does not create a real charge.'
+                : 'Private production preview: this checkout uses real payment methods.';
+            onlineCategory.prepend(notice);
+        }
+
+        section.replaceChildren(intro, onlineCategory);
+        section.setAttribute('aria-label', 'Online shop');
+        document.body.classList.add('storefront-full-shop');
+
+        if (previewEnabled) {
+            const shopLink = document.querySelector('.nav-links [data-page="shop"]')
+                || document.querySelector('[data-page="shop"]');
+            shopLink?.click();
+        }
+    }
+
     async function initializeStorefrontGate() {
         const params = new URLSearchParams(window.location.search);
         const previewEnabled = params.get('storefront-preview') === '1';
@@ -64,25 +115,12 @@
         document.body.classList.add('storefront-preview-enabled');
         updatePurchaseCopy();
 
-        const shopPage = document.getElementById('page-shop');
-        const onlineCategory = document.getElementById('shop-online-store');
-        const onlineTab = document.querySelector('.storefront-tab');
-        if (!shopPage || !onlineCategory || !onlineTab) return;
-
-        if (previewEnabled) {
-            const notice = document.createElement('div');
-            notice.className = 'storefront-preview-notice';
-            const testMode = String(config?.stripeEnvironment || 'test').toLowerCase() !== 'live';
-            notice.textContent = testMode
-                ? 'Sandbox preview: Stripe uses test cards and does not create a real charge.'
-                : 'Private production preview: this checkout uses real payment methods.';
-            onlineCategory.prepend(notice);
-
-            const shopLink = document.querySelector('.nav-links [data-page="shop"]')
-                || document.querySelector('[data-page="shop"]');
-            shopLink?.click();
-            onlineTab.click();
+        const onlineCategory = await waitForStorefrontShell();
+        if (!onlineCategory) {
+            console.warn('[storefront] storefront shell was not created');
+            return;
         }
+        promoteStorefrontToShopPage(onlineCategory, previewEnabled, config);
     }
 
     loadStorefrontCardStyles();

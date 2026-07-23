@@ -17,7 +17,7 @@
         const shopPage = document.getElementById('page-shop');
         const shopNotice = shopPage?.querySelector('.shop-notice');
         if (shopNotice) {
-            shopNotice.innerHTML = '<strong>How to Purchase:</strong> Eligible dry goods can be purchased securely through our online Stripe checkout. Live-animal sales and special-order items are handled by direct inquiry or MorphMarket.';
+            shopNotice.innerHTML = '<strong>Online Catalog:</strong> Browse products by category below. Products marked out of stock are being prepared for online fulfillment. Live-animal sales and special orders remain available by direct inquiry or MorphMarket.';
         }
 
         document.querySelectorAll('.ship-card').forEach(card => {
@@ -39,7 +39,7 @@
             if (!question.includes('How do I purchase a reptile')) return;
             const answer = item.querySelector('.faq-answer');
             if (answer) {
-                answer.innerHTML = '<p>Contact us at 970-400-1278, email <a href="mailto:rrereptiles@gmail.com">rrereptiles@gmail.com</a>, or reach out through our social media or MorphMarket. Online Stripe checkout is available for products specifically marked for checkout.</p>';
+                answer.innerHTML = '<p>Contact us at 970-400-1278, email <a href="mailto:rrereptiles@gmail.com">rrereptiles@gmail.com</a>, or reach out through our social media or MorphMarket. Secure Stripe checkout appears on products that are enabled for online purchase.</p>';
             }
         });
     }
@@ -64,25 +64,22 @@
         document.body.classList.add('storefront-preview-enabled');
         updatePurchaseCopy();
 
-        const shopPage = document.getElementById('page-shop');
-        const onlineCategory = document.getElementById('shop-online-store');
-        const onlineTab = document.querySelector('.storefront-tab');
-        if (!shopPage || !onlineCategory || !onlineTab) return;
+        if (!previewEnabled) return;
 
-        if (previewEnabled) {
+        const section = document.querySelector('#page-shop > .section');
+        if (section && !section.querySelector('.storefront-preview-notice')) {
             const notice = document.createElement('div');
             notice.className = 'storefront-preview-notice';
             const testMode = String(config?.stripeEnvironment || 'test').toLowerCase() !== 'live';
             notice.textContent = testMode
                 ? 'Sandbox preview: Stripe uses test cards and does not create a real charge.'
                 : 'Private production preview: this checkout uses real payment methods.';
-            onlineCategory.prepend(notice);
-
-            const shopLink = document.querySelector('.nav-links [data-page="shop"]')
-                || document.querySelector('[data-page="shop"]');
-            shopLink?.click();
-            onlineTab.click();
+            section.prepend(notice);
         }
+
+        const shopLink = document.querySelector('.nav-links [data-page="shop"]')
+            || document.querySelector('[data-page="shop"]');
+        shopLink?.click();
     }
 
     loadStorefrontCardStyles();

@@ -22,6 +22,23 @@
         document.head.appendChild(script);
     }
 
+    function loadStorefrontInventoryWarnings() {
+        if (!document.querySelector('link[data-storefront-inventory-warnings]')) {
+            const stylesheet = document.createElement('link');
+            stylesheet.rel = 'stylesheet';
+            stylesheet.href = 'shop/storefront-inventory-warnings.css?v=20260724';
+            stylesheet.dataset.storefrontInventoryWarnings = '';
+            document.head.appendChild(stylesheet);
+        }
+
+        if (document.querySelector('script[data-storefront-inventory-warnings]')) return;
+        const script = document.createElement('script');
+        script.src = 'shop/storefront-inventory-warnings.js?v=20260724';
+        script.defer = true;
+        script.dataset.storefrontInventoryWarnings = '';
+        document.head.appendChild(script);
+    }
+
     function updatePurchaseCopy() {
         const shopPage = document.getElementById('page-shop');
         const shopNotice = shopPage?.querySelector('.shop-notice');
@@ -93,5 +110,6 @@
 
     loadStorefrontCardStyles();
     loadStorefrontPhotoSync();
+    loadStorefrontInventoryWarnings();
     initializeStorefrontGate();
 })();

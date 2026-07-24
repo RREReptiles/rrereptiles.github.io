@@ -65,19 +65,46 @@
         return payload;
     }
 
+    function setText(selector, value) {
+        const element = document.querySelector(selector);
+        if (element) element.textContent = value;
+    }
+
     function showError(message) {
         document.querySelector('[data-checkout-loading]')?.setAttribute('hidden', '');
         document.querySelector('[data-checkout-layout]')?.setAttribute('hidden', '');
         const error = document.querySelector('[data-checkout-error]');
         error?.removeAttribute('hidden');
-        const text = document.querySelector('[data-checkout-error-message]');
-        if (text) text.textContent = message;
+        setText('[data-checkout-error-message]', message);
+    }
+
+    function showPendingTotals(subtotal) {
+        setText('[data-checkout-subtotal]', currency.format(subtotal));
+        setText('[data-checkout-shipping]', 'Calculated at order review');
+        setText('[data-checkout-tax]', 'Calculated at order review');
+        setText('[data-checkout-total]', 'Calculated at order review');
+        setText('[data-checkout-total-note]', 'Complete the delivery address in Stripe to see the final total.');
+        document.querySelector('[data-checkout-totals]')?.classList.remove('is-final');
+    }
+
+    function showFinalTotals(result) {
+        const shipping = Number(result.shippingTotal);
+        const tax = Number(result.amountTax);
+        const total = Number(result.orderTotal);
+        if (!Number.isFinite(shipping) || !Number.isFinite(tax) || !Number.isFinite(total)) return;
+
+        setText('[data-checkout-shipping]', currency.format(shipping));
+        setText('[data-checkout-tax]', currency.format(tax));
+        setText('[data-checkout-total]', currency.format(total));
+        setText('[data-checkout-total-note]', 'Final shipping, tax, and total match the Stripe Checkout review.');
+        document.querySelector('[data-checkout-totals]')?.classList.add('is-final');
     }
 
     function renderSummary(products, items) {
         const map = new Map(products.map(product => [Number(product.item_id), product]));
         const valid = items.filter(item => map.has(item.itemId));
         if (valid.length !== items.length) throw new Error('An item in your cart is no longer available.');
+
         const container = document.querySelector('[data-checkout-items]');
         const subtotal = valid.reduce((sum, item) => sum + Number(map.get(item.itemId).price) * item.quantity, 0);
         container.innerHTML = valid.map(item => {
@@ -93,7 +120,8 @@
                 </div>
             `;
         }).join('');
-        document.querySelector('[data-checkout-subtotal]').textContent = currency.format(subtotal);
+
+        showPendingTotals(subtotal);
         document.querySelector('[data-checkout-layout]').removeAttribute('hidden');
     }
 
@@ -155,13 +183,14 @@
 
             const onShippingDetailsChange = async event => {
                 try {
-                    await requestJson(`${FUNCTIONS_URL}/update-stripe-shipping`, {
+                    const result = await requestJson(`${FUNCTIONS_URL}/update-stripe-shipping`, {
                         method: 'POST',
                         body: JSON.stringify({
                             checkoutSessionId: event.checkoutSessionId,
                             shippingDetails: event.shippingDetails
                         })
                     });
+                    showFinalTotals(result);
                     return { type: 'accept' };
                 } catch (error) {
                     console.error('[checkout] shipping error', error);

@@ -8,9 +8,29 @@
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
     <title>Stripe Checkout Preview | Red Rocks Exotic Reptiles</title>
     <link rel="icon" type="image/png" sizes="32x32" href="/images/favicons/favicon-32x32.png">
-    <link rel="stylesheet" href="shop/stripe-checkout.css?v=stripe-preview-2">
+    <link rel="stylesheet" href="shop/stripe-checkout.css?v=stripe-preview-3">
+    <style>
+        .checkout-preview-totals { margin: 18px 0 0; }
+        .checkout-preview-totals > div {
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 10px 0;
+            border-top: 1px solid var(--line);
+        }
+        .checkout-preview-totals dt { color: var(--muted); }
+        .checkout-preview-totals dd { margin: 0; text-align: right; font-weight: 700; }
+        .checkout-preview-totals .checkout-preview-total {
+            margin-top: 4px;
+            padding-top: 14px;
+            font-size: 1.08rem;
+            border-top-color: var(--ink);
+        }
+        .checkout-preview-totals.is-final .checkout-preview-total dd { color: var(--accent); }
+        .checkout-preview-total-note { margin-top: 14px !important; font-size: .82rem !important; }
+    </style>
     <script src="https://js.stripe.com/clover/stripe.js"></script>
-    <script src="shop/stripe-checkout.js?v=stripe-preview-2" defer></script>
+    <script src="shop/stripe-checkout-preview.js?v=stripe-preview-3" defer></script>
 </head>
 <body>
     <header class="checkout-header">
@@ -29,7 +49,7 @@
             <div>
                 <p class="checkout-eyebrow">Stripe checkout preview</p>
                 <h1>Complete your order</h1>
-                <p>Stripe collects and suggests the delivery address. USPS shipping and applicable sales tax update after the address form is completed.</p>
+                <p>Stripe collects and suggests the delivery address. USPS shipping and applicable sales tax update after the address is reviewed.</p>
             </div>
             <button type="button" class="checkout-back" data-cancel-checkout>Return to cart</button>
         </div>
@@ -48,11 +68,25 @@
             <aside class="checkout-summary">
                 <h2>Order summary</h2>
                 <div data-checkout-items></div>
-                <div class="checkout-subtotal">
-                    <span>Merchandise subtotal</span>
-                    <strong data-checkout-subtotal>$0.00</strong>
-                </div>
-                <p>Stripe will suggest and validate the delivery address. Final shipping and tax appear inside the secure checkout form.</p>
+                <dl class="checkout-preview-totals" data-checkout-totals>
+                    <div>
+                        <dt>Merchandise</dt>
+                        <dd data-checkout-subtotal>$0.00</dd>
+                    </div>
+                    <div>
+                        <dt>USPS shipping</dt>
+                        <dd data-checkout-shipping>Calculated at order review</dd>
+                    </div>
+                    <div>
+                        <dt>Sales tax</dt>
+                        <dd data-checkout-tax>Calculated at order review</dd>
+                    </div>
+                    <div class="checkout-preview-total">
+                        <dt>Order total</dt>
+                        <dd data-checkout-total>Calculated at order review</dd>
+                    </div>
+                </dl>
+                <p class="checkout-preview-total-note" data-checkout-total-note>Complete the delivery address in Stripe to see the final total.</p>
             </aside>
 
             <section class="checkout-form-card" aria-label="Stripe payment form">

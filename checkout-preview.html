@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <meta name="theme-color" content="#1a1a1a">
-    <title>Checkout Preview | Red Rocks Exotic Reptiles</title>
+    <title>Stripe Checkout Preview | Red Rocks Exotic Reptiles</title>
     <link rel="icon" type="image/png" sizes="32x32" href="/images/favicons/favicon-32x32.png">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/RREReptiles/rrereptiles.github.io@4486e41ccd5d87cec28bf25f179258a03b5edd95/shop/stripe-checkout.css">
+    <link rel="stylesheet" href="shop/stripe-checkout.css">
     <script src="https://js.stripe.com/clover/stripe.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/RREReptiles/rrereptiles.github.io@4486e41ccd5d87cec28bf25f179258a03b5edd95/shop/stripe-checkout.js" defer></script>
+    <script src="shop/stripe-checkout.js" defer></script>
 </head>
 <body>
     <header class="checkout-header">
@@ -17,201 +17,49 @@
             <img src="images/Logo.svg" alt="">
             <span><strong>Red Rocks</strong> Exotic Reptiles</span>
         </a>
-        <div class="checkout-secure" aria-label="Secure checkout">
-            <span aria-hidden="true">🔒</span>
-            Secure checkout preview
-        </div>
     </header>
 
     <div style="max-width:1180px;margin:14px auto 0;padding:10px 16px;border:1px solid #9a7b2f;background:#fff7d6;color:#4b3a10;border-radius:10px;font:600 14px/1.4 system-ui,sans-serif;">
-        Private preview page. The existing public checkout has not been replaced.
+        Private Stripe checkout preview. The public checkout has not been replaced.
     </div>
 
     <main class="checkout-main">
         <div class="checkout-heading">
             <div>
-                <p class="checkout-eyebrow">Checkout preview</p>
+                <p class="checkout-eyebrow">Stripe checkout preview</p>
                 <h1>Complete your order</h1>
-                <p>Enter delivery details first. Shipping and tax are calculated once when you review the order.</p>
+                <p>Stripe collects and suggests the delivery address. USPS shipping and applicable sales tax update after the address form is completed.</p>
             </div>
             <button type="button" class="checkout-back" data-cancel-checkout>Return to cart</button>
         </div>
-
-        <ol class="checkout-steps" aria-label="Checkout progress">
-            <li class="is-active" data-step-indicator="delivery">
-                <span>1</span>
-                <div><strong>Delivery</strong><small>Address and contact</small></div>
-            </li>
-            <li data-step-indicator="review">
-                <span>2</span>
-                <div><strong>Review &amp; pay</strong><small>Final total and payment</small></div>
-            </li>
-        </ol>
 
         <div class="checkout-sandbox" data-checkout-sandbox hidden>
             Stripe test mode — use a Stripe test card. No real money will be charged.
         </div>
 
-        <div class="checkout-error" data-checkout-error hidden role="alert">
-            <h2 data-checkout-error-title>Checkout could not continue</h2>
-            <p data-checkout-error-message>Please review your information and try again.</p>
-        </div>
-
-        <div class="checkout-loading-page" data-page-loading>
-            <div class="checkout-spinner" aria-hidden="true"></div>
-            <p>Loading your cart…</p>
+        <div class="checkout-error" data-checkout-error hidden>
+            <h2>Checkout could not start</h2>
+            <p data-checkout-error-message>Please return to the shop and try again.</p>
+            <a href="/?storefront-preview=1">Return to the shop</a>
         </div>
 
         <div class="checkout-layout" data-checkout-layout hidden>
-            <aside class="checkout-summary" aria-label="Order summary">
-                <div class="summary-heading">
-                    <h2>Order summary</h2>
-                    <span data-cart-count></span>
-                </div>
+            <aside class="checkout-summary">
+                <h2>Order summary</h2>
                 <div data-checkout-items></div>
-                <dl class="checkout-totals">
-                    <div>
-                        <dt>Merchandise</dt>
-                        <dd data-checkout-subtotal>$0.00</dd>
-                    </div>
-                    <div data-shipping-row>
-                        <dt>USPS shipping</dt>
-                        <dd data-checkout-shipping>Calculated at review</dd>
-                    </div>
-                    <div data-tax-row>
-                        <dt>Sales tax</dt>
-                        <dd data-checkout-tax>Calculated at review</dd>
-                    </div>
-                    <div class="checkout-total-row">
-                        <dt>Total</dt>
-                        <dd data-checkout-total>Calculated at review</dd>
-                    </div>
-                </dl>
-                <div class="summary-reassurance">
-                    <span aria-hidden="true">🔒</span>
-                    <p>Payment information is securely processed by Stripe. We do not store card details.</p>
+                <div class="checkout-subtotal">
+                    <span>Merchandise subtotal</span>
+                    <strong data-checkout-subtotal>$0.00</strong>
                 </div>
+                <p>Stripe will suggest and validate the delivery address. Final shipping and tax appear inside the secure checkout form.</p>
             </aside>
 
-            <section class="checkout-form-card" aria-live="polite">
-                <div data-delivery-step>
-                    <div class="card-heading">
-                        <div>
-                            <p class="card-kicker">Step 1 of 2</p>
-                            <h2>Delivery details</h2>
-                            <p>Your entries stay on this form while you type. No shipping or tax request is sent until you select <strong>Review order</strong>.</p>
-                        </div>
-                    </div>
-
-                    <form data-delivery-form novalidate>
-                        <fieldset>
-                            <legend>Contact information</legend>
-                            <div class="field-grid field-grid-two">
-                                <label class="field">
-                                    <span>Email address</span>
-                                    <input type="email" name="email" autocomplete="email" inputmode="email" required maxlength="320">
-                                    <small>Order confirmation and shipping updates.</small>
-                                </label>
-                                <label class="field">
-                                    <span>Phone number <em>optional</em></span>
-                                    <input type="tel" name="phone" autocomplete="tel" inputmode="tel" maxlength="40">
-                                    <small>Only used if there is a delivery issue.</small>
-                                </label>
-                            </div>
-                        </fieldset>
-
-                        <fieldset>
-                            <legend>Shipping address</legend>
-                            <div class="field-grid">
-                                <label class="field">
-                                    <span>Full name</span>
-                                    <input type="text" name="name" autocomplete="name" required maxlength="255">
-                                </label>
-                                <label class="field">
-                                    <span>Street address</span>
-                                    <input type="text" name="line1" autocomplete="shipping address-line1" required maxlength="255">
-                                </label>
-                                <label class="field">
-                                    <span>Apartment, suite, unit, etc. <em>optional</em></span>
-                                    <input type="text" name="line2" autocomplete="shipping address-line2" maxlength="255">
-                                </label>
-                                <div class="field-grid field-grid-location">
-                                    <label class="field field-city">
-                                        <span>City</span>
-                                        <input type="text" name="city" autocomplete="shipping address-level2" required maxlength="120">
-                                    </label>
-                                    <label class="field field-state">
-                                        <span>State</span>
-                                        <select name="state" autocomplete="shipping address-level1" required>
-                                            <option value="">Select</option>
-                                            <option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option>
-                                            <option value="CA">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option>
-                                            <option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option>
-                                            <option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option>
-                                            <option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option>
-                                            <option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option>
-                                            <option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option>
-                                            <option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option>
-                                            <option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option>
-                                            <option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option>
-                                            <option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option>
-                                            <option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option>
-                                            <option value="WI">Wisconsin</option><option value="WY">Wyoming</option><option value="DC">District of Columbia</option>
-                                        </select>
-                                    </label>
-                                    <label class="field field-zip">
-                                        <span>ZIP code</span>
-                                        <input type="text" name="postal_code" autocomplete="shipping postal-code" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" required>
-                                    </label>
-                                </div>
-                            </div>
-                        </fieldset>
-
-                        <div class="form-notice">
-                            <span aria-hidden="true">ℹ️</span>
-                            <p>USPS shipping and applicable sales tax will be calculated once from the complete address on the next screen.</p>
-                        </div>
-
-                        <button type="submit" class="checkout-primary" data-review-order>
-                            <span data-review-label>Review order</span>
-                            <span aria-hidden="true">→</span>
-                        </button>
-                    </form>
+            <section class="checkout-form-card" aria-label="Stripe payment form">
+                <div class="checkout-loading" data-checkout-loading>
+                    <div class="checkout-spinner" aria-hidden="true"></div>
+                    <p>Loading secure Stripe checkout…</p>
                 </div>
-
-                <div data-review-step hidden>
-                    <div class="card-heading review-heading">
-                        <div>
-                            <p class="card-kicker">Step 2 of 2</p>
-                            <h2>Review and pay</h2>
-                            <p>Your final USPS shipping and Stripe Tax totals are shown before payment.</p>
-                        </div>
-                        <button type="button" class="checkout-link-button" data-edit-address>Edit delivery</button>
-                    </div>
-
-                    <div class="review-address-card">
-                        <div>
-                            <span class="review-label">Deliver to</span>
-                            <strong data-review-name></strong>
-                            <p data-review-address></p>
-                            <p data-review-contact></p>
-                        </div>
-                        <span class="review-check" aria-hidden="true">✓</span>
-                    </div>
-
-                    <div class="review-total-card">
-                        <div><span>Merchandise</span><strong data-review-subtotal>$0.00</strong></div>
-                        <div><span data-review-shipping-label>USPS Ground Advantage</span><strong data-review-shipping>$0.00</strong></div>
-                        <div><span>Sales tax</span><strong data-review-tax>$0.00</strong></div>
-                        <div class="review-grand-total"><span>Total due</span><strong data-review-total>$0.00</strong></div>
-                    </div>
-
-                    <div class="checkout-loading" data-checkout-loading>
-                        <div class="checkout-spinner" aria-hidden="true"></div>
-                        <p>Preparing secure payment…</p>
-                    </div>
-                    <div id="checkout"></div>
-                </div>
+                <div id="checkout"></div>
             </section>
         </div>
 

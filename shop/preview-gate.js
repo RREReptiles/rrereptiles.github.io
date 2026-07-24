@@ -78,13 +78,123 @@
                 margin-top: 1.35rem;
             }
 
+            #page-shop.shop-show-all .shop-category {
+                display: block;
+            }
+
+            #page-shop .shop-category-heading {
+                display: none;
+            }
+
+            #page-shop.shop-show-all .shop-category-heading {
+                display: flex;
+                align-items: center;
+                gap: .8rem;
+                margin: 0 0 1.25rem;
+                padding-bottom: .6rem;
+                color: var(--black);
+                font-family: 'Playfair Display', Georgia, serif;
+                font-size: clamp(1.3rem, 2.4vw, 1.65rem);
+                line-height: 1.2;
+                border-bottom: 2px solid rgba(158, 20, 3, .22);
+            }
+
+            #page-shop.shop-show-all .shop-category-heading::after {
+                content: '';
+                flex: 1;
+                height: 1px;
+                background: linear-gradient(90deg, rgba(158, 20, 3, .26), transparent);
+            }
+
+            #page-shop.shop-show-all .shop-category + .shop-category {
+                margin-top: 3rem;
+                padding-top: .25rem;
+            }
+
             @media (max-width: 600px) {
                 #page-shop .storefront-header {
                     padding: 1.2rem;
                 }
+
+                #page-shop.shop-show-all .shop-category + .shop-category {
+                    margin-top: 2.35rem;
+                }
             }
         `;
         document.head.appendChild(style);
+    }
+
+    function installShopCategoryView() {
+        const shopPage = document.getElementById('page-shop');
+        const tabs = shopPage?.querySelector('.shop-tabs');
+        if (!shopPage || !tabs) return;
+
+        let allProductsTab = tabs.querySelector('.shop-tab[data-shop="all"]');
+        if (!allProductsTab) {
+            allProductsTab = document.createElement('button');
+            allProductsTab.type = 'button';
+            allProductsTab.className = 'shop-tab';
+            allProductsTab.dataset.shop = 'all';
+            allProductsTab.textContent = 'All Products';
+            tabs.prepend(allProductsTab);
+        }
+
+        shopPage.querySelectorAll('.shop-category').forEach(category => {
+            const categoryKey = category.id.replace(/^shop-/, '');
+            const categoryTab = tabs.querySelector(`.shop-tab[data-shop="${categoryKey}"]`);
+            const categoryName = categoryTab?.textContent.trim()
+                || categoryKey.replaceAll('-', ' ').replace(/\b\w/g, letter => letter.toUpperCase());
+
+            let heading = category.querySelector(':scope > .shop-category-heading');
+            if (!heading) {
+                heading = document.createElement('h3');
+                heading.className = 'shop-category-heading';
+                category.prepend(heading);
+            }
+            heading.textContent = categoryName;
+        });
+
+        function showShopCategory(shopKey) {
+            const showAll = !shopKey || shopKey === 'all';
+            shopPage.classList.toggle('shop-show-all', showAll);
+
+            tabs.querySelectorAll('.shop-tab').forEach(tab => {
+                const isActive = tab.dataset.shop === (showAll ? 'all' : shopKey);
+                tab.classList.toggle('active', isActive);
+                tab.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+            });
+
+            shopPage.querySelectorAll('.shop-category').forEach(category => {
+                const isActive = !showAll && category.id === `shop-${shopKey}`;
+                category.classList.toggle('active', isActive);
+            });
+        }
+
+        window.setShopCategory = showShopCategory;
+
+        if (tabs.dataset.shopCategoryToggleInstalled !== 'true') {
+            tabs.dataset.shopCategoryToggleInstalled = 'true';
+            tabs.addEventListener('click', event => {
+                const tab = event.target.closest('.shop-tab[data-shop]');
+                if (!tab || !tabs.contains(tab)) return;
+
+                const shopKey = tab.dataset.shop;
+                if (shopKey === 'all') {
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                    showShopCategory('all');
+                    return;
+                }
+
+                if (tab.classList.contains('active')) {
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                    showShopCategory('all');
+                }
+            }, true);
+        }
+
+        showShopCategory('all');
     }
 
     function professionalizeShopPage() {
@@ -172,6 +282,7 @@
 
     async function initializeStorefrontGate() {
         installShopPolishStyles();
+        installShopCategoryView();
         professionalizeShopPage();
         observeShopChanges();
 

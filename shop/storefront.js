@@ -424,7 +424,35 @@
         document.body.classList.remove('storefront-cart-open');
     }
 
+    function updateWebsitePrivacyPolicy() {
+        const section = document.getElementById('privacy-policy');
+        if (!section) return;
+        section.innerHTML = `
+            <h3>Privacy Policy</h3>
+            <p><strong>Last updated:</strong> July 24, 2026</p>
+            <p>This privacy policy applies to rrereptiles.com, our online storefront, and customer communications. ReptiLog is covered by its own <a href="https://reptilog.app/privacy-policy.html" target="_blank" rel="noopener">privacy policy</a>.</p>
+
+            <h4>Information We Collect</h4>
+            <p>When you contact us, use the storefront, or place an order, we may receive your name, email address, phone number, billing or shipping address, order details, messages, transaction status, and technical information needed to operate and secure the website.</p>
+            <p>The storefront stores cart contents in your browser and maintains a temporary checkout-session record so your cart and Stripe checkout can function correctly.</p>
+
+            <h4>Payments</h4>
+            <p>Online payments are processed by Stripe through its secure checkout interface. Red Rocks Exotic Reptiles does not receive or store your complete card number or security code. We receive the transaction and order information needed to process, fulfill, refund, and support your purchase.</p>
+
+            <h4>How We Use and Share Information</h4>
+            <p>Information is used to process payments, calculate shipping and applicable taxes, fulfill orders, communicate with customers, maintain inventory and accounting records, prevent fraud, and comply with legal obligations.</p>
+            <p>We may share necessary information with Stripe, Supabase, shipping carriers, transactional email providers, and website infrastructure providers. We do not sell personal information or provide customer order information to advertisers.</p>
+
+            <h4>Retention, Security, and Requests</h4>
+            <p>We retain records as reasonably necessary for fulfillment, customer service, accounting, tax, dispute, fraud-prevention, and legal purposes. We use reasonable safeguards, but no online system can guarantee absolute security.</p>
+            <p>You may contact <a href="mailto:rrereptiles@gmail.com">rrereptiles@gmail.com</a> to request access to, correction of, or deletion of personal information we control. Some records may need to be retained for legal, tax, accounting, or fraud-prevention purposes.</p>
+
+            <p><a href="/policies/privacy-policy.html" target="_blank" rel="noopener"><strong>Read the full Privacy Policy</strong></a></p>
+        `;
+    }
+
     function init() {
+        updateWebsitePrivacyPolicy();
         const shell = buildStorefrontShell();
         if (!shell) return;
         buildCartDrawer();

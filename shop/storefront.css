@@ -98,6 +98,29 @@
     background: var(--light-gray);
 }
 
+/* Inventory items without a ReptiTrax photo use the business logo until a photo is supplied. */
+#page-shop .product-card[data-storefront-item-id] > div.product-img {
+    background-color: #e3dcc9;
+    background-image: url("../images/Logo.svg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    color: transparent;
+    font-size: 0;
+}
+
+#page-shop .product-card img.product-img[src$="images/Logo.svg"] {
+    object-fit: contain;
+    padding: 1rem;
+    background: #e3dcc9;
+}
+
+.storefront-cart-item img[src$="images/Logo.svg"] {
+    object-fit: contain;
+    padding: .35rem;
+    background: #e3dcc9;
+}
+
 .storefront-product-body {
     padding: 1rem;
 }

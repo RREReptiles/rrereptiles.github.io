@@ -7,9 +7,9 @@
     <meta name="theme-color" content="#1a1a1a">
     <title>Secure Checkout | Red Rocks Exotic Reptiles</title>
     <link rel="icon" type="image/png" sizes="32x32" href="/images/favicons/favicon-32x32.png">
-    <link rel="stylesheet" href="shop/stripe-checkout.css">
+    <link rel="stylesheet" href="shop/stripe-checkout.css?v=live-summary-1">
     <script src="https://js.stripe.com/clover/stripe.js"></script>
-    <script src="shop/stripe-checkout.js" defer></script>
+    <script src="shop/stripe-checkout.js?v=live-summary-1" defer></script>
 </head>
 <body>
     <header class="checkout-header">
@@ -24,7 +24,7 @@
             <div>
                 <p class="checkout-eyebrow">Secure checkout</p>
                 <h1>Complete your order</h1>
-                <p>USPS shipping and applicable sales tax update after you enter the delivery address.</p>
+                <p>Stripe collects and suggests the delivery address. USPS shipping and applicable sales tax update after the address is completed.</p>
             </div>
             <button type="button" class="checkout-back" data-cancel-checkout>Return to cart</button>
         </div>
@@ -43,11 +43,25 @@
             <aside class="checkout-summary">
                 <h2>Order summary</h2>
                 <div data-checkout-items></div>
-                <div class="checkout-subtotal">
-                    <span>Merchandise subtotal</span>
-                    <strong data-checkout-subtotal>$0.00</strong>
-                </div>
-                <p>Final shipping and tax appear in the secure checkout form.</p>
+                <dl class="checkout-preview-totals" data-checkout-totals>
+                    <div>
+                        <dt>Merchandise</dt>
+                        <dd data-checkout-subtotal>$0.00</dd>
+                    </div>
+                    <div>
+                        <dt>USPS shipping</dt>
+                        <dd data-checkout-shipping>Calculated at order review</dd>
+                    </div>
+                    <div>
+                        <dt>Sales tax</dt>
+                        <dd data-checkout-tax>Calculated at order review</dd>
+                    </div>
+                    <div class="checkout-preview-total">
+                        <dt>Order total</dt>
+                        <dd data-checkout-total>Calculated at order review</dd>
+                    </div>
+                </dl>
+                <p class="checkout-preview-total-note" data-checkout-total-note>Complete the delivery address in Stripe to see the final total.</p>
             </aside>
 
             <section class="checkout-form-card" aria-label="Stripe payment form">

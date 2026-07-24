@@ -6,7 +6,7 @@
     const FUNCTIONS_URL = `${SUPABASE_URL}/functions/v1`;
     const CATALOG_URL = `${SUPABASE_URL}/rest/v1/rpc/get_storefront_catalog`;
     const CART_STORAGE_KEY = 'rre-storefront-cart-v1';
-    const SESSION_STORAGE_KEY = 'rre-stripe-checkout-preview-session-v1';
+    const SESSION_STORAGE_KEY = 'rre-stripe-checkout-session-v1';
     const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
     let checkoutInstance = null;
@@ -95,7 +95,7 @@
         setText('[data-checkout-shipping]', currency.format(shipping));
         setText('[data-checkout-tax]', currency.format(tax));
         setText('[data-checkout-total]', currency.format(total));
-        setText('[data-checkout-total-note]', 'Mirrored from the same Stripe Checkout update shown on the right.');
+        setText('[data-checkout-total-note]', 'Final shipping, tax, and total are calculated securely through Stripe.');
         document.querySelector('[data-checkout-totals]')?.classList.add('is-final');
     }
 

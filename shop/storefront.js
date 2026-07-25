@@ -74,6 +74,14 @@
         return currency.format(Number(product.price || 0));
     }
 
+    function isLocalPickupOnly(product) {
+        return product?.local_pickup_only === true || product?.store_category === 'feeders';
+    }
+
+    function purchaseMode(product) {
+        return isLocalPickupOnly(product) ? 'inquiry' : product?.purchase_mode;
+    }
+
     function totalCartQuantity() {
         return state.cart.reduce((sum, item) => sum + item.quantity, 0);
     }
@@ -88,7 +96,7 @@
     function normalizeCartAgainstCatalog() {
         state.cart = state.cart.flatMap(item => {
             const product = state.products.get(item.itemId);
-            if (!product || !product.in_stock || product.purchase_mode !== 'checkout') return [];
+            if (!product || !product.in_stock || purchaseMode(product) !== 'checkout') return [];
             const available = Math.max(0, Number(product.available_quantity || 0));
             const configuredMax = product.max_per_order == null
                 ? available
@@ -97,6 +105,20 @@
             return quantity > 0 ? [{ itemId: item.itemId, quantity }] : [];
         });
         saveCart();
+    }
+
+    function ensureFeederPickupNotice() {
+        const panel = document.getElementById('shop-feeders');
+        if (!panel) return;
+
+        let notice = panel.querySelector(':scope > .shop-notice');
+        if (!notice) {
+            notice = document.createElement('div');
+            notice.className = 'shop-notice';
+            panel.prepend(notice);
+        }
+        notice.classList.add('storefront-local-pickup-notice');
+        notice.innerHTML = '<strong>Local Pickup Only:</strong> Live insects, feeder cultures, and other feeder items are available for local pickup in Colorado only. We do not ship live feeders. Use the Inquire button to confirm current availability, quantities, pricing, and pickup arrangements.';
     }
 
     function buildStorefrontShell() {
@@ -224,7 +246,15 @@
         const price = info.querySelector('.price');
         if (price && product) price.textContent = productPrice(product);
 
-        info.querySelectorAll('.inquire, [data-storefront-action], [data-storefront-stock-label]').forEach(element => element.remove());
+        info.querySelectorAll('.inquire, [data-storefront-action], [data-storefront-stock-label], [data-storefront-local-pickup]').forEach(element => element.remove());
+
+        if (product && isLocalPickupOnly(product)) {
+            const badge = document.createElement('span');
+            badge.className = 'storefront-local-pickup-badge';
+            badge.dataset.storefrontLocalPickup = '';
+            badge.textContent = 'Local Pickup Only';
+            info.appendChild(badge);
+        }
 
         const stock = document.createElement('p');
         stock.className = 'storefront-stock';
@@ -232,7 +262,7 @@
         stock.textContent = product?.in_stock ? 'In stock' : 'Out of stock';
         info.appendChild(stock);
 
-        if (product?.in_stock && product.purchase_mode === 'checkout') {
+        if (product?.in_stock && purchaseMode(product) === 'checkout') {
             const button = document.createElement('button');
             button.type = 'button';
             button.className = 'storefront-add-button';
@@ -243,7 +273,7 @@
             return;
         }
 
-        if (product?.in_stock && product.purchase_mode === 'inquiry') {
+        if (product?.in_stock && purchaseMode(product) === 'inquiry') {
             const link = document.createElement('a');
             link.className = 'storefront-inquiry-button';
             link.dataset.storefrontAction = '';
@@ -335,7 +365,7 @@
 
     function addToCart(itemId) {
         const product = state.products.get(itemId);
-        if (!product || !product.in_stock || product.purchase_mode !== 'checkout') return;
+        if (!product || !product.in_stock || purchaseMode(product) !== 'checkout') return;
         const available = Math.max(0, Number(product.available_quantity || 0));
         const maxPerOrder = product.max_per_order == null ? available : Math.min(available, Number(product.max_per_order));
         const existing = state.cart.find(item => item.itemId === itemId);
@@ -474,6 +504,7 @@
 
     function init() {
         updateWebsitePrivacyPolicy();
+        ensureFeederPickupNotice();
         const shell = buildStorefrontShell();
         if (!shell) return;
         buildCartDrawer();

@@ -15,6 +15,11 @@
         ['round flat hide', 'flat hides']
     ]);
 
+    const CATALOG_IMAGE_OVERRIDES = new Set([
+        'rotala indica orange juice',
+        'anacharis'
+    ]);
+
     const state = {
         products: new Map(),
         cart: loadCart(),
@@ -275,6 +280,31 @@
         return card;
     }
 
+    function syncStaticCardImage(card, product) {
+        const imageUrl = productImage(product);
+        const currentImage = card.querySelector('img.product-img');
+        const placeholder = card.querySelector('div.product-img');
+        const shouldReplaceHardcodedImage = CATALOG_IMAGE_OVERRIDES.has(matchingName(product.public_name));
+
+        if (currentImage && (product.image_url || shouldReplaceHardcodedImage)) {
+            currentImage.src = imageUrl;
+            currentImage.alt = product.public_name;
+            currentImage.loading = 'lazy';
+            currentImage.decoding = 'async';
+            return;
+        }
+
+        if (!placeholder || !product.image_url) return;
+
+        const image = document.createElement('img');
+        image.src = imageUrl;
+        image.alt = product.public_name;
+        image.className = 'product-img';
+        image.loading = 'lazy';
+        image.decoding = 'async';
+        placeholder.replaceWith(image);
+    }
+
     function renderProducts(products) {
         document.querySelectorAll('.product-card[data-storefront-generated]').forEach(card => card.remove());
 
@@ -291,16 +321,7 @@
             const existing = findStaticCard(panel, product);
             if (existing) {
                 existing.dataset.storefrontItemId = String(product.item_id);
-                const placeholder = existing.querySelector('div.product-img');
-                if (placeholder && product.image_url) {
-                    const image = document.createElement('img');
-                    image.src = product.image_url;
-                    image.alt = product.public_name;
-                    image.className = 'product-img';
-                    image.loading = 'lazy';
-                    image.decoding = 'async';
-                    placeholder.replaceWith(image);
-                }
+                syncStaticCardImage(existing, product);
                 markCardAvailability(existing, product);
             } else {
                 grid.appendChild(generatedCard(product));

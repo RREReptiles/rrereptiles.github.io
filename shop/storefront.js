@@ -121,6 +121,42 @@
         notice.innerHTML = '<strong>Local Pickup Only:</strong> Live insects, feeder cultures, and other feeder items are available for local pickup in Colorado only. We do not ship live feeders. Use the Inquire button to confirm current availability, quantities, pricing, and pickup arrangements.';
     }
 
+    function ensureTropicalPlantCategory() {
+        const shopPage = document.getElementById('page-shop');
+        const section = shopPage?.querySelector(':scope > .section');
+        const tabs = section?.querySelector('.shop-tabs');
+        if (!shopPage || !section || !tabs) return;
+
+        let tab = tabs.querySelector('.shop-tab[data-shop="tropical-plants"]');
+        if (!tab) {
+            tab = document.createElement('button');
+            tab.type = 'button';
+            tab.className = 'shop-tab';
+            tab.dataset.shop = 'tropical-plants';
+            tab.textContent = 'Tropical Plants';
+            tab.addEventListener('click', () => window.setShopCategory?.('tropical-plants'));
+
+            const aquaticTab = tabs.querySelector('.shop-tab[data-shop="plants"]');
+            aquaticTab?.insertAdjacentElement('afterend', tab);
+            if (!tab.isConnected) tabs.appendChild(tab);
+        }
+
+        let panel = document.getElementById('shop-tropical-plants');
+        if (!panel) {
+            panel = document.createElement('div');
+            panel.className = 'shop-category';
+            panel.id = 'shop-tropical-plants';
+            panel.innerHTML = `
+                <p class="section-subtitle">Tropical and terrarium plants for planted enclosures, bioactive habitats, and indoor growing.</p>
+                <div class="product-grid"></div>
+            `;
+
+            const aquaticPanel = document.getElementById('shop-plants');
+            aquaticPanel?.insertAdjacentElement('afterend', panel);
+            if (!panel.isConnected) section.appendChild(panel);
+        }
+    }
+
     function buildStorefrontShell() {
         const shopPage = document.getElementById('page-shop');
         const section = shopPage?.querySelector(':scope > .section');
@@ -504,6 +540,7 @@
 
     function init() {
         updateWebsitePrivacyPolicy();
+        ensureTropicalPlantCategory();
         ensureFeederPickupNotice();
         const shell = buildStorefrontShell();
         if (!shell) return;

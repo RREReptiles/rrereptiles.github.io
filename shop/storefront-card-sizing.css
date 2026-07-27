@@ -17,6 +17,26 @@
     padding: .6rem;
 }
 
+/*
+ * Multi-photo galleries may mix portrait, square, and landscape images.
+ * Keep the existing cover crop for ordinary single-photo cards, but show
+ * complete gallery images inside the same 220px frame so unusually shaped
+ * photos are not clipped by the card.
+ */
+#page-shop .storefront-product-carousel {
+    height: 220px;
+    background: #e9e3d6;
+}
+
+#page-shop .storefront-product-carousel > img.product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    padding: .35rem;
+    background: transparent;
+}
+
 @media (max-width: 600px) {
     .storefront-grid {
         grid-template-columns: 1fr;

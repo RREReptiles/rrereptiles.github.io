@@ -514,12 +514,15 @@
     }
 
 
+
     function handleStorefrontRequest() {
         const params = new URLSearchParams(window.location.search);
-        const requestedItemId = Number(params.get('add'));
-        const shouldOpenCart = params.get('cart') === 'open' || Number.isInteger(requestedItemId);
+        const requestedValue = params.get('add');
+        const requestedItemId = requestedValue === null ? null : Number(requestedValue);
+        const hasRequestedItem = Number.isInteger(requestedItemId) && requestedItemId > 0;
+        const shouldOpenCart = params.get('cart') === 'open' || hasRequestedItem;
 
-        if (Number.isInteger(requestedItemId)) addToCart(requestedItemId);
+        if (hasRequestedItem) addToCart(requestedItemId);
         else if (shouldOpenCart) openCart();
 
         if (!shouldOpenCart) return;

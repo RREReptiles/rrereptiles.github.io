@@ -9,6 +9,7 @@ on:
       - agent/scrub-private-backend-name
       - agent/clean-product-detail-pages
       - agent/product-description-binding
+      - agent/unify-product-site-shell
   pull_request:
     branches:
       - main
@@ -42,8 +43,8 @@ jobs:
         run: |
           python scripts/build_seo_integrated.py
           python scripts/postprocess_seo_integration.py
-          python scripts/clean_product_pages.py
           python scripts/wire_product_descriptions.py
+          python scripts/clean_product_pages.py
           python scripts/scrub_private_backend_name.py
 
       - name: Validate output
@@ -64,6 +65,7 @@ jobs:
           required = [
               Path('index.html'),
               Path('shop/product-page.js'),
+              Path('shop/site-shell.css'),
               Path('llms.txt'),
               Path('sitemap.xml'),
           ]
@@ -106,6 +108,22 @@ jobs:
           if missing_bindings:
               raise SystemExit(f'Product page is missing live storefront bindings: {missing_bindings}')
 
+          required_shell = [
+              '<div class="nav-container">',
+              '<nav class="nav-links"',
+              '<a href="/#shop" class="active" aria-current="page">Shop</a>',
+              'class="hamburger" id="hamburger"',
+              '<nav class="mobile-nav" id="mobileNav"',
+              '<div class="footer-grid">',
+              '<h4>Quick Links</h4>',
+              '<h4>Contact Us</h4>',
+              '<h4>Follow Us</h4>',
+              '<div class="footer-bottom">',
+          ]
+          missing_shell = [value for value in required_shell if value not in sample]
+          if missing_shell:
+              raise SystemExit(f'Product page is missing the full site shell: {missing_shell}')
+
           forbidden_product_copy = [
               '<dl class="details-list">',
               '<dt>Seller</dt>',
@@ -115,10 +133,11 @@ jobs:
               'Ordering through the original',
               'extension of the original website',
               'original Shop tab',
-              'ReptiTrax reports this item as out of stock',
+              'reports this item as out of stock',
               'inventory system reports this item as out of stock',
               'Currently unavailable.',
               'data-product-notice',
+              '<a class="brand"',
           ]
           product_failures = []
           for page in pages:
@@ -128,16 +147,29 @@ jobs:
               for value in forbidden_product_copy:
                   if value.casefold() in content.casefold():
                       product_failures.append(f'{page}: contains {value}')
+              for value in required_shell:
+                  if value not in content:
+                      product_failures.append(f'{page}: missing {value}')
           if product_failures:
               raise SystemExit(f'Customer-facing product cleanup failed: {product_failures}')
 
           product_script = Path('shop/product-page.js').read_text(encoding='utf-8')
-          for value in forbidden_product_copy[-4:]:
+          for value in forbidden_product_copy[-5:-1]:
               if value.casefold() in product_script.casefold():
                   raise SystemExit(f'Product script contains stale copy: {value}')
-          for value in ('product.description', 'product.short_description', 'data-product-description'):
+          for value in (
+              'product.description',
+              'product.short_description',
+              'data-product-description',
+              'function renderSiteShell()',
+              'renderSiteShell();',
+          ):
               if value not in product_script:
-                  raise SystemExit(f'Product script is missing description binding: {value}')
+                  raise SystemExit(f'Product script is missing binding or shell behavior: {value}')
+
+          seo_css = Path('shop/seo.css').read_text(encoding='utf-8')
+          if '@import url("/shop/site-shell.css");' not in seo_css:
+              raise SystemExit('Product CSS does not load the shared site shell')
 
           supporting_copy = '\n'.join([
               Path('index.html').read_text(encoding='utf-8'),

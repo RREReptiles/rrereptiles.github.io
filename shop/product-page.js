@@ -5,78 +5,9 @@
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_w1szxATkVRFs2JBQOyG8rg_ULipgOPv";
     const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
-    const SITE_HEADER = `
-<header class="site-header">
-    <div class="nav-container">
-        <a href="/#home" class="logo" aria-label="Go to Home page">
-            <div class="logo-icon"><img src="/images/Logo.svg" alt="RRE Logo"></div>
-            <span><span class="accent">Red Rocks</span> Exotic Reptiles</span>
-        </a>
-        <nav class="nav-links" aria-label="Primary navigation">
-            <a href="/#home">Home</a>
-            <a href="/#shop" class="active" aria-current="page">Shop</a>
-            <a href="/#about">About Us</a>
-            <a href="/#socials">Socials</a>
-            <a href="/#reptilog">ReptiLog</a>
-            <a href="/#care">Care Guides</a>
-            <a href="/#faq">Shipping/FAQs</a>
-        </nav>
-        <button class="hamburger" id="hamburger" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="mobileNav">
-            <span></span><span></span><span></span>
-        </button>
-    </div>
-    <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
-        <a href="/#home">Home</a>
-        <a href="/#shop" class="active" aria-current="page">Shop</a>
-        <a href="/#about">About Us</a>
-        <a href="/#socials">Socials</a>
-        <a href="/#reptilog">ReptiLog</a>
-        <a href="/#care">Care Guides</a>
-        <a href="/#faq">Shipping/FAQs</a>
-    </nav>
-</header>`;
 
-    const SITE_FOOTER = `
-<footer class="site-footer">
-    <div class="footer-grid">
-        <div>
-            <h4 style="color:var(--accent);">Red Rocks Exotic Reptiles</h4>
-            <p>Colorado's source for ethically bred reptiles, aquatic plants, and custom reptile goods. Woman, Veteran, Hispanic &amp; Native American owned.</p>
-        </div>
-        <div>
-            <h4>Quick Links</h4>
-            <a href="/#home">Home</a><br>
-            <a href="/#shop">Shop</a><br>
-            <a href="/#about">About Us</a><br>
-            <a href="/#care">Care Guides</a><br>
-            <a href="/#faq">Shipping/FAQs</a><br>
-            <a href="/#faq">Store Policies</a><br>
-            <a href="/#faq">Privacy Policy</a>
-        </div>
-        <div>
-            <h4>Contact Us</h4>
-            <p>
-                <a href="mailto:rrereptiles@gmail.com">rrereptiles@gmail.com</a><br>
-                <a href="tel:9704001278">970-400-1278</a>
-            </p>
-        </div>
-        <div>
-            <h4>Follow Us</h4>
-            <a href="https://www.instagram.com/red_rocks_reptiles/" target="_blank" rel="noopener">Instagram</a><br>
-            <a href="https://www.facebook.com/RREReptiles" target="_blank" rel="noopener">Facebook</a><br>
-            <a href="https://www.tiktok.com/@redrocks_exotic_reptiles" target="_blank" rel="noopener">TikTok</a><br>
-            <a href="https://www.youtube.com/@RedRocksExoticReptiles" target="_blank" rel="noopener">YouTube</a><br>
-            <a href="https://www.morphmarket.com/stores/red_rocks_exotic_reptiles/" target="_blank" rel="noopener">MorphMarket</a>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <p>&copy; 2023&ndash;2026 Red Rocks Exotic Reptiles LLC. All rights reserved.</p>
-    </div>
-</footer>`;
-
-    function textValue(value) {
-        return String(value ?? '').trim();
-    }
+    const SITE_HEADER = "<header class=\"site-header\">\n    <div class=\"nav-container\">\n        <a href=\"/#home\" class=\"logo\" aria-label=\"Go to Home page\">\n            <div class=\"logo-icon\"><img src=\"/images/Logo.svg\" alt=\"RRE Logo\"></div>\n            <span><span class=\"accent\">Red Rocks</span> Exotic Reptiles</span>\n        </a>\n        <nav class=\"nav-links\" aria-label=\"Primary navigation\">\n            <a href=\"/#home\">Home</a>\n            <a href=\"/#shop\" class=\"active\" aria-current=\"page\">Shop</a>\n            <a href=\"/#about\">About Us</a>\n            <a href=\"/#socials\">Socials</a>\n            <a href=\"/#reptilog\">ReptiLog</a>\n            <a href=\"/#care\">Care Guides</a>\n            <a href=\"/#faq\">Shipping/FAQs</a>\n        </nav>\n        <button class=\"hamburger\" id=\"hamburger\" type=\"button\" aria-label=\"Toggle navigation\" aria-expanded=\"false\" aria-controls=\"mobileNav\">\n            <span></span><span></span><span></span>\n        </button>\n    </div>\n    <nav class=\"mobile-nav\" id=\"mobileNav\" aria-label=\"Mobile navigation\">\n        <a href=\"/#home\">Home</a>\n        <a href=\"/#shop\" class=\"active\" aria-current=\"page\">Shop</a>\n        <a href=\"/#about\">About Us</a>\n        <a href=\"/#socials\">Socials</a>\n        <a href=\"/#reptilog\">ReptiLog</a>\n        <a href=\"/#care\">Care Guides</a>\n        <a href=\"/#faq\">Shipping/FAQs</a>\n    </nav>\n</header>";
+    const SITE_FOOTER = "<footer class=\"site-footer\">\n    <div class=\"footer-grid\">\n        <div>\n            <h4 style=\"color:var(--accent);\">Red Rocks Exotic Reptiles</h4>\n            <p>Colorado's source for ethically bred reptiles, aquatic plants, and custom reptile goods. Woman, Veteran, Hispanic &amp; Native American owned.</p>\n        </div>\n        <div>\n            <h4>Quick Links</h4>\n            <a href=\"/#home\">Home</a><br>\n            <a href=\"/#shop\">Shop</a><br>\n            <a href=\"/#about\">About Us</a><br>\n            <a href=\"/#care\">Care Guides</a><br>\n            <a href=\"/#faq\">Shipping/FAQs</a><br>\n            <a href=\"/#faq\">Store Policies</a><br>\n            <a href=\"/#faq\">Privacy Policy</a>\n        </div>\n        <div>\n            <h4>Contact Us</h4>\n            <p>\n                <a href=\"mailto:rrereptiles@gmail.com\">rrereptiles@gmail.com</a><br>\n                <a href=\"tel:9704001278\">970-400-1278</a>\n            </p>\n        </div>\n        <div>\n            <h4>Follow Us</h4>\n            <a href=\"https://www.instagram.com/red_rocks_reptiles/\" target=\"_blank\" rel=\"noopener\">Instagram</a><br>\n            <a href=\"https://www.facebook.com/RREReptiles\" target=\"_blank\" rel=\"noopener\">Facebook</a><br>\n            <a href=\"https://www.tiktok.com/@redrocks_exotic_reptiles\" target=\"_blank\" rel=\"noopener\">TikTok</a><br>\n            <a href=\"https://www.youtube.com/@RedRocksExoticReptiles\" target=\"_blank\" rel=\"noopener\">YouTube</a><br>\n            <a href=\"https://www.morphmarket.com/stores/red_rocks_exotic_reptiles/\" target=\"_blank\" rel=\"noopener\">MorphMarket</a>\n        </div>\n    </div>\n    <div class=\"footer-bottom\">\n        <p>&copy; 2023&ndash;2026 Red Rocks Exotic Reptiles LLC. All rights reserved.</p>\n    </div>\n</footer>";
 
     function renderSiteShell() {
         const header = document.querySelector('body > header');
@@ -103,6 +34,10 @@
         document.addEventListener('keydown', event => {
             if (event.key === 'Escape') setOpen(false);
         });
+    }
+
+    function textValue(value) {
+        return String(value ?? '').trim();
     }
 
     function isLocalPickupOnly(product) {

@@ -170,7 +170,7 @@ def fulfillment_notice(product: dict) -> str:
         )
     return (
         '<p class="notice"><strong>Online checkout available.</strong> '
-        "The Add to Cart button uses the same live ReptiTrax inventory and cart as the original Shop tab.</p>"
+        "The Add to Cart button uses the same live store inventory and cart as the original Shop tab.</p>"
     )
 
 
@@ -246,7 +246,7 @@ def integrate_product_pages(products: list[dict]) -> list[str]:
         )
         text = re.sub(
             r"<p>Red Rocks Exotic Reptiles offers secure online checkout.*?</p>",
-            "<p>This product page is an extension of the original website. Add to Cart and Inquire follow the same ReptiTrax-controlled purchase mode, stock, and local-pickup rules used in the Shop tab.</p>",
+            "<p>This product page is an extension of the original website. Add to Cart and Inquire follow the same store-controlled purchase mode, stock, and local-pickup rules used in the Shop tab.</p>",
             text,
             count=1,
             flags=re.DOTALL,
@@ -322,7 +322,7 @@ def write_llms(products: list[dict]) -> None:
 
 ## Content use notes
 
-The original rrereptiles.com page is the authoritative navigation experience. Product detail URLs hand Add to Cart requests back to the same live ReptiTrax storefront cart. Product availability and prices can change.
+The original rrereptiles.com page is the authoritative navigation experience. Product detail URLs hand Add to Cart requests back to the same live storefront cart. Product availability and prices can change.
 """
     (base.ROOT / "llms.txt").write_text(content, encoding="utf-8")
 

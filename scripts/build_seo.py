@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate crawlable SEO pages from the public ReptiTrax storefront catalog.
+"""Generate crawlable SEO pages from the public storefront catalog.
 
 The source website remains a lightweight GitHub Pages site. This script makes the
 commercial content available as static HTML for search engines, social crawlers,
@@ -668,7 +668,7 @@ def write_category_pages(products: list[dict[str, Any]]) -> list[str]:
     <p class="lead">Browse live inventory from our Colorado reptile business, including captive-bred reptiles, feeder insects, husbandry supplies, aquatic plants, and custom enclosure products.</p>
   </section>
   <section class="category-grid" aria-label="Shop categories">{category_links}</section>
-  <section class="section-heading"><h2>Current inventory</h2><p>Availability and prices are generated from the same ReptiTrax inventory used by the interactive storefront.</p></section>
+  <section class="section-heading"><h2>Current inventory</h2><p>Availability and prices are generated from the same store inventory used by the interactive storefront.</p></section>
   <div class="product-list">{all_cards or '<p>No products are currently published. Please check back soon.</p>'}</div>
 </main>
 {site_footer()}

@@ -195,7 +195,7 @@
             header.innerHTML = `
                 <div>
                     <h3>Shop Current Inventory</h3>
-                    <p>Products and pricing are managed through ReptiTrax. Items remain unavailable online until their inventory and shipping details are verified.</p>
+                    <p>Products and pricing are managed through our inventory system. Items remain unavailable online until their inventory and shipping details are verified.</p>
                 </div>
                 <button type="button" class="storefront-cart-button" data-storefront-open-cart>
                     Cart <span class="storefront-cart-count" data-storefront-cart-count>0</span>
@@ -512,6 +512,7 @@
             ? 'Secure card and wallet payments are processed by Stripe.'
             : 'Products will become purchasable as their shipping details are verified.');
     }
+
 
 
 

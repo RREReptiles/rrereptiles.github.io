@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Apply live ReptiTrax behavior to generated product detail pages."""
+"""Apply live our inventory system behavior to generated product detail pages."""
 
 from __future__ import annotations
 
@@ -113,7 +113,7 @@ def write_live_product_script() -> None:
         stock.classList.toggle('available', Boolean(product.in_stock));
 
         if (!product.in_stock) {{
-            notice.innerHTML = '<strong>Currently unavailable.</strong> ReptiTrax reports this item as out of stock.';
+            notice.innerHTML = '<strong>Currently unavailable.</strong> Our inventory system reports this item as out of stock.';
             setAction(action, 'Out of Stock');
             return;
         }}
@@ -239,7 +239,7 @@ def validate() -> None:
         "data-product-notice",
     )
     if any(value not in sample for value in required):
-        raise RuntimeError("Generated product pages are missing live ReptiTrax bindings.")
+        raise RuntimeError("Generated product pages are missing live storefront bindings.")
 
 
 def main() -> None:
@@ -247,7 +247,7 @@ def main() -> None:
     write_live_product_script()
     count = patch_product_pages()
     validate()
-    print(f"Applied live ReptiTrax bindings to {count} product pages.")
+    print(f"Applied live storefront bindings to {count} product pages.")
 
 
 if __name__ == "__main__":

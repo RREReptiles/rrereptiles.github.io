@@ -45,4 +45,4 @@
 
 ## Content use notes
 
-The original rrereptiles.com page is the authoritative navigation experience. Product detail URLs hand Add to Cart requests back to the same live ReptiTrax storefront cart. Product availability and prices can change.
+The original rrereptiles.com page is the authoritative navigation experience. Product detail URLs hand Add to Cart requests back to the same live storefront cart. Product availability and prices can change.

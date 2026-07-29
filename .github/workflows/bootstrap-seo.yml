@@ -43,13 +43,13 @@ jobs:
         run: |
           python scripts/build_seo_integrated.py
           python scripts/postprocess_seo_integration.py
-          python scripts/wire_product_descriptions.py
+          python scripts/generate_product_descriptions.py
           python scripts/clean_product_pages.py
           python scripts/scrub_private_backend_name.py
 
       - name: Validate output
         run: |
-          python -m py_compile scripts/build_seo.py scripts/build_seo_integrated.py scripts/postprocess_seo_integration.py scripts/clean_product_pages.py scripts/wire_product_descriptions.py scripts/scrub_private_backend_name.py
+          python -m py_compile scripts/build_seo.py scripts/build_seo_integrated.py scripts/postprocess_seo_integration.py scripts/generate_product_descriptions.py scripts/clean_product_pages.py scripts/wire_product_descriptions.py scripts/scrub_private_backend_name.py
           node --check shop/storefront.js
           node --check shop/product-page.js
           python - <<'PY'
@@ -154,9 +154,13 @@ jobs:
               raise SystemExit(f'Customer-facing product cleanup failed: {product_failures}')
 
           product_script = Path('shop/product-page.js').read_text(encoding='utf-8')
-          for value in forbidden_product_copy[-5:-1]:
+          for value in (
+              'reports this item as out of stock',
+              'inventory system reports this item as out of stock',
+              'Currently unavailable.',
+          ):
               if value.casefold() in product_script.casefold():
-                  raise SystemExit(f'Product script contains stale copy: {value}')
+                  raise SystemExit(f'Product script contains stale customer copy: {value}')
           for value in (
               'product.description',
               'product.short_description',

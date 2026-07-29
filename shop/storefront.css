@@ -444,3 +444,16 @@ body.storefront-cart-open {
     letter-spacing: .03em;
     text-transform: uppercase;
 }
+
+
+/* SEO product detail links */
+.storefront-product-link {
+    color: inherit;
+    text-decoration: none;
+}
+.storefront-product-link:hover,
+.storefront-product-link:focus-visible {
+    color: var(--accent, #9e1403);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}

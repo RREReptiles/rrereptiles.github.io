@@ -282,6 +282,7 @@
             normalizeCartAgainstCatalog();
             renderProducts(products);
             renderCart();
+            handleStorefrontRequest();
             status.hidden = true;
         } catch (error) {
             console.error('[storefront] catalog error', error);
@@ -510,6 +511,22 @@
         setCheckoutStatus(hasItems
             ? 'Secure card and wallet payments are processed by Stripe.'
             : 'Products will become purchasable as their shipping details are verified.');
+    }
+
+
+    function handleStorefrontRequest() {
+        const params = new URLSearchParams(window.location.search);
+        const requestedItemId = Number(params.get('add'));
+        const shouldOpenCart = params.get('cart') === 'open' || Number.isInteger(requestedItemId);
+
+        if (Number.isInteger(requestedItemId)) addToCart(requestedItemId);
+        else if (shouldOpenCart) openCart();
+
+        if (!shouldOpenCart) return;
+        params.delete('add');
+        params.delete('cart');
+        const query = params.toString();
+        window.history.replaceState({}, '', `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash}`);
     }
 
     function beginCheckout() {

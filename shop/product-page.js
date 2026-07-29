@@ -5,6 +5,10 @@
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_w1szxATkVRFs2JBQOyG8rg_ULipgOPv";
     const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
+    function textValue(value) {
+        return String(value ?? '').trim();
+    }
+
     function isLocalPickupOnly(product) {
         return product?.local_pickup_only === true || product?.store_category === 'feeders';
     }
@@ -14,9 +18,16 @@
     }
 
     function productPrice(product) {
-        const display = String(product.display_price_text || '').trim();
+        const display = textValue(product.display_price_text);
         if (display) return display.replace(/\.00(?=\s|$)/, '');
         return currency.format(Number(product.price || 0));
+    }
+
+    function setVisibleText(element, value) {
+        if (!element) return;
+        const text = textValue(value);
+        element.textContent = text;
+        element.hidden = !text;
     }
 
     function setAction(action, text, href = '') {
@@ -29,33 +40,75 @@
         }
     }
 
-    function applyProduct(product) {
+    function prepareDescriptionLayout() {
+        const copy = document.querySelector('.product-detail-copy');
+        const legacyLead = copy?.querySelector('.lead');
+        const legacyNotice = copy?.querySelector('[data-product-notice]');
+        let shortDescription = copy?.querySelector('[data-product-short-description]');
+        let description = copy?.querySelector('[data-product-description]');
+        let fulfillment = copy?.querySelector('[data-product-fulfillment]');
+
+        if (!description && legacyNotice) {
+            description = legacyNotice;
+            description.removeAttribute('data-product-notice');
+            description.setAttribute('data-product-description', '');
+            const fallback = textValue(legacyLead?.textContent)
+                || textValue(document.querySelector('meta[name="description"]')?.content);
+            setVisibleText(description, fallback);
+        }
+
+        if (!shortDescription && legacyLead) {
+            shortDescription = legacyLead;
+            shortDescription.setAttribute('data-product-short-description', '');
+            shortDescription.hidden = true;
+        }
+
+        if (!fulfillment && description) {
+            fulfillment = document.createElement('p');
+            fulfillment.className = 'product-fulfillment';
+            fulfillment.setAttribute('data-product-fulfillment', '');
+            fulfillment.hidden = true;
+            description.insertAdjacentElement('afterend', fulfillment);
+        }
+
+        return { shortDescription, description, fulfillment };
+    }
+
+    function applyProduct(product, layout) {
         const action = document.querySelector('[data-product-action]');
         const price = document.querySelector('[data-product-price]');
         const stock = document.querySelector('[data-product-stock]');
-        const notice = document.querySelector('[data-product-notice]');
-        if (!action || !price || !stock || !notice) return;
+        const { shortDescription, description, fulfillment } = layout;
+        if (!action || !price || !stock || !description) return;
+
+        const fullDescription = textValue(product.description);
+        const shortCopy = textValue(product.short_description);
+        const fallbackDescription = textValue(description.textContent)
+            || textValue(document.querySelector('meta[name="description"]')?.content);
+
+        setVisibleText(description, fullDescription || fallbackDescription);
+        setVisibleText(shortDescription, shortCopy && shortCopy !== fullDescription ? shortCopy : '');
 
         price.textContent = productPrice(product);
         stock.textContent = product.in_stock ? 'In stock' : 'Out of stock';
         stock.classList.toggle('available', Boolean(product.in_stock));
 
         if (!product.in_stock) {
-            notice.innerHTML = '<strong>Currently unavailable.</strong> Our inventory system reports this item as out of stock.';
+            setVisibleText(fulfillment, '');
             setAction(action, 'Out of Stock');
             return;
         }
 
         if (purchaseMode(product) === 'checkout') {
-            notice.innerHTML = '<strong>Online checkout available.</strong> Add to Cart uses the original storefront cart and verifies current quantity limits.';
+            setVisibleText(fulfillment, '');
             setAction(action, 'Add to Cart', `/?add=${encodeURIComponent(product.item_id)}#shop`);
             return;
         }
 
         if (isLocalPickupOnly(product)) {
-            notice.innerHTML = '<strong>Colorado local pickup only.</strong> Use Inquire to confirm availability, quantity, pricing, and pickup arrangements.';
+            setVisibleText(fulfillment, 'Colorado local pickup only. Contact us to arrange pickup.');
         } else {
-            notice.innerHTML = '<strong>Contact to order.</strong> Availability and fulfillment will be confirmed before payment.';
+            setVisibleText(fulfillment, 'Contact us to confirm availability and ordering details.');
         }
         setAction(
             action,
@@ -65,6 +118,7 @@
     }
 
     async function init() {
+        const layout = prepareDescriptionLayout();
         const itemId = Number(document.body.dataset.storefrontItemId);
         if (!Number.isInteger(itemId) || itemId <= 0) return;
 
@@ -81,7 +135,7 @@
             if (!response.ok || !Array.isArray(products)) throw new Error('Catalog response was invalid.');
             const product = products.find(row => Number(row.item_id) === itemId);
             if (!product) throw new Error('Product is no longer published.');
-            applyProduct(product);
+            applyProduct(product, layout);
         } catch (error) {
             console.error('[product-page] catalog error', error);
         }

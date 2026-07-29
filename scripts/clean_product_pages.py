@@ -3,11 +3,13 @@
 
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PRODUCTS_DIR = ROOT / "products"
+PRODUCT_PAGE_JS = ROOT / "shop" / "product-page.js"
 
 PUBLIC_COPY_REPLACEMENTS = (
     ("← Back to the original Shop tab", "← Back to Shop"),
@@ -134,7 +136,6 @@ def clean_product_page(path: Path) -> bool:
     text = preserve_hidden_item_id(text, path)
     text = install_full_site_shell(text, path)
 
-    # Seller, location, and product ID are internal details and should not be shown.
     text = re.sub(
         r'\s*<dl class="details-list">.*?</dl>',
         "",
@@ -142,8 +143,6 @@ def clean_product_page(path: Path) -> bool:
         count=1,
         flags=re.DOTALL | re.IGNORECASE,
     )
-
-    # Remove the generic explanatory card beneath every product.
     text = re.sub(
         r'\s*<section class="content-panel">\s*<h2>Ordering.*?</section>',
         "",
@@ -157,6 +156,61 @@ def clean_product_page(path: Path) -> bool:
 
     if text != original:
         path.write_text(text, encoding="utf-8")
+        return True
+    return False
+
+
+def patch_product_script_shell() -> bool:
+    text = PRODUCT_PAGE_JS.read_text(encoding="utf-8")
+    original = text
+
+    if "function renderSiteShell()" not in text:
+        shell_script = f"""
+    const SITE_HEADER = {json.dumps(FULL_HEADER)};
+    const SITE_FOOTER = {json.dumps(FULL_FOOTER)};
+
+    function renderSiteShell() {{
+        const header = document.querySelector('body > header');
+        const footer = document.querySelector('body > footer');
+        if (header) header.outerHTML = SITE_HEADER;
+        if (footer) footer.outerHTML = SITE_FOOTER;
+
+        const hamburger = document.getElementById('hamburger');
+        const mobileNav = document.getElementById('mobileNav');
+        if (!hamburger || !mobileNav) return;
+
+        function setOpen(open) {{
+            hamburger.classList.toggle('open', open);
+            mobileNav.classList.toggle('show', open);
+            hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
+        }}
+
+        hamburger.addEventListener('click', () => {{
+            setOpen(!mobileNav.classList.contains('show'));
+        }});
+        mobileNav.querySelectorAll('a').forEach(link => {{
+            link.addEventListener('click', () => setOpen(false));
+        }});
+        document.addEventListener('keydown', event => {{
+            if (event.key === 'Escape') setOpen(false);
+        }});
+    }}
+
+"""
+        marker = "    function textValue(value) {"
+        if marker not in text:
+            raise RuntimeError("Could not locate the product-page script insertion point")
+        text = text.replace(marker, shell_script + marker, 1)
+
+    if "renderSiteShell();" not in text:
+        marker = "    async function init() {\n        const layout = prepareDescriptionLayout();"
+        replacement = "    async function init() {\n        renderSiteShell();\n        const layout = prepareDescriptionLayout();"
+        if marker not in text:
+            raise RuntimeError("Could not connect the product-page site shell")
+        text = text.replace(marker, replacement, 1)
+
+    if text != original:
+        PRODUCT_PAGE_JS.write_text(text, encoding="utf-8")
         return True
     return False
 
@@ -229,13 +283,17 @@ def validate() -> None:
 
     site_shell = ROOT / "shop" / "site-shell.css"
     seo_css = ROOT / "shop" / "seo.css"
-    product_script = ROOT / "shop" / "product-page.js"
     if not site_shell.exists():
         failures.append("missing shared site shell stylesheet")
     if not seo_css.exists() or '@import url("/shop/site-shell.css");' not in seo_css.read_text(encoding="utf-8"):
         failures.append("product stylesheet does not load the shared site shell")
-    if not product_script.exists() or "renderSiteShell();" not in product_script.read_text(encoding="utf-8"):
-        failures.append("product script does not install the shared site shell")
+    if not PRODUCT_PAGE_JS.exists():
+        failures.append("missing product-page script")
+    else:
+        product_script = PRODUCT_PAGE_JS.read_text(encoding="utf-8")
+        for marker in ("function renderSiteShell()", "renderSiteShell();", "SITE_HEADER", "SITE_FOOTER"):
+            if marker not in product_script:
+                failures.append(f"product script is missing {marker}")
 
     if failures:
         raise RuntimeError("Product-page cleanup failed: " + "; ".join(failures))
@@ -243,11 +301,13 @@ def validate() -> None:
 
 def main() -> None:
     changed_pages = sum(clean_product_page(path) for path in PRODUCTS_DIR.glob("*.html"))
+    changed_script = patch_product_script_shell()
     changed_supporting = clean_supporting_copy()
     validate()
     print(
-        f"Cleaned customer-facing product details on {changed_pages} product pages "
-        f"and {changed_supporting} supporting files."
+        f"Cleaned customer-facing product details on {changed_pages} product pages, "
+        f"updated the product shell script={changed_script}, and changed "
+        f"{changed_supporting} supporting files."
     )
 
 

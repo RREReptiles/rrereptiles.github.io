@@ -36,7 +36,7 @@
         const display = String(product.display_price_text || '').trim();
         if (!display) return '';
 
-        // A plain stored amount becomes stale when ReptiTrax changes the price.
+        // A plain stored amount becomes stale when our inventory system changes the price.
         // Keep only genuinely custom labels such as ranges or "starting at" text.
         const isSingleAmount = /^\$?\s*\d[\d,]*(?:\.\d{1,2})?\s*$/.test(display);
         return isSingleAmount ? '' : display.replace(/\.00(?=\s|$)/g, '');

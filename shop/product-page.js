@@ -41,7 +41,7 @@
         stock.classList.toggle('available', Boolean(product.in_stock));
 
         if (!product.in_stock) {
-            notice.innerHTML = '<strong>Currently unavailable.</strong> ReptiTrax reports this item as out of stock.';
+            notice.innerHTML = '<strong>Currently unavailable.</strong> Our inventory system reports this item as out of stock.';
             setAction(action, 'Out of Stock');
             return;
         }

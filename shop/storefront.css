@@ -149,7 +149,7 @@
     background: var(--light-gray);
 }
 
-/* Inventory items without a ReptiTrax photo use the business logo until a photo is supplied. */
+/* Inventory items without a our inventory system photo use the business logo until a photo is supplied. */
 #page-shop .product-card[data-storefront-item-id] > div.product-img {
     background-color: #e3dcc9;
     background-image: url("../images/Logo.svg");

@@ -6,6 +6,7 @@ on:
       - main
       - agent/seo-optimization
       - agent/fix-seo-integration
+      - agent/scrub-private-backend-name
   pull_request:
     branches:
       - main
@@ -39,10 +40,11 @@ jobs:
         run: |
           python scripts/build_seo_integrated.py
           python scripts/postprocess_seo_integration.py
+          python scripts/scrub_private_backend_name.py
 
       - name: Validate output
         run: |
-          python -m py_compile scripts/build_seo.py scripts/build_seo_integrated.py scripts/postprocess_seo_integration.py
+          python -m py_compile scripts/build_seo.py scripts/build_seo_integrated.py scripts/postprocess_seo_integration.py scripts/scrub_private_backend_name.py
           node --check shop/storefront.js
           node --check shop/product-page.js
           python - <<'PY'
@@ -95,7 +97,7 @@ jobs:
           ]
           missing_bindings = [value for value in required_bindings if value not in sample]
           if missing_bindings:
-              raise SystemExit(f'Product page is missing live ReptiTrax bindings: {missing_bindings}')
+              raise SystemExit(f'Product page is missing live storefront bindings: {missing_bindings}')
 
           storefront = Path('shop/storefront.js').read_text(encoding='utf-8')
           if "requestedValue === null ? null" not in storefront:
@@ -104,6 +106,23 @@ jobs:
           index = Path('index.html').read_text(encoding='utf-8')
           if 'href="/#shop"' not in index or 'href="/#faq"' not in index:
               raise SystemExit('Original single-page navigation was not restored')
+
+          private_name = ('Repti' + 'Trax').casefold()
+          text_suffixes = {'.css', '.html', '.js', '.json', '.md', '.py', '.txt', '.xml', '.yaml', '.yml'}
+          leaked = []
+          for path in Path('.').rglob('*'):
+              if not path.is_file() or '.git' in path.parts:
+                  continue
+              if path.suffix.lower() not in text_suffixes and path.name not in {'CNAME', 'robots.txt'}:
+                  continue
+              try:
+                  content = path.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+              if private_name in content.casefold():
+                  leaked.append(str(path))
+          if leaked:
+              raise SystemExit(f'Private backend naming remains in public source: {leaked}')
 
           print(f'Validated {len(pages)} integrated product pages')
           PY

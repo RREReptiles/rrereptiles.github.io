@@ -2,7 +2,7 @@
 
 > Colorado reptile store and ethical breeder offering captive-bred reptiles, feeder insects, reptile supplies, aquatic plants, entomology art, and breeder-backed care information.
 
-## Original website sections
+## Website sections
 
 - Home: https://rrereptiles.com/#home
 - Shop: https://rrereptiles.com/#shop
@@ -45,4 +45,4 @@
 
 ## Content use notes
 
-The original rrereptiles.com page is the authoritative navigation experience. Product detail URLs hand Add to Cart requests back to the same live storefront cart. Product availability and prices can change.
+rrereptiles.com is the primary website. Product detail URLs hand Add to Cart requests back to the same live storefront cart. Product availability and prices can change.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Apply live our inventory system behavior to generated product detail pages."""
+"""Apply live storefront behavior to generated product detail pages."""
 
 from __future__ import annotations
 

@@ -38,7 +38,7 @@ def replacements() -> list[tuple[str, str]]:
         (f"{name} inventory", "store inventory"),
         (f"{name} bindings", "storefront bindings"),
         (name, "our inventory system"),
-        ("Apply live our inventory system behavior", "Apply live storefront behavior"),
+        ("Apply live storefront behavior", "Apply live storefront behavior"),
     ]
 
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Use the product description as the highlighted product-page copy."""
+"""Use the catalog product description as the highlighted product-page copy."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ STOREFRONT_JS = ROOT / "shop" / "storefront.js"
 PRODUCT_PAGE_JS = ROOT / "shop" / "product-page.js"
 SEO_CSS = ROOT / "shop" / "seo.css"
 BUSINESS_EMAIL = "rrereptiles@gmail.com"
-ASSET_VERSION = "20260729-1"
+ASSET_VERSION = "20260729-2"
 
 
 def read_storefront_config() -> tuple[str, str]:
@@ -69,18 +69,52 @@ def write_product_script() -> None:
         }}
     }}
 
-    function applyProduct(product) {{
+    function prepareDescriptionLayout() {{
+        const copy = document.querySelector('.product-detail-copy');
+        const legacyLead = copy?.querySelector('.lead');
+        const legacyNotice = copy?.querySelector('[data-product-notice]');
+        let shortDescription = copy?.querySelector('[data-product-short-description]');
+        let description = copy?.querySelector('[data-product-description]');
+        let fulfillment = copy?.querySelector('[data-product-fulfillment]');
+
+        if (!description && legacyNotice) {{
+            description = legacyNotice;
+            description.removeAttribute('data-product-notice');
+            description.setAttribute('data-product-description', '');
+            const fallback = textValue(legacyLead?.textContent)
+                || textValue(document.querySelector('meta[name=\"description\"]')?.content);
+            setVisibleText(description, fallback);
+        }}
+
+        if (!shortDescription && legacyLead) {{
+            shortDescription = legacyLead;
+            shortDescription.setAttribute('data-product-short-description', '');
+            shortDescription.hidden = true;
+        }}
+
+        if (!fulfillment && description) {{
+            fulfillment = document.createElement('p');
+            fulfillment.className = 'product-fulfillment';
+            fulfillment.setAttribute('data-product-fulfillment', '');
+            fulfillment.hidden = true;
+            description.insertAdjacentElement('afterend', fulfillment);
+        }}
+
+        return {{ shortDescription, description, fulfillment }};
+    }}
+
+    function applyProduct(product, layout) {{
         const action = document.querySelector('[data-product-action]');
         const price = document.querySelector('[data-product-price]');
         const stock = document.querySelector('[data-product-stock]');
-        const shortDescription = document.querySelector('[data-product-short-description]');
-        const description = document.querySelector('[data-product-description]');
-        const fulfillment = document.querySelector('[data-product-fulfillment]');
+        const {{ shortDescription, description, fulfillment }} = layout;
         if (!action || !price || !stock || !description) return;
 
         const fullDescription = textValue(product.description);
         const shortCopy = textValue(product.short_description);
-        const fallbackDescription = textValue(description.textContent);
+        const fallbackDescription = textValue(description.textContent)
+            || textValue(document.querySelector('meta[name=\"description\"]')?.content);
+
         setVisibleText(description, fullDescription || fallbackDescription);
         setVisibleText(shortDescription, shortCopy && shortCopy !== fullDescription ? shortCopy : '');
 
@@ -113,6 +147,7 @@ def write_product_script() -> None:
     }}
 
     async function init() {{
+        const layout = prepareDescriptionLayout();
         const itemId = Number(document.body.dataset.storefrontItemId);
         if (!Number.isInteger(itemId) || itemId <= 0) return;
 
@@ -129,7 +164,7 @@ def write_product_script() -> None:
             if (!response.ok || !Array.isArray(products)) throw new Error('Catalog response was invalid.');
             const product = products.find(row => Number(row.item_id) === itemId);
             if (!product) throw new Error('Product is no longer published.');
-            applyProduct(product);
+            applyProduct(product, layout);
         }} catch (error) {{
             console.error('[product-page] catalog error', error);
         }}
@@ -150,7 +185,6 @@ def current_description(text: str) -> str:
     )
     if bound:
         return bound.group(1).strip()
-
     lead = re.search(r'<p class="lead"[^>]*>(.*?)</p>', text, flags=re.DOTALL | re.IGNORECASE)
     return lead.group(1).strip() if lead else ""
 
@@ -163,7 +197,6 @@ def current_fulfillment(text: str) -> str:
     )
     if bound:
         return bound.group(1).strip()
-
     notice = re.search(
         r'<p class="notice"[^>]*data-product-notice[^>]*>(.*?)</p>',
         text,
@@ -172,8 +205,8 @@ def current_fulfillment(text: str) -> str:
     if not notice:
         return ""
     value = notice.group(1).strip()
-    lowered = re.sub(r"<[^>]+>", " ", value).casefold()
-    if "local pickup only" in lowered or "contact to order" in lowered:
+    plain = re.sub(r"<[^>]+>", " ", value).casefold()
+    if "local pickup only" in plain or "contact to order" in plain:
         return value
     return ""
 
@@ -184,10 +217,9 @@ def patch_product_page(path: Path) -> bool:
     description = current_description(text)
     fulfillment = current_fulfillment(text)
 
-    script_tag = f'<script src="/shop/product-page.js?v={ASSET_VERSION}" defer></script>'
     text = re.sub(
         r'<script src="/shop/product-page\.js(?:\?[^\"]*)?" defer></script>',
-        script_tag,
+        f'<script src="/shop/product-page.js?v={ASSET_VERSION}" defer></script>',
         text,
         count=1,
     )
@@ -211,14 +243,13 @@ def patch_product_page(path: Path) -> bool:
         else '<p class="product-fulfillment" data-product-fulfillment hidden></p>'
     )
     replacement = description_tag + "\n      " + fulfillment_tag
-
-    if re.search(
-        r'<p class="notice"[^>]*(?:data-product-notice|data-product-description)[^>]*>.*?</p>(?:\s*<p class="product-fulfillment"[^>]*>.*?</p>)?',
-        text,
-        flags=re.DOTALL | re.IGNORECASE,
-    ):
+    notice_pattern = (
+        r'<p class="notice"[^>]*(?:data-product-notice|data-product-description)[^>]*>.*?</p>'
+        r'(?:\s*<p class="product-fulfillment"[^>]*>.*?</p>)?'
+    )
+    if re.search(notice_pattern, text, flags=re.DOTALL | re.IGNORECASE):
         text = re.sub(
-            r'<p class="notice"[^>]*(?:data-product-notice|data-product-description)[^>]*>.*?</p>(?:\s*<p class="product-fulfillment"[^>]*>.*?</p>)?',
+            notice_pattern,
             replacement,
             text,
             count=1,
@@ -227,14 +258,16 @@ def patch_product_page(path: Path) -> bool:
     else:
         text = text.replace('<div class="price-line">', replacement + '\n      <div class="price-line">', 1)
 
-    stale_phrases = (
-        "ReptiTrax reports this item as out of stock.",
-        "Our inventory system reports this item as out of stock.",
-        "Currently unavailable.",
-        "Add to Cart uses the original storefront cart and verifies current quantity limits.",
+    text = re.sub(
+        r'<strong>Currently unavailable\.</strong>.*?out of stock\.',
+        "",
+        text,
+        flags=re.IGNORECASE,
     )
-    for phrase in stale_phrases:
-        text = text.replace(phrase, "")
+    text = text.replace(
+        "Add to Cart uses the original storefront cart and verifies current quantity limits.",
+        "",
+    )
 
     if text != original:
         path.write_text(text, encoding="utf-8")
@@ -245,11 +278,14 @@ def patch_product_page(path: Path) -> bool:
 def patch_css() -> bool:
     text = SEO_CSS.read_text(encoding="utf-8")
     original = text
-    rule = ".product-fulfillment { color: var(--muted); font-size: .92rem; margin: .35rem 0 .2rem; }\n.notice[hidden], .product-fulfillment[hidden], .lead[hidden] { display: none; }"
+    rules = (
+        ".product-fulfillment { color: var(--muted); font-size: .92rem; margin: .35rem 0 .2rem; }\n"
+        ".notice[hidden], .product-fulfillment[hidden], .lead[hidden] { display: none; }"
+    )
     if ".product-fulfillment {" not in text:
         text = text.replace(
             ".notice { background: #f7f3e9; border-left: 4px solid var(--accent); padding: .85rem 1rem; border-radius: 7px; }",
-            ".notice { background: #f7f3e9; border-left: 4px solid var(--accent); padding: .85rem 1rem; border-radius: 7px; }\n" + rule,
+            ".notice { background: #f7f3e9; border-left: 4px solid var(--accent); padding: .85rem 1rem; border-radius: 7px; }\n" + rules,
             1,
         )
     if text != original:
@@ -264,21 +300,19 @@ def validate() -> None:
         raise RuntimeError("No generated product pages were found.")
 
     forbidden = (
-        "ReptiTrax reports this item as out of stock",
-        "inventory system reports this item as out of stock",
+        "reports this item as out of stock",
         "Currently unavailable.",
         "data-product-notice",
     )
     failures: list[str] = []
     for path in pages:
         text = path.read_text(encoding="utf-8")
-        required = (
+        for value in (
             f'/shop/product-page.js?v={ASSET_VERSION}',
             "data-product-short-description",
             "data-product-description",
             "data-product-fulfillment",
-        )
-        for value in required:
+        ):
             if value not in text:
                 failures.append(f"{path.name}: missing {value}")
         for value in forbidden:

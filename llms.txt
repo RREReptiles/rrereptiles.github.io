@@ -2,28 +2,22 @@
 
 > Colorado reptile store and ethical breeder offering captive-bred reptiles, feeder insects, reptile supplies, aquatic plants, entomology art, and breeder-backed care information.
 
-## Official information
+## Original website sections
 
-- Website: https://rrereptiles.com/
-- Shop: https://rrereptiles.com/shop/
-- Care guides: https://rrereptiles.com/care-guides/
-- Contact: https://rrereptiles.com/contact.html
-- Shipping and local pickup: https://rrereptiles.com/shipping.html
+- Home: https://rrereptiles.com/#home
+- Shop: https://rrereptiles.com/#shop
+- About: https://rrereptiles.com/#about
+- Social profiles: https://rrereptiles.com/#socials
+- ReptiLog: https://rrereptiles.com/#reptilog
+- Care guides: https://rrereptiles.com/#care
+- Shipping, pickup, contact, and policies: https://rrereptiles.com/#faq
 - Email: rrereptiles@gmail.com
 - Phone: 970-400-1278
-- Service area: Colorado and the United States for eligible shippable products
 - Local pickup: By prior arrangement; no public walk-in storefront
 
-## Shop categories
+## Current product detail pages
 
-- [Reptiles](https://rrereptiles.com/shop/reptiles.html): Browse available captive-bred geckos, skinks, lizards, and snakes from Red Rocks Exotic Reptiles, a Colorado reptile breeder and online store.
-- [Reptile Supplies](https://rrereptiles.com/shop/reptile-supplies.html): Shop reptile husbandry supplies, custom hides, feeding ledges, bowls, supplements, enclosure accessories, and 3D-printed reptile products.
-- [Feeder Insects](https://rrereptiles.com/shop/feeders.html): Check local availability for crickets, mealworms, superworms, dubia roaches, fruit fly cultures, isopods, and other reptile feeders. Local pickup only.
-- [Aquatic Plants](https://rrereptiles.com/shop/aquatic-plants.html): Shop fully submerged-grown freshwater aquarium plants, including swords, mosses, stem plants, floaters, and other aquatic plants from Colorado.
-- [Entomology Art](https://rrereptiles.com/shop/entomology-art.html): Browse handcrafted pinned insect displays, floating frames, shadow boxes, and custom entomology art from Red Rocks Exotic Reptiles.
-
-## Current product pages
-
+- [Coconut Hide](https://rrereptiles.com/products/coconut-hide-13.html): Reptile keeping supply from Red Rocks Exotic Reptiles.
 - [Potato](https://rrereptiles.com/products/potato-crested-gecko.html): Crested Gecko (Correlophus ciliatus)
 - [Juvenile Pictus Geckos](https://rrereptiles.com/products/juvenile-pictus-geckos.html): Paroedura pictus
 - [Bee Pollen](https://rrereptiles.com/products/bee-pollen-26.html): Reptile food or supplement from Red Rocks Exotic Reptiles.
@@ -46,10 +40,9 @@
 - [12" Metal Tongs](https://rrereptiles.com/products/l-metal-tongs-74.html): Reptile keeping supply from Red Rocks Exotic Reptiles.
 - [8" Metal Tongs](https://rrereptiles.com/products/s-metal-tongs-27.html): Reptile keeping supply from Red Rocks Exotic Reptiles.
 - [Coco Brick](https://rrereptiles.com/products/coco-brick-33.html): Reptile keeping supply from Red Rocks Exotic Reptiles.
-- [Coconut Hide](https://rrereptiles.com/products/coconut-hide-13.html): Reptile keeping supply from Red Rocks Exotic Reptiles.
 - [Floor Bowl](https://rrereptiles.com/products/floor-bowl-4.html): Reptile keeping supply from Red Rocks Exotic Reptiles.
 - [Magnetic Food Ledge](https://rrereptiles.com/products/food-ledge-magnetic-51.html): Reptile keeping supply from Red Rocks Exotic Reptiles.
 
 ## Content use notes
 
-Product availability and prices can change. Use each product page and the secure storefront as the current source. Care guides are general educational references and are not veterinary diagnosis.
+The original rrereptiles.com page is the authoritative navigation experience. Product detail URLs hand Add to Cart requests back to the same live ReptiTrax storefront cart. Product availability and prices can change.

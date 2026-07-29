@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - agent/seo-optimization
+      - agent/fix-seo-integration
   pull_request:
     branches:
       - main
@@ -34,33 +35,16 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install generator files when needed
+      - name: Generate integrated SEO pages
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          import base64
-          import tarfile
-
-          parts = sorted(Path('.seo-bootstrap').glob('part-*'))
-          if parts:
-              payload = ''.join(path.read_text(encoding='ascii') for path in parts)
-              archive = Path('/tmp/seo-payload.tgz')
-              archive.write_bytes(base64.b64decode(payload, validate=True))
-              with tarfile.open(archive, 'r:gz') as tar:
-                  tar.extractall('.')
-          elif not Path('scripts/build_seo.py').exists():
-              raise SystemExit('SEO generator and bootstrap payload are both missing')
-          PY
-          rm -rf .seo-bootstrap
-          rm -f .github/workflows/build-seo.yml
-
-      - name: Generate crawlable pages
-        run: python scripts/build_seo.py
+          python scripts/build_seo_integrated.py
+          python scripts/postprocess_seo_integration.py
 
       - name: Validate output
         run: |
-          python -m py_compile scripts/build_seo.py
+          python -m py_compile scripts/build_seo.py scripts/build_seo_integrated.py scripts/postprocess_seo_integration.py
           node --check shop/storefront.js
+          node --check shop/product-page.js
           python - <<'PY'
           from pathlib import Path
           import xml.etree.ElementTree as ET
@@ -69,7 +53,18 @@ jobs:
           pages = list(Path('products').glob('*.html'))
           if not pages:
               raise SystemExit('No product pages generated')
+
           required = [
+              Path('index.html'),
+              Path('shop/product-page.js'),
+              Path('llms.txt'),
+              Path('sitemap.xml'),
+          ]
+          missing = [str(path) for path in required if not path.exists()]
+          if missing:
+              raise SystemExit(f'Missing generated files: {missing}')
+
+          obsolete = [
               Path('shop/index.html'),
               Path('shop/reptiles.html'),
               Path('shop/reptile-supplies.html'),
@@ -80,12 +75,37 @@ jobs:
               Path('about.html'),
               Path('contact.html'),
               Path('shipping.html'),
-              Path('llms.txt'),
           ]
-          missing = [str(path) for path in required if not path.exists()]
-          if missing:
-              raise SystemExit(f'Missing generated pages: {missing}')
-          print(f'Generated {len(pages)} product pages')
+          remaining = [str(path) for path in obsolete if path.exists()]
+          if remaining:
+              raise SystemExit(f'Duplicate SEO shell pages remain: {remaining}')
+
+          sample = pages[0].read_text(encoding='utf-8')
+          if 'Shop this product' in sample or 'Ask about availability' in sample:
+              raise SystemExit('Legacy product-page button labels remain')
+          if 'class="breadcrumbs"' in sample:
+              raise SystemExit('Visible breadcrumb shell remains on product pages')
+          required_bindings = [
+              'src="/shop/product-page.js"',
+              'data-storefront-item-id=',
+              'data-product-action',
+              'data-product-price',
+              'data-product-stock',
+              'data-product-notice',
+          ]
+          missing_bindings = [value for value in required_bindings if value not in sample]
+          if missing_bindings:
+              raise SystemExit(f'Product page is missing live ReptiTrax bindings: {missing_bindings}')
+
+          storefront = Path('shop/storefront.js').read_text(encoding='utf-8')
+          if "requestedValue === null ? null" not in storefront:
+              raise SystemExit('Product-to-cart handoff still treats a missing item ID as zero')
+
+          index = Path('index.html').read_text(encoding='utf-8')
+          if 'href="/#shop"' not in index or 'href="/#faq"' not in index:
+              raise SystemExit('Original single-page navigation was not restored')
+
+          print(f'Validated {len(pages)} integrated product pages')
           PY
 
       - name: Commit refreshed SEO pages
@@ -98,5 +118,5 @@ jobs:
             echo "SEO pages are already current."
             exit 0
           fi
-          git commit -m "Refresh crawlable storefront pages"
+          git commit -m "Refresh integrated storefront SEO"
           git push origin "HEAD:${TARGET_BRANCH}"

@@ -5,6 +5,37 @@
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_w1szxATkVRFs2JBQOyG8rg_ULipgOPv";
     const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
+
+    const SITE_HEADER = "<header class=\"site-header\">\n    <div class=\"nav-container\">\n        <a href=\"/#home\" class=\"logo\" aria-label=\"Go to Home page\">\n            <div class=\"logo-icon\"><img src=\"/images/Logo.svg\" alt=\"RRE Logo\"></div>\n            <span><span class=\"accent\">Red Rocks</span> Exotic Reptiles</span>\n        </a>\n        <nav class=\"nav-links\" aria-label=\"Primary navigation\">\n            <a href=\"/#home\">Home</a>\n            <a href=\"/#shop\" class=\"active\" aria-current=\"page\">Shop</a>\n            <a href=\"/#about\">About Us</a>\n            <a href=\"/#socials\">Socials</a>\n            <a href=\"/#reptilog\">ReptiLog</a>\n            <a href=\"/#care\">Care Guides</a>\n            <a href=\"/#faq\">Shipping/FAQs</a>\n        </nav>\n        <button class=\"hamburger\" id=\"hamburger\" type=\"button\" aria-label=\"Toggle navigation\" aria-expanded=\"false\" aria-controls=\"mobileNav\">\n            <span></span><span></span><span></span>\n        </button>\n    </div>\n    <nav class=\"mobile-nav\" id=\"mobileNav\" aria-label=\"Mobile navigation\">\n        <a href=\"/#home\">Home</a>\n        <a href=\"/#shop\" class=\"active\" aria-current=\"page\">Shop</a>\n        <a href=\"/#about\">About Us</a>\n        <a href=\"/#socials\">Socials</a>\n        <a href=\"/#reptilog\">ReptiLog</a>\n        <a href=\"/#care\">Care Guides</a>\n        <a href=\"/#faq\">Shipping/FAQs</a>\n    </nav>\n</header>";
+    const SITE_FOOTER = "<footer class=\"site-footer\">\n    <div class=\"footer-grid\">\n        <div>\n            <h4 style=\"color:var(--accent);\">Red Rocks Exotic Reptiles</h4>\n            <p>Colorado's source for ethically bred reptiles, aquatic plants, and custom reptile goods. Woman, Veteran, Hispanic &amp; Native American owned.</p>\n        </div>\n        <div>\n            <h4>Quick Links</h4>\n            <a href=\"/#home\">Home</a><br>\n            <a href=\"/#shop\">Shop</a><br>\n            <a href=\"/#about\">About Us</a><br>\n            <a href=\"/#care\">Care Guides</a><br>\n            <a href=\"/#faq\">Shipping/FAQs</a><br>\n            <a href=\"/#faq\">Store Policies</a><br>\n            <a href=\"/#faq\">Privacy Policy</a>\n        </div>\n        <div>\n            <h4>Contact Us</h4>\n            <p>\n                <a href=\"mailto:rrereptiles@gmail.com\">rrereptiles@gmail.com</a><br>\n                <a href=\"tel:9704001278\">970-400-1278</a>\n            </p>\n        </div>\n        <div>\n            <h4>Follow Us</h4>\n            <a href=\"https://www.instagram.com/red_rocks_reptiles/\" target=\"_blank\" rel=\"noopener\">Instagram</a><br>\n            <a href=\"https://www.facebook.com/RREReptiles\" target=\"_blank\" rel=\"noopener\">Facebook</a><br>\n            <a href=\"https://www.tiktok.com/@redrocks_exotic_reptiles\" target=\"_blank\" rel=\"noopener\">TikTok</a><br>\n            <a href=\"https://www.youtube.com/@RedRocksExoticReptiles\" target=\"_blank\" rel=\"noopener\">YouTube</a><br>\n            <a href=\"https://www.morphmarket.com/stores/red_rocks_exotic_reptiles/\" target=\"_blank\" rel=\"noopener\">MorphMarket</a>\n        </div>\n    </div>\n    <div class=\"footer-bottom\">\n        <p>&copy; 2023&ndash;2026 Red Rocks Exotic Reptiles LLC. All rights reserved.</p>\n    </div>\n</footer>";
+
+    function renderSiteShell() {
+        const header = document.querySelector('body > header');
+        const footer = document.querySelector('body > footer');
+        if (header) header.outerHTML = SITE_HEADER;
+        if (footer) footer.outerHTML = SITE_FOOTER;
+
+        const hamburger = document.getElementById('hamburger');
+        const mobileNav = document.getElementById('mobileNav');
+        if (!hamburger || !mobileNav) return;
+
+        function setOpen(open) {
+            hamburger.classList.toggle('open', open);
+            mobileNav.classList.toggle('show', open);
+            hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
+        }
+
+        hamburger.addEventListener('click', () => {
+            setOpen(!mobileNav.classList.contains('show'));
+        });
+        mobileNav.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => setOpen(false));
+        });
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape') setOpen(false);
+        });
+    }
+
     function textValue(value) {
         return String(value ?? '').trim();
     }
@@ -118,6 +149,7 @@
     }
 
     async function init() {
+        renderSiteShell();
         const layout = prepareDescriptionLayout();
         const itemId = Number(document.body.dataset.storefrontItemId);
         if (!Number.isInteger(itemId) || itemId <= 0) return;

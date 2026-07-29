@@ -25,6 +25,7 @@ TEXT_SUFFIXES = {
 def replacements() -> list[tuple[str, str]]:
     name = PRIVATE_NAME
     return [
+        (f"Apply live {name} behavior", "Apply live storefront behavior"),
         (f"Your purchase has been recorded in {name}.", "Your order has been received and recorded."),
         (f"same live {name} inventory and cart", "same live store inventory and cart"),
         (f"same {name} inventory and cart", "same live store inventory and cart"),
@@ -37,6 +38,7 @@ def replacements() -> list[tuple[str, str]]:
         (f"{name} inventory", "store inventory"),
         (f"{name} bindings", "storefront bindings"),
         (name, "our inventory system"),
+        ("Apply live our inventory system behavior", "Apply live storefront behavior"),
     ]
 
 

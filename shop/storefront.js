@@ -68,6 +68,27 @@
         return product.image_url || 'images/Logo.svg';
     }
 
+    function productDetailUrl(product) {
+        const slug = String(product?.slug || `item-${product?.item_id || 'product'}`);
+        return `/products/${encodeURIComponent(slug)}.html`;
+    }
+
+    function syncProductDetailLink(card, product) {
+        if (!card || !product) return;
+        const title = card.querySelector('.product-info h3, h3');
+        if (!title) return;
+        let link = title.querySelector('a.storefront-product-link');
+        if (!link) {
+            link = document.createElement('a');
+            link.className = 'storefront-product-link';
+            link.textContent = title.textContent.trim();
+            title.replaceChildren(link);
+        }
+        link.href = productDetailUrl(product);
+        link.setAttribute('aria-label', `View details for ${product.public_name}`);
+    }
+
+
     function productPrice(product) {
         const display = String(product.display_price_text || '').trim();
         if (display) return display.replace(/\.00(?=\s|$)/, '');
@@ -278,6 +299,7 @@
     }
 
     function markCardAvailability(card, product = null) {
+        if (product) syncProductDetailLink(card, product);
         const info = card.querySelector('.product-info') || card;
         const price = info.querySelector('.price');
         if (price && product) price.textContent = productPrice(product);

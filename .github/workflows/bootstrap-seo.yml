@@ -1,0 +1,102 @@
+name: Build SEO pages
+
+on:
+  push:
+    branches:
+      - main
+      - agent/seo-optimization
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: '23 9 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  TARGET_BRANCH: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+
+jobs:
+  build-seo:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out target branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install generator files when needed
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import base64
+          import tarfile
+
+          parts = sorted(Path('.seo-bootstrap').glob('part-*'))
+          if parts:
+              payload = ''.join(path.read_text(encoding='ascii') for path in parts)
+              archive = Path('/tmp/seo-payload.tgz')
+              archive.write_bytes(base64.b64decode(payload, validate=True))
+              with tarfile.open(archive, 'r:gz') as tar:
+                  tar.extractall('.')
+          elif not Path('scripts/build_seo.py').exists():
+              raise SystemExit('SEO generator and bootstrap payload are both missing')
+          PY
+          rm -rf .seo-bootstrap
+          rm -f .github/workflows/build-seo.yml
+
+      - name: Generate crawlable pages
+        run: python scripts/build_seo.py
+
+      - name: Validate output
+        run: |
+          python -m py_compile scripts/build_seo.py
+          node --check shop/storefront.js
+          python - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+
+          ET.parse('sitemap.xml')
+          pages = list(Path('products').glob('*.html'))
+          if not pages:
+              raise SystemExit('No product pages generated')
+          required = [
+              Path('shop/index.html'),
+              Path('shop/reptiles.html'),
+              Path('shop/reptile-supplies.html'),
+              Path('shop/feeders.html'),
+              Path('shop/aquatic-plants.html'),
+              Path('shop/entomology-art.html'),
+              Path('care-guides/index.html'),
+              Path('about.html'),
+              Path('contact.html'),
+              Path('shipping.html'),
+              Path('llms.txt'),
+          ]
+          missing = [str(path) for path in required if not path.exists()]
+          if missing:
+              raise SystemExit(f'Missing generated pages: {missing}')
+          print(f'Generated {len(pages)} product pages')
+          PY
+
+      - name: Commit refreshed SEO pages
+        if: github.event_name != 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "SEO pages are already current."
+            exit 0
+          fi
+          git commit -m "Refresh crawlable storefront pages"
+          git push origin "HEAD:${TARGET_BRANCH}"

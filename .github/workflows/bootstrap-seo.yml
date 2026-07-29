@@ -8,6 +8,7 @@ on:
       - agent/fix-seo-integration
       - agent/scrub-private-backend-name
       - agent/clean-product-detail-pages
+      - agent/product-description-binding
   pull_request:
     branches:
       - main
@@ -42,11 +43,12 @@ jobs:
           python scripts/build_seo_integrated.py
           python scripts/postprocess_seo_integration.py
           python scripts/clean_product_pages.py
+          python scripts/wire_product_descriptions.py
           python scripts/scrub_private_backend_name.py
 
       - name: Validate output
         run: |
-          python -m py_compile scripts/build_seo.py scripts/build_seo_integrated.py scripts/postprocess_seo_integration.py scripts/clean_product_pages.py scripts/scrub_private_backend_name.py
+          python -m py_compile scripts/build_seo.py scripts/build_seo_integrated.py scripts/postprocess_seo_integration.py scripts/clean_product_pages.py scripts/wire_product_descriptions.py scripts/scrub_private_backend_name.py
           node --check shop/storefront.js
           node --check shop/product-page.js
           python - <<'PY'
@@ -91,12 +93,14 @@ jobs:
           if 'class="breadcrumbs"' in sample:
               raise SystemExit('Visible breadcrumb shell remains on product pages')
           required_bindings = [
-              'src="/shop/product-page.js"',
+              'src="/shop/product-page.js?v=',
               'data-storefront-item-id=',
               'data-product-action',
               'data-product-price',
               'data-product-stock',
-              'data-product-notice',
+              'data-product-short-description',
+              'data-product-description',
+              'data-product-fulfillment',
           ]
           missing_bindings = [value for value in required_bindings if value not in sample]
           if missing_bindings:
@@ -111,6 +115,10 @@ jobs:
               'Ordering through the original',
               'extension of the original website',
               'original Shop tab',
+              'ReptiTrax reports this item as out of stock',
+              'inventory system reports this item as out of stock',
+              'Currently unavailable.',
+              'data-product-notice',
           ]
           product_failures = []
           for page in pages:
@@ -122,6 +130,14 @@ jobs:
                       product_failures.append(f'{page}: contains {value}')
           if product_failures:
               raise SystemExit(f'Customer-facing product cleanup failed: {product_failures}')
+
+          product_script = Path('shop/product-page.js').read_text(encoding='utf-8')
+          for value in forbidden_product_copy[-4:]:
+              if value.casefold() in product_script.casefold():
+                  raise SystemExit(f'Product script contains stale copy: {value}')
+          for value in ('product.description', 'product.short_description', 'data-product-description'):
+              if value not in product_script:
+                  raise SystemExit(f'Product script is missing description binding: {value}')
 
           supporting_copy = '\n'.join([
               Path('index.html').read_text(encoding='utf-8'),

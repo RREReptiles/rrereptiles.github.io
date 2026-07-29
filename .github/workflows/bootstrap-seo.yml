@@ -7,6 +7,7 @@ on:
       - agent/seo-optimization
       - agent/fix-seo-integration
       - agent/scrub-private-backend-name
+      - agent/clean-product-detail-pages
   pull_request:
     branches:
       - main
@@ -40,15 +41,17 @@ jobs:
         run: |
           python scripts/build_seo_integrated.py
           python scripts/postprocess_seo_integration.py
+          python scripts/clean_product_pages.py
           python scripts/scrub_private_backend_name.py
 
       - name: Validate output
         run: |
-          python -m py_compile scripts/build_seo.py scripts/build_seo_integrated.py scripts/postprocess_seo_integration.py scripts/scrub_private_backend_name.py
+          python -m py_compile scripts/build_seo.py scripts/build_seo_integrated.py scripts/postprocess_seo_integration.py scripts/clean_product_pages.py scripts/scrub_private_backend_name.py
           node --check shop/storefront.js
           node --check shop/product-page.js
           python - <<'PY'
           from pathlib import Path
+          import re
           import xml.etree.ElementTree as ET
 
           ET.parse('sitemap.xml')
@@ -99,13 +102,41 @@ jobs:
           if missing_bindings:
               raise SystemExit(f'Product page is missing live storefront bindings: {missing_bindings}')
 
+          forbidden_product_copy = [
+              '<dl class="details-list">',
+              '<dt>Seller</dt>',
+              '<dt>Location</dt>',
+              '<dt>Product ID</dt>',
+              '<section class="content-panel">',
+              'Ordering through the original',
+              'extension of the original website',
+              'original Shop tab',
+          ]
+          product_failures = []
+          for page in pages:
+              content = page.read_text(encoding='utf-8')
+              if not re.search(r'<body[^>]*\bdata-storefront-item-id="\d+"', content):
+                  product_failures.append(f'{page}: missing hidden product ID binding')
+              for value in forbidden_product_copy:
+                  if value.casefold() in content.casefold():
+                      product_failures.append(f'{page}: contains {value}')
+          if product_failures:
+              raise SystemExit(f'Customer-facing product cleanup failed: {product_failures}')
+
+          supporting_copy = '\n'.join([
+              Path('index.html').read_text(encoding='utf-8'),
+              Path('llms.txt').read_text(encoding='utf-8'),
+          ]).casefold()
+          if 'original website' in supporting_copy:
+              raise SystemExit('Public website copy still contains original website wording')
+
           storefront = Path('shop/storefront.js').read_text(encoding='utf-8')
           if "requestedValue === null ? null" not in storefront:
               raise SystemExit('Product-to-cart handoff still treats a missing item ID as zero')
 
           index = Path('index.html').read_text(encoding='utf-8')
           if 'href="/#shop"' not in index or 'href="/#faq"' not in index:
-              raise SystemExit('Original single-page navigation was not restored')
+              raise SystemExit('Single-page navigation was not restored')
 
           private_name = ('Repti' + 'Trax').casefold()
           text_suffixes = {'.css', '.html', '.js', '.json', '.md', '.py', '.txt', '.xml', '.yaml', '.yml'}

@@ -1,24 +1,27 @@
-name: Bootstrap SEO generator
+name: Build SEO pages
 
 on:
   push:
     branches:
-      - agent/seo-optimization
       - main
+      - agent/seo-optimization
   pull_request:
     branches:
       - main
+  schedule:
+    - cron: '23 9 * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
 
+env:
+  TARGET_BRANCH: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+
 jobs:
-  bootstrap:
+  build-seo:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
-    env:
-      TARGET_BRANCH: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
     steps:
       - name: Check out target branch
         uses: actions/checkout@v4
@@ -31,7 +34,7 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install generator files
+      - name: Install generator files when needed
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -39,16 +42,17 @@ jobs:
           import tarfile
 
           parts = sorted(Path('.seo-bootstrap').glob('part-*'))
-          if not parts:
-              raise SystemExit('SEO payload parts were not found')
-          payload = ''.join(path.read_text(encoding='ascii') for path in parts)
-          archive = Path('/tmp/seo-payload.tgz')
-          archive.write_bytes(base64.b64decode(payload, validate=True))
-          with tarfile.open(archive, 'r:gz') as tar:
-              tar.extractall('.')
+          if parts:
+              payload = ''.join(path.read_text(encoding='ascii') for path in parts)
+              archive = Path('/tmp/seo-payload.tgz')
+              archive.write_bytes(base64.b64decode(payload, validate=True))
+              with tarfile.open(archive, 'r:gz') as tar:
+                  tar.extractall('.')
+          elif not Path('scripts/build_seo.py').exists():
+              raise SystemExit('SEO generator and bootstrap payload are both missing')
           PY
           rm -rf .seo-bootstrap
-          rm -f .github/workflows/bootstrap-seo.yml
+          rm -f .github/workflows/build-seo.yml
 
       - name: Generate crawlable pages
         run: python scripts/build_seo.py
@@ -84,10 +88,15 @@ jobs:
           print(f'Generated {len(pages)} product pages')
           PY
 
-      - name: Commit SEO implementation
+      - name: Commit refreshed SEO pages
+        if: github.event_name != 'pull_request'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "Optimize website for search indexing"
+          if git diff --cached --quiet; then
+            echo "SEO pages are already current."
+            exit 0
+          fi
+          git commit -m "Refresh crawlable storefront pages"
           git push origin "HEAD:${TARGET_BRANCH}"

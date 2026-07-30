@@ -40,6 +40,116 @@
         return String(value ?? '').trim();
     }
 
+    function imageSource(value) {
+        if (typeof value === 'string') return textValue(value);
+        if (!value || typeof value !== 'object') return '';
+        return textValue(value.url || value.public_url || value.image_url || value.src);
+    }
+
+    function prepareProductGallery(product = null) {
+        const gallery = document.querySelector('.product-gallery');
+        if (!gallery) return;
+
+        const existingSources = Array.from(gallery.querySelectorAll('img'))
+            .map(image => image.getAttribute('src'))
+            .filter(Boolean);
+        const catalogSources = Array.isArray(product?.image_urls) ? product.image_urls : [];
+        const sources = Array.from(new Set(
+            [...catalogSources, product?.image_url, ...existingSources]
+                .map(imageSource)
+                .filter(Boolean)
+        ));
+        if (sources.length === 0) sources.push('/images/Logo.svg');
+
+        const productName = textValue(product?.public_name)
+            || textValue(document.querySelector('.product-detail-copy h1')?.textContent)
+            || 'Product';
+        const failed = new Set();
+        const thumbnailButtons = [];
+
+        const mainFrame = document.createElement('div');
+        mainFrame.className = 'product-gallery-main';
+
+        const mainImage = document.createElement('img');
+        mainImage.className = 'product-gallery-main-image';
+        mainImage.loading = 'eager';
+        mainImage.decoding = 'async';
+        mainFrame.appendChild(mainImage);
+
+        const thumbnails = document.createElement('div');
+        thumbnails.className = 'product-gallery-thumbnails';
+        thumbnails.setAttribute('role', 'list');
+        thumbnails.setAttribute('aria-label', `${productName} images`);
+
+        gallery.replaceChildren(mainFrame);
+        gallery.classList.toggle('has-thumbnails', sources.length > 1);
+        if (sources.length > 1) gallery.appendChild(thumbnails);
+
+        function showFallback() {
+            gallery.classList.remove('has-thumbnails');
+            thumbnails.remove();
+            mainImage.removeAttribute('data-image-index');
+            mainImage.alt = `${productName} image unavailable`;
+            mainImage.src = '/images/Logo.svg';
+        }
+
+        function activate(index) {
+            if (!Number.isInteger(index) || index < 0 || index >= sources.length || failed.has(index)) {
+                return;
+            }
+            mainImage.dataset.imageIndex = String(index);
+            mainImage.alt = `${productName} product image ${index + 1} of ${sources.length}`;
+            mainImage.src = sources[index];
+            thumbnailButtons.forEach((button, buttonIndex) => {
+                button.setAttribute('aria-pressed', buttonIndex === index ? 'true' : 'false');
+            });
+        }
+
+        function activateNextAvailable() {
+            const nextIndex = sources.findIndex((_, index) => !failed.has(index));
+            if (nextIndex === -1) showFallback();
+            else activate(nextIndex);
+        }
+
+        sources.forEach((source, index) => {
+            if (sources.length <= 1) return;
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'product-gallery-thumbnail';
+            button.setAttribute('role', 'listitem');
+            button.setAttribute('aria-label', `View ${productName} image ${index + 1}`);
+            button.setAttribute('aria-pressed', index === 0 ? 'true' : 'false');
+
+            const image = document.createElement('img');
+            image.src = source;
+            image.alt = '';
+            image.loading = 'lazy';
+            image.decoding = 'async';
+            image.addEventListener('error', () => {
+                if (failed.has(index)) return;
+                failed.add(index);
+                button.remove();
+                if (Number(mainImage.dataset.imageIndex) === index) activateNextAvailable();
+            }, { once: true });
+
+            button.appendChild(image);
+            button.addEventListener('click', () => activate(index));
+            thumbnailButtons.push(button);
+            thumbnails.appendChild(button);
+        });
+
+        mainImage.addEventListener('error', () => {
+            const failedIndex = Number(mainImage.dataset.imageIndex);
+            if (Number.isInteger(failedIndex)) {
+                failed.add(failedIndex);
+                thumbnailButtons[failedIndex]?.remove();
+            }
+            activateNextAvailable();
+        });
+
+        activate(0);
+    }
+
     function isLocalPickupOnly(product) {
         return product?.local_pickup_only === true || product?.store_category === 'feeders';
     }
@@ -106,6 +216,7 @@
     }
 
     function applyProduct(product, layout) {
+        prepareProductGallery(product);
         const action = document.querySelector('[data-product-action]');
         const price = document.querySelector('[data-product-price]');
         const stock = document.querySelector('[data-product-stock]');
@@ -151,6 +262,7 @@
     async function init() {
         renderSiteShell();
         const layout = prepareDescriptionLayout();
+        prepareProductGallery();
         const itemId = Number(document.body.dataset.storefrontItemId);
         if (!Number.isInteger(itemId) || itemId <= 0) return;
 

@@ -14,7 +14,8 @@ PHOTO_SYNC_JS = ROOT / "shop" / "storefront-photo-sync.js"
 STOREFRONT_JS = ROOT / "shop" / "storefront.js"
 BUILD_SEO = ROOT / "scripts" / "build_seo.py"
 PRODUCTS_DIR = ROOT / "products"
-ASSET_VERSION = "20260729-4"
+ASSET_VERSION = "20260729-5"
+STOREFRONT_ASSET_VERSION = "20260729-5"
 SHELL_COMPATIBILITY_MARKERS = "\n// Generated shell compatibility markers: SITE_HEADER SITE_FOOTER\n"
 
 ANIMALS_PANEL = """
@@ -28,8 +29,8 @@ ANIMALS_PANEL = """
 
 CATEGORY_HELPER = """
     function storefrontCategory(product) {
-        const category = String(product?.store_category || '').trim();
-        if (category === 'animals' || category === 'geckos-crested' || category === 'geckos-other') {
+        const category = String(product?.store_category || '').trim().toLowerCase();
+        if (['animal', 'animals', 'reptile', 'reptiles', 'geckos-crested', 'geckos-other'].includes(category)) {
             return 'animals';
         }
         return category || 'husbandry-supplies';
@@ -71,6 +72,17 @@ def patch_index() -> bool:
     text = text.replace('data-shop-target="geckos-crested"', 'data-shop-target="animals"')
     text = text.replace('data-shop-target="geckos-other"', 'data-shop-target="animals"')
 
+    text = re.sub(
+        r'src=["\']/?shop/storefront\.js(?:\?v=[^"\']*)?["\']',
+        f'src="shop/storefront.js?v={STOREFRONT_ASSET_VERSION}"',
+        text,
+    )
+    text = re.sub(
+        r'src=["\']/?shop/preview-gate\.js(?:\?v=[^"\']*)?["\']',
+        f'src="shop/preview-gate.js?v={STOREFRONT_ASSET_VERSION}"',
+        text,
+    )
+
     if text == original:
         return False
     INDEX_PATH.write_text(text, encoding="utf-8")
@@ -81,7 +93,13 @@ def patch_storefront_script() -> bool:
     text = STOREFRONT_JS.read_text(encoding="utf-8")
     original = text
 
-    if "function storefrontCategory(product)" not in text:
+    existing_helper = re.compile(
+        r"\n    function storefrontCategory\(product\) \{.*?\n    \}\n",
+        flags=re.DOTALL,
+    )
+    if existing_helper.search(text):
+        text = existing_helper.sub("\n" + CATEGORY_HELPER.rstrip() + "\n", text, count=1)
+    else:
         marker = "    function renderProducts(products) {"
         if marker not in text:
             raise RuntimeError("Could not locate storefront product rendering.")
@@ -104,15 +122,26 @@ def patch_seo_categories() -> bool:
     original = text
 
     text = text.replace(
-        '        "categories": {"geckos-crested", "geckos-other"},',
         '        "categories": {"animals", "geckos-crested", "geckos-other"},',
+        '        "categories": {"animal", "animals", "reptile", "reptiles", "geckos-crested", "geckos-other"},',
+        1,
+    )
+    text = text.replace(
+        '        "categories": {"geckos-crested", "geckos-other"},',
+        '        "categories": {"animal", "animals", "reptile", "reptiles", "geckos-crested", "geckos-other"},',
         1,
     )
     text = text.replace(
         '    "geckos-crested": "Crested Geckos",\n    "geckos-other": "Other Reptiles",',
-        '    "animals": "Animals",\n    "geckos-crested": "Animals",\n    "geckos-other": "Animals",',
+        '    "animal": "Animals",\n    "animals": "Animals",\n    "reptile": "Animals",\n    "reptiles": "Animals",\n    "geckos-crested": "Animals",\n    "geckos-other": "Animals",',
         1,
     )
+    if '    "animals": "Animals",' in text and '    "animal": "Animals",' not in text:
+        text = text.replace(
+            '    "animals": "Animals",',
+            '    "animal": "Animals",\n    "animals": "Animals",\n    "reptile": "Animals",\n    "reptiles": "Animals",',
+            1,
+        )
 
     if text == original:
         return False
@@ -178,6 +207,8 @@ def validate() -> None:
         'data-shop="animals">Animals</button>',
         'id="shop-animals"',
         '<div class="product-grid"></div>',
+        f'src="shop/storefront.js?v={STOREFRONT_ASSET_VERSION}"',
+        f'src="shop/preview-gate.js?v={STOREFRONT_ASSET_VERSION}"',
     ):
         if marker not in index:
             raise RuntimeError(f"Unified Animals shop marker is missing: {marker}")
@@ -186,16 +217,21 @@ def validate() -> None:
         'data-shop="geckos-other"',
         'id="shop-geckos-crested"',
         'id="shop-geckos-other"',
+        'src="shop/storefront.js"',
+        'src="shop/preview-gate.js"',
     ):
         if stale_marker in index:
-            raise RuntimeError(f"Legacy gecko shop section remains: {stale_marker}")
+            raise RuntimeError(f"Legacy storefront marker remains: {stale_marker}")
     if index.count('id="shop-animals"') != 1:
         raise RuntimeError("The Animals shop section must appear exactly once.")
 
     storefront = STOREFRONT_JS.read_text(encoding="utf-8")
     for marker in (
         "function storefrontCategory(product)",
-        "category === 'animals'",
+        ".trim().toLowerCase()",
+        "'animal'",
+        "'animals'",
+        "'geckos-other'",
         "const category = storefrontCategory(product);",
         "document.getElementById(`shop-${category}`)",
     ):
@@ -204,7 +240,8 @@ def validate() -> None:
 
     seo_script = BUILD_SEO.read_text(encoding="utf-8")
     for marker in (
-        '"categories": {"animals", "geckos-crested", "geckos-other"}',
+        '"animal", "animals", "reptile", "reptiles", "geckos-crested", "geckos-other"',
+        '"animal": "Animals"',
         '"animals": "Animals"',
         '"geckos-crested": "Animals"',
         '"geckos-other": "Animals"',

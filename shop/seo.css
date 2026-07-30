@@ -68,3 +68,99 @@ img { max-width: 100%; height: auto; }
   .product-card, .product-detail { grid-template-columns: 1fr; }
   .product-card .product-image { min-height: 240px; }
 }
+
+/* Product image gallery */
+.product-gallery { display: block; min-width: 0; }
+.product-gallery.has-thumbnails {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr);
+  gap: .85rem;
+  align-items: start;
+}
+.product-gallery-main {
+  display: grid;
+  grid-column: 1 / -1;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #f7f3e9;
+}
+.product-gallery.has-thumbnails .product-gallery-main {
+  grid-column: 2;
+  grid-row: 1;
+}
+.product-gallery-main .product-gallery-main-image {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  aspect-ratio: auto;
+  object-fit: contain;
+  padding: .5rem;
+  border-radius: 0;
+  background: transparent;
+}
+.product-gallery-thumbnails {
+  display: flex;
+  grid-column: 1;
+  grid-row: 1;
+  flex-direction: column;
+  gap: .6rem;
+  max-height: min(70vh, 620px);
+  overflow-y: auto;
+  padding: 2px;
+}
+.product-gallery-thumbnail {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  padding: .2rem;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background: #f7f3e9;
+  cursor: pointer;
+}
+.product-gallery-thumbnail:hover {
+  border-color: rgba(158, 20, 3, .45);
+}
+.product-gallery-thumbnail[aria-pressed="true"] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(158, 20, 3, .12);
+}
+.product-gallery-thumbnail:focus-visible {
+  outline: 3px solid rgba(158, 20, 3, .25);
+  outline-offset: 2px;
+}
+.product-gallery-thumbnail img {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  object-fit: contain;
+  padding: 0;
+  border-radius: 6px;
+  background: transparent;
+}
+@media (max-width: 760px) {
+  .product-gallery.has-thumbnails {
+    grid-template-columns: 1fr;
+  }
+  .product-gallery.has-thumbnails .product-gallery-main {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .product-gallery-thumbnails {
+    grid-column: 1;
+    grid-row: 2;
+    flex-direction: row;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .product-gallery-thumbnail {
+    flex: 0 0 72px;
+  }
+}

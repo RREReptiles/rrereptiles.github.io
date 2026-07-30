@@ -457,3 +457,28 @@ body.storefront-cart-open {
     text-decoration: underline;
     text-underline-offset: 3px;
 }
+
+/* Full product card links */
+#page-shop .product-card[data-storefront-item-id] {
+    position: relative;
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+#page-shop .product-card[data-storefront-item-id]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 26px rgba(26, 26, 26, .13);
+}
+#page-shop .product-card[data-storefront-item-id] .storefront-product-link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+}
+#page-shop .product-card[data-storefront-item-id] .storefront-product-link:focus-visible::after {
+    outline: 3px solid rgba(158, 20, 3, .28);
+    outline-offset: 3px;
+}
+#page-shop .product-card[data-storefront-item-id] [data-storefront-action] {
+    position: relative;
+    z-index: 2;
+}

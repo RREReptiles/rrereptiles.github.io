@@ -44,12 +44,13 @@ jobs:
           python scripts/build_seo_integrated.py
           python scripts/postprocess_seo_integration.py
           python scripts/generate_product_descriptions.py
+          python scripts/patch_product_gallery.py
           python scripts/clean_product_pages.py
           python scripts/scrub_private_backend_name.py
 
       - name: Validate output
         run: |
-          python -m py_compile scripts/build_seo.py scripts/build_seo_integrated.py scripts/postprocess_seo_integration.py scripts/generate_product_descriptions.py scripts/clean_product_pages.py scripts/wire_product_descriptions.py scripts/scrub_private_backend_name.py
+          python -m py_compile scripts/build_seo.py scripts/build_seo_integrated.py scripts/postprocess_seo_integration.py scripts/generate_product_descriptions.py scripts/patch_product_gallery.py scripts/clean_product_pages.py scripts/wire_product_descriptions.py scripts/scrub_private_backend_name.py
           node --check shop/storefront.js
           node --check shop/product-page.js
           python - <<'PY'
@@ -167,6 +168,9 @@ jobs:
               'data-product-description',
               'function renderSiteShell()',
               'renderSiteShell();',
+              'function prepareProductGallery(',
+              'prepareProductGallery(product);',
+              'prepareProductGallery();',
           ):
               if value not in product_script:
                   raise SystemExit(f'Product script is missing binding or shell behavior: {value}')
@@ -174,6 +178,12 @@ jobs:
           seo_css = Path('shop/seo.css').read_text(encoding='utf-8')
           if '@import url("/shop/site-shell.css");' not in seo_css:
               raise SystemExit('Product CSS does not load the shared site shell')
+          if '/* Product image gallery */' not in seo_css:
+              raise SystemExit('Product CSS is missing gallery styles')
+
+          storefront_css = Path('shop/storefront.css').read_text(encoding='utf-8')
+          if '/* Full product card links */' not in storefront_css:
+              raise SystemExit('Storefront CSS is missing full-card link behavior')
 
           supporting_copy = '\n'.join([
               Path('index.html').read_text(encoding='utf-8'),

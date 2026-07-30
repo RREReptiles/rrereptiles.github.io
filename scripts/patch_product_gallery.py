@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Keep generated product pages on the current carousel and storefront navigation assets."""
+"""Keep generated storefront assets aligned with the live inventory catalog."""
 
 from __future__ import annotations
 
@@ -7,12 +7,35 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+INDEX_PATH = ROOT / "index.html"
 PRODUCT_PAGE_TEMPLATE = ROOT / "scripts" / "product-page.template.js"
 PRODUCT_PAGE_JS = ROOT / "shop" / "product-page.js"
 PHOTO_SYNC_JS = ROOT / "shop" / "storefront-photo-sync.js"
+STOREFRONT_JS = ROOT / "shop" / "storefront.js"
+BUILD_SEO = ROOT / "scripts" / "build_seo.py"
 PRODUCTS_DIR = ROOT / "products"
 ASSET_VERSION = "20260729-4"
 SHELL_COMPATIBILITY_MARKERS = "\n// Generated shell compatibility markers: SITE_HEADER SITE_FOOTER\n"
+
+ANIMALS_PANEL = """
+            <!-- Animals -->
+            <div class="shop-category active" id="shop-animals">
+                <p class="section-subtitle">Browse all reptiles and other animals currently available from Red Rocks Exotic Reptiles.</p>
+                <div class="product-grid"></div>
+            </div>
+
+            <!-- Aquatic Plants -->"""
+
+CATEGORY_HELPER = """
+    function storefrontCategory(product) {
+        const category = String(product?.store_category || '').trim();
+        if (category === 'animals' || category === 'geckos-crested' || category === 'geckos-other') {
+            return 'animals';
+        }
+        return category || 'husbandry-supplies';
+    }
+
+"""
 
 
 def restore_product_script() -> bool:
@@ -25,6 +48,78 @@ def restore_product_script() -> bool:
     return True
 
 
+def patch_index() -> bool:
+    text = INDEX_PATH.read_text(encoding="utf-8")
+    original = text
+
+    old_tabs = re.compile(
+        r'\s*<button class="shop-tab(?: active)?" data-shop="geckos-crested">Crested Geckos</button>\s*'
+        r'<button class="shop-tab(?: active)?" data-shop="geckos-other">Other Geckos</button>'
+    )
+    text = old_tabs.sub(
+        '\n                <button class="shop-tab active" data-shop="animals">Animals</button>',
+        text,
+        count=1,
+    )
+
+    old_panels = re.compile(
+        r'\n\s*<!-- Crested Geckos -->.*?\n\s*<!-- Aquatic Plants -->',
+        flags=re.DOTALL,
+    )
+    text = old_panels.sub("\n" + ANIMALS_PANEL, text, count=1)
+
+    text = text.replace('data-shop-target="geckos-crested"', 'data-shop-target="animals"')
+    text = text.replace('data-shop-target="geckos-other"', 'data-shop-target="animals"')
+
+    if text == original:
+        return False
+    INDEX_PATH.write_text(text, encoding="utf-8")
+    return True
+
+
+def patch_storefront_script() -> bool:
+    text = STOREFRONT_JS.read_text(encoding="utf-8")
+    original = text
+
+    if "function storefrontCategory(product)" not in text:
+        marker = "    function renderProducts(products) {"
+        if marker not in text:
+            raise RuntimeError("Could not locate storefront product rendering.")
+        text = text.replace(marker, CATEGORY_HELPER + marker, 1)
+
+    text = text.replace(
+        "            const category = product.store_category || 'husbandry-supplies';",
+        "            const category = storefrontCategory(product);",
+        1,
+    )
+
+    if text == original:
+        return False
+    STOREFRONT_JS.write_text(text, encoding="utf-8")
+    return True
+
+
+def patch_seo_categories() -> bool:
+    text = BUILD_SEO.read_text(encoding="utf-8")
+    original = text
+
+    text = text.replace(
+        '        "categories": {"geckos-crested", "geckos-other"},',
+        '        "categories": {"animals", "geckos-crested", "geckos-other"},',
+        1,
+    )
+    text = text.replace(
+        '    "geckos-crested": "Crested Geckos",\n    "geckos-other": "Other Reptiles",',
+        '    "animals": "Animals",\n    "geckos-crested": "Animals",\n    "geckos-other": "Animals",',
+        1,
+    )
+
+    if text == original:
+        return False
+    BUILD_SEO.write_text(text, encoding="utf-8")
+    return True
+
+
 def patch_product_pages() -> int:
     changed = 0
     pattern = re.compile(r'/shop/product-page\.js(?:\?v=[^"\']*)?')
@@ -33,6 +128,8 @@ def patch_product_pages() -> int:
     for path in PRODUCTS_DIR.glob("*.html"):
         text = path.read_text(encoding="utf-8")
         updated = pattern.sub(replacement, text, count=1)
+        updated = updated.replace('"category":"Crested Geckos"', '"category":"Animals"')
+        updated = updated.replace('"category":"Other Reptiles"', '"category":"Animals"')
         if updated == text:
             continue
         path.write_text(updated, encoding="utf-8")
@@ -76,12 +173,60 @@ def validate() -> None:
     if stale:
         raise RuntimeError(f"Legacy thumbnail gallery behavior remains: {stale}")
 
+    index = INDEX_PATH.read_text(encoding="utf-8")
+    for marker in (
+        'data-shop="animals">Animals</button>',
+        'id="shop-animals"',
+        '<div class="product-grid"></div>',
+    ):
+        if marker not in index:
+            raise RuntimeError(f"Unified Animals shop marker is missing: {marker}")
+    for stale_marker in (
+        'data-shop="geckos-crested"',
+        'data-shop="geckos-other"',
+        'id="shop-geckos-crested"',
+        'id="shop-geckos-other"',
+    ):
+        if stale_marker in index:
+            raise RuntimeError(f"Legacy gecko shop section remains: {stale_marker}")
+    if index.count('id="shop-animals"') != 1:
+        raise RuntimeError("The Animals shop section must appear exactly once.")
+
+    storefront = STOREFRONT_JS.read_text(encoding="utf-8")
+    for marker in (
+        "function storefrontCategory(product)",
+        "category === 'animals'",
+        "const category = storefrontCategory(product);",
+        "document.getElementById(`shop-${category}`)",
+    ):
+        if marker not in storefront:
+            raise RuntimeError(f"Animal category routing marker is missing: {marker}")
+
+    seo_script = BUILD_SEO.read_text(encoding="utf-8")
+    for marker in (
+        '"categories": {"animals", "geckos-crested", "geckos-other"}',
+        '"animals": "Animals"',
+        '"geckos-crested": "Animals"',
+        '"geckos-other": "Animals"',
+    ):
+        if marker not in seo_script:
+            raise RuntimeError(f"Animal SEO category marker is missing: {marker}")
+
+    for path in PRODUCTS_DIR.glob("*.html"):
+        content = path.read_text(encoding="utf-8")
+        if '"category":"Crested Geckos"' in content or '"category":"Other Reptiles"' in content:
+            raise RuntimeError(f"Legacy animal category remains in {path.name}")
+
 
 if __name__ == "__main__":
     restored_script = restore_product_script()
+    changed_index = patch_index()
+    changed_storefront = patch_storefront_script()
+    changed_seo = patch_seo_categories()
     updated_pages = patch_product_pages()
     validate()
     print(
         f"Restored product script: {restored_script}; "
-        f"updated {updated_pages} product page asset reference(s) to {ASSET_VERSION}."
+        f"updated index: {changed_index}; storefront: {changed_storefront}; "
+        f"SEO categories: {changed_seo}; product pages: {updated_pages}."
     )

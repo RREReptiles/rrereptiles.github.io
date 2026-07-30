@@ -40,6 +40,72 @@
         return String(value ?? '').trim();
     }
 
+    function isLocalPickupOnly(product) {
+        return product?.local_pickup_only === true || product?.store_category === 'feeders';
+    }
+
+    function purchaseMode(product) {
+        return isLocalPickupOnly(product) ? 'inquiry' : product?.purchase_mode;
+    }
+
+    function productPrice(product) {
+        const display = textValue(product.display_price_text);
+        if (display) return display.replace(/\.00(?=\s|$)/, '');
+        return currency.format(Number(product.price || 0));
+    }
+
+    function setVisibleText(element, value) {
+        if (!element) return;
+        const text = textValue(value);
+        element.textContent = text;
+        element.hidden = !text;
+    }
+
+    function setAction(action, text, href = '') {
+        action.textContent = text;
+        action.removeAttribute('aria-disabled');
+        if (href) action.href = href;
+        else {
+            action.removeAttribute('href');
+            action.setAttribute('aria-disabled', 'true');
+        }
+    }
+
+    function prepareDescriptionLayout() {
+        const copy = document.querySelector('.product-detail-copy');
+        const legacyLead = copy?.querySelector('.lead');
+        const legacyNotice = copy?.querySelector('[data-product-notice]');
+        let shortDescription = copy?.querySelector('[data-product-short-description]');
+        let description = copy?.querySelector('[data-product-description]');
+        let fulfillment = copy?.querySelector('[data-product-fulfillment]');
+
+        if (!description && legacyNotice) {
+            description = legacyNotice;
+            description.removeAttribute('data-product-notice');
+            description.setAttribute('data-product-description', '');
+            const fallback = textValue(legacyLead?.textContent)
+                || textValue(document.querySelector('meta[name="description"]')?.content);
+            setVisibleText(description, fallback);
+        }
+
+        if (!shortDescription && legacyLead) {
+            shortDescription = legacyLead;
+            shortDescription.setAttribute('data-product-short-description', '');
+            shortDescription.hidden = true;
+        }
+
+        if (!fulfillment && description) {
+            fulfillment = document.createElement('p');
+            fulfillment.className = 'product-fulfillment';
+            fulfillment.setAttribute('data-product-fulfillment', '');
+            fulfillment.hidden = true;
+            description.insertAdjacentElement('afterend', fulfillment);
+        }
+
+        return { shortDescription, description, fulfillment };
+    }
+
+
     function imageSource(value) {
         if (typeof value === 'string') return textValue(value);
         if (!value || typeof value !== 'object') return '';
@@ -148,71 +214,6 @@
         });
 
         activate(0);
-    }
-
-    function isLocalPickupOnly(product) {
-        return product?.local_pickup_only === true || product?.store_category === 'feeders';
-    }
-
-    function purchaseMode(product) {
-        return isLocalPickupOnly(product) ? 'inquiry' : product?.purchase_mode;
-    }
-
-    function productPrice(product) {
-        const display = textValue(product.display_price_text);
-        if (display) return display.replace(/\.00(?=\s|$)/, '');
-        return currency.format(Number(product.price || 0));
-    }
-
-    function setVisibleText(element, value) {
-        if (!element) return;
-        const text = textValue(value);
-        element.textContent = text;
-        element.hidden = !text;
-    }
-
-    function setAction(action, text, href = '') {
-        action.textContent = text;
-        action.removeAttribute('aria-disabled');
-        if (href) action.href = href;
-        else {
-            action.removeAttribute('href');
-            action.setAttribute('aria-disabled', 'true');
-        }
-    }
-
-    function prepareDescriptionLayout() {
-        const copy = document.querySelector('.product-detail-copy');
-        const legacyLead = copy?.querySelector('.lead');
-        const legacyNotice = copy?.querySelector('[data-product-notice]');
-        let shortDescription = copy?.querySelector('[data-product-short-description]');
-        let description = copy?.querySelector('[data-product-description]');
-        let fulfillment = copy?.querySelector('[data-product-fulfillment]');
-
-        if (!description && legacyNotice) {
-            description = legacyNotice;
-            description.removeAttribute('data-product-notice');
-            description.setAttribute('data-product-description', '');
-            const fallback = textValue(legacyLead?.textContent)
-                || textValue(document.querySelector('meta[name="description"]')?.content);
-            setVisibleText(description, fallback);
-        }
-
-        if (!shortDescription && legacyLead) {
-            shortDescription = legacyLead;
-            shortDescription.setAttribute('data-product-short-description', '');
-            shortDescription.hidden = true;
-        }
-
-        if (!fulfillment && description) {
-            fulfillment = document.createElement('p');
-            fulfillment.className = 'product-fulfillment';
-            fulfillment.setAttribute('data-product-fulfillment', '');
-            fulfillment.hidden = true;
-            description.insertAdjacentElement('afterend', fulfillment);
-        }
-
-        return { shortDescription, description, fulfillment };
     }
 
     function applyProduct(product, layout) {

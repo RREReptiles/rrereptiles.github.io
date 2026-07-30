@@ -7,10 +7,20 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+PRODUCT_PAGE_TEMPLATE = ROOT / "scripts" / "product-page.template.js"
 PRODUCT_PAGE_JS = ROOT / "shop" / "product-page.js"
 PHOTO_SYNC_JS = ROOT / "shop" / "storefront-photo-sync.js"
 PRODUCTS_DIR = ROOT / "products"
 ASSET_VERSION = "20260729-4"
+
+
+def restore_product_script() -> bool:
+    template = PRODUCT_PAGE_TEMPLATE.read_text(encoding="utf-8")
+    current = PRODUCT_PAGE_JS.read_text(encoding="utf-8") if PRODUCT_PAGE_JS.exists() else ""
+    if current == template:
+        return False
+    PRODUCT_PAGE_JS.write_text(template, encoding="utf-8")
+    return True
 
 
 def patch_product_pages() -> int:
@@ -64,6 +74,10 @@ def validate() -> None:
 
 
 if __name__ == "__main__":
+    restored_script = restore_product_script()
     updated_pages = patch_product_pages()
     validate()
-    print(f"Updated {updated_pages} product page asset reference(s) to {ASSET_VERSION}.")
+    print(
+        f"Restored product script: {restored_script}; "
+        f"updated {updated_pages} product page asset reference(s) to {ASSET_VERSION}."
+    )

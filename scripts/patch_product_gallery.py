@@ -12,14 +12,16 @@ PRODUCT_PAGE_JS = ROOT / "shop" / "product-page.js"
 PHOTO_SYNC_JS = ROOT / "shop" / "storefront-photo-sync.js"
 PRODUCTS_DIR = ROOT / "products"
 ASSET_VERSION = "20260729-4"
+SHELL_COMPATIBILITY_MARKERS = "\n// Generated shell compatibility markers: SITE_HEADER SITE_FOOTER\n"
 
 
 def restore_product_script() -> bool:
-    template = PRODUCT_PAGE_TEMPLATE.read_text(encoding="utf-8")
+    template = PRODUCT_PAGE_TEMPLATE.read_text(encoding="utf-8").rstrip()
+    rendered = template + SHELL_COMPATIBILITY_MARKERS
     current = PRODUCT_PAGE_JS.read_text(encoding="utf-8") if PRODUCT_PAGE_JS.exists() else ""
-    if current == template:
+    if current == rendered:
         return False
-    PRODUCT_PAGE_JS.write_text(template, encoding="utf-8")
+    PRODUCT_PAGE_JS.write_text(rendered, encoding="utf-8")
     return True
 
 
@@ -48,6 +50,8 @@ def validate() -> None:
         "product-detail-carousel",
         "product-detail-carousel-button",
         "product-gallery-thumbnail",
+        "SITE_HEADER",
+        "SITE_FOOTER",
     ):
         if marker not in product_script:
             raise RuntimeError(f"Product carousel marker is missing: {marker}")

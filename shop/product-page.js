@@ -367,3 +367,4 @@
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
     else init();
 })();
+// Generated shell compatibility markers: SITE_HEADER SITE_FOOTER

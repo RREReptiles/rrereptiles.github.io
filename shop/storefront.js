@@ -394,6 +394,15 @@
         placeholder.replaceWith(image);
     }
 
+
+    function storefrontCategory(product) {
+        const category = String(product?.store_category || '').trim();
+        if (category === 'animals' || category === 'geckos-crested' || category === 'geckos-other') {
+            return 'animals';
+        }
+        return category || 'husbandry-supplies';
+    }
+
     function renderProducts(products) {
         document.querySelectorAll('.product-card[data-storefront-generated]').forEach(card => card.remove());
 
@@ -401,7 +410,7 @@
         staticCards.forEach(card => markCardAvailability(card));
 
         products.forEach(product => {
-            const category = product.store_category || 'husbandry-supplies';
+            const category = storefrontCategory(product);
             const panel = document.getElementById(`shop-${category}`)
                 || document.getElementById('shop-husbandry-supplies');
             const grid = panel?.querySelector('.product-grid');
@@ -512,6 +521,7 @@
             ? 'Secure card and wallet payments are processed by Stripe.'
             : 'Products will become purchasable as their shipping details are verified.');
     }
+
 
 
 

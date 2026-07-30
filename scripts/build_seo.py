@@ -55,7 +55,7 @@ CATEGORY_GROUPS: dict[str, dict[str, Any]] = {
             "Browse available captive-bred geckos, skinks, lizards, and snakes from "
             "Red Rocks Exotic Reptiles, a Colorado reptile breeder and online store."
         ),
-        "categories": {"geckos-crested", "geckos-other"},
+        "categories": {"animals", "geckos-crested", "geckos-other"},
         "keywords": "reptiles for sale Colorado, geckos for sale, reptile breeder Colorado",
     },
     "reptile-supplies": {
@@ -101,8 +101,9 @@ CATEGORY_GROUPS: dict[str, dict[str, Any]] = {
 }
 
 CATEGORY_LABELS = {
-    "geckos-crested": "Crested Geckos",
-    "geckos-other": "Other Reptiles",
+    "animals": "Animals",
+    "geckos-crested": "Animals",
+    "geckos-other": "Animals",
     "husbandry-supplies": "Husbandry Supplies",
     "dietary-supplements": "Diet & Supplements",
     "feeders": "Feeder Insects",

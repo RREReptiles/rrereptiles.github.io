@@ -13,6 +13,9 @@
         ['small metal tongs', 'metal tongs'],
         ['round flat hide', 'flat hides']
     ]);
+    const STATIC_DETAIL_PATHS = new Map([
+        ['potato', '/products/potato-crested-gecko.html']
+    ]);
 
     let productsByItemId = new Map();
     let productsByName = new Map();
@@ -32,12 +35,44 @@
         return STATIC_NAME_ALIASES.get(normalized) || normalized;
     }
 
+    function cardTitle(card) {
+        return card.querySelector('.product-info h3, h3')?.textContent?.trim() || 'Product';
+    }
+
+    function staticDetailPath(card) {
+        return STATIC_DETAIL_PATHS.get(matchingName(cardTitle(card))) || '';
+    }
+
+    function productDetailPath(product, card) {
+        const staticPath = staticDetailPath(card);
+        if (staticPath) return staticPath;
+
+        const explicit = String(
+            product?.detail_url
+            || product?.product_url
+            || product?.public_url
+            || ''
+        ).trim();
+        if (explicit) {
+            try {
+                const url = new URL(explicit, window.location.origin);
+                if (url.origin === window.location.origin && url.pathname.startsWith('/products/')) {
+                    return `${url.pathname}${url.search}${url.hash}`;
+                }
+            } catch (_) {
+                // Fall through to the catalog slug.
+            }
+        }
+
+        const slug = String(product?.slug || '').trim();
+        if (!slug) return '';
+        return `/products/${encodeURIComponent(slug)}.html`;
+    }
+
     function customDisplayPrice(product) {
         const display = String(product.display_price_text || '').trim();
         if (!display) return '';
 
-        // A plain stored amount becomes stale when our inventory system changes the price.
-        // Keep only genuinely custom labels such as ranges or "starting at" text.
         const isSingleAmount = /^\$?\s*\d[\d,]*(?:\.\d{1,2})?\s*$/.test(display);
         return isSingleAmount ? '' : display.replace(/\.00(?=\s|$)/g, '');
     }
@@ -59,7 +94,10 @@
         const seen = new Set();
 
         candidates.forEach(value => {
-            const url = String(value || '').trim();
+            const source = typeof value === 'object' && value
+                ? value.url || value.public_url || value.image_url || value.src
+                : value;
+            const url = String(source || '').trim();
             if (!url || seen.has(url)) return;
             seen.add(url);
             unique.push(url);
@@ -88,7 +126,7 @@
             #page-shop .storefront-product-carousel-button {
                 position: absolute;
                 top: 50%;
-                z-index: 2;
+                z-index: 3;
                 display: grid;
                 place-items: center;
                 width: 36px;
@@ -108,13 +146,8 @@
                 transition: opacity .18s ease, background .18s ease, transform .18s ease;
             }
 
-            #page-shop .storefront-product-carousel-button.previous {
-                left: 10px;
-            }
-
-            #page-shop .storefront-product-carousel-button.next {
-                right: 10px;
-            }
+            #page-shop .storefront-product-carousel-button.previous { left: 10px; }
+            #page-shop .storefront-product-carousel-button.next { right: 10px; }
 
             #page-shop .storefront-product-carousel:hover .storefront-product-carousel-button,
             #page-shop .storefront-product-carousel:focus-within .storefront-product-carousel-button {
@@ -144,6 +177,15 @@
                 font-weight: 800;
                 letter-spacing: .02em;
                 pointer-events: none;
+            }
+
+            #page-shop .product-card[data-storefront-detail-url] {
+                cursor: pointer;
+            }
+
+            #page-shop .product-card[data-storefront-detail-url] .storefront-product-link::after {
+                content: none !important;
+                display: none !important;
             }
 
             @media (hover: none), (pointer: coarse) {
@@ -274,9 +316,11 @@
         carousel.addEventListener('keydown', event => {
             if (event.key === 'ArrowLeft') {
                 event.preventDefault();
+                event.stopPropagation();
                 move(-1);
             } else if (event.key === 'ArrowRight') {
                 event.preventDefault();
+                event.stopPropagation();
                 move(1);
             }
         });
@@ -295,8 +339,42 @@
             return productsByItemId.get(itemId);
         }
 
-        const title = card.querySelector('.product-info h3, h3')?.textContent;
-        return productsByName.get(matchingName(title)) || null;
+        return productsByName.get(matchingName(cardTitle(card))) || null;
+    }
+
+    function ensureCardNavigation(card, product = null) {
+        const detailPath = productDetailPath(product, card);
+        if (!detailPath) {
+            delete card.dataset.storefrontDetailUrl;
+            return;
+        }
+
+        card.dataset.storefrontDetailUrl = detailPath;
+        const title = card.querySelector('.product-info h3, h3');
+        if (title) {
+            let link = title.querySelector('a.storefront-product-link');
+            if (!link) {
+                link = document.createElement('a');
+                link.className = 'storefront-product-link';
+                link.textContent = title.textContent.trim();
+                title.replaceChildren(link);
+            }
+            link.href = detailPath;
+            link.setAttribute('aria-label', `View details for ${product?.public_name || cardTitle(card)}`);
+        }
+
+        if (card.dataset.storefrontNavigationBound === 'true') return;
+        card.dataset.storefrontNavigationBound = 'true';
+        card.addEventListener('click', event => {
+            if (event.defaultPrevented) return;
+            if (!(event.target instanceof Element)) return;
+            if (event.target.closest('a, button, input, select, textarea, summary, label, [role="button"], [contenteditable="true"]')) {
+                return;
+            }
+
+            const destination = card.dataset.storefrontDetailUrl;
+            if (destination) window.location.assign(destination);
+        });
     }
 
     function applyProductPhotos(card, product) {
@@ -317,6 +395,13 @@
             const isGenerated = card.hasAttribute('data-storefront-generated');
 
             if (!product) {
+                const fallbackPath = staticDetailPath(card);
+                if (fallbackPath && !isGenerated) {
+                    card.hidden = false;
+                    ensureCardNavigation(card);
+                    return;
+                }
+
                 if (isGenerated) card.remove();
                 else card.hidden = true;
                 return;
@@ -330,6 +415,7 @@
             if (price && price.textContent !== nextPrice) price.textContent = nextPrice;
 
             applyProductPhotos(card, product);
+            ensureCardNavigation(card, product);
         });
     }
 
@@ -364,6 +450,7 @@
                 applyCatalogState();
             } catch (error) {
                 console.warn('[storefront] item catalog sync unavailable', error);
+                applyCatalogState();
             } finally {
                 refreshPromise = null;
             }

@@ -37,6 +37,23 @@
     background: transparent;
 }
 
+/*
+ * Category cards receive their product-backed images from preview-gate.js.
+ * Keep them subtle at rest, then reveal a little more image detail on hover.
+ */
+#page-shop .shop-tab::before {
+    opacity: .13 !important;
+}
+
+#page-shop .shop-tab.active::before {
+    opacity: .16 !important;
+}
+
+#page-shop .shop-tab:hover::before,
+#page-shop .shop-tab.active:hover::before {
+    opacity: .20 !important;
+}
+
 @media (max-width: 600px) {
     .storefront-grid {
         grid-template-columns: 1fr;

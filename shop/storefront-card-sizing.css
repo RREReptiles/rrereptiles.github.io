@@ -42,16 +42,16 @@
  * Keep them subtle at rest, then reveal a little more image detail on hover.
  */
 #page-shop .shop-tab::before {
-    opacity: .13 !important;
+    opacity: .25 !important;
 }
 
 #page-shop .shop-tab.active::before {
-    opacity: .16 !important;
+    opacity: .05 !important;
 }
 
 #page-shop .shop-tab:hover::before,
 #page-shop .shop-tab.active:hover::before {
-    opacity: .20 !important;
+    opacity: .99 !important;
 }
 
 @media (max-width: 600px) {

@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import base64
 import hashlib
-import shutil
 import urllib.request
 from pathlib import Path
 
@@ -17,15 +16,25 @@ EXPECTED_SIZE = 90660
 EXPECTED_SHA256 = "6440465b44534c456ee1ecbd3e6716fcccb4c2e54667bef8eade63391f1663ab"
 
 
+def fetch_chunk(name: str) -> str:
+    url = (
+        "https://raw.githubusercontent.com/RREReptiles/rrereptiles.github.io/"
+        f"{SOURCE_BRANCH}/care-guides/downloads/western-hognose/{name}"
+    )
+    with urllib.request.urlopen(url, timeout=30) as response:
+        return response.read().decode("ascii").strip()
+
+
 def main() -> None:
     chunks: list[str] = []
     for index in range(14):
-        url = (
-            "https://raw.githubusercontent.com/RREReptiles/rrereptiles.github.io/"
-            f"{SOURCE_BRANCH}/care-guides/downloads/western-hognose/part-{index:02d}.b64"
-        )
-        with urllib.request.urlopen(url, timeout=30) as response:
-            chunks.append(response.read().decode("ascii").strip())
+        if index == 5:
+            names = ["part-05a.b64", "part-05b.b64", "part-05c.b64"]
+        elif index == 6:
+            names = ["part-06a.b64", "part-06b.b64", "part-06c.b64"]
+        else:
+            names = [f"part-{index:02d}.b64"]
+        chunks.extend(fetch_chunk(name) for name in names)
 
     payload = base64.b64decode("".join(chunks), validate=True)
     digest = hashlib.sha256(payload).hexdigest()
@@ -44,7 +53,6 @@ def main() -> None:
             raise RuntimeError("Could not locate Western Hognose care-guide action buttons.")
         GUIDE.write_text(html.replace(old, new, 1), encoding="utf-8")
 
-    # Leave only the actual site changes in the branch.
     WORKFLOW.unlink(missing_ok=True)
     SELF.unlink(missing_ok=True)
 

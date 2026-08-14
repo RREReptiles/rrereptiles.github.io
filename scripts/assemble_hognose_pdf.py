@@ -29,7 +29,11 @@ def main() -> None:
     chunks: list[str] = []
     for index in range(14):
         if index == 5:
-            names = ["part-05a.b64", "part-05b.b64", "part-05c0.b64", "part-05c1.b64", "part-05c2.b64"]
+            names = [
+                "part-05a.b64", "part-05b.b64", "part-05c0.b64",
+                "part-05c1a.b64", "part-05c1b.b64", "part-05c1c.b64", "part-05c1d.b64",
+                "part-05c2a.b64", "part-05c2b.b64", "part-05c2c.b64", "part-05c2d.b64",
+            ]
         elif index == 6:
             names = ["part-06a0.b64", "part-06a1.b64", "part-06a2.b64", "part-06b.b64", "part-06c.b64"]
         else:

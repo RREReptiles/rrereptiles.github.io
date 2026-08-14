@@ -23,6 +23,28 @@ WESTERN_HOGNOSE_CARD = """                <a href="care-guides/western-hognose-s
                 </a>
 """
 
+CARE_REPTILOG_PROMO = """            <aside class="feature-card" data-care-reptilog-promo aria-label="More reptile care guides in ReptiLog" style="display:flex;gap:1.2rem;align-items:center;flex-wrap:wrap;margin-bottom:2rem;padding:1.4rem 1.5rem;">
+                <img src="images/ReptiLog%20Icon.png" alt="ReptiLog app icon" loading="lazy" decoding="async" style="width:72px;height:72px;border-radius:16px;box-shadow:0 3px 14px rgba(0,0,0,.18);flex:0 0 auto;">
+                <div style="flex:1 1 260px;">
+                    <p style="color:var(--accent);font-size:.78rem;font-weight:700;letter-spacing:.04em;margin-bottom:.15rem;">ReptiLog by Red Rocks Exotic Reptiles</p>
+                    <h3 style="font-size:1.2rem;margin-bottom:.35rem;">Looking for more care guides?</h3>
+                    <p style="color:var(--gray);font-size:.94rem;margin-bottom:.55rem;">Our website care-guide library is still growing. ReptiLog includes hundreds of reptile species profiles and care guides, with more being added as the library grows.</p>
+                    <a href="/#reptilog" data-page="reptilog" style="font-weight:700;">Explore the ReptiLog species library &rarr;</a>
+                </div>
+            </aside>
+
+"""
+
+LEGACY_CARE_GUIDE_FOOTER = """            <div style="margin-top:2.5rem;" class="shop-notice">
+                <strong>Need a care guide for a species not listed?</strong> Reach out and we'll be happy to provide guidance or point you in the right direction. We're always here to help, even after purchase!
+            </div>
+"""
+
+CARE_REPTILOG_FOOTER = """            <div style="margin-top:2.5rem;" class="shop-notice" data-care-reptilog-footer>
+                <strong>Can't find your species here?</strong> ReptiLog's species library includes hundreds of reptile profiles and care guides beyond what we currently have on the website. <a href="/#reptilog" data-page="reptilog">Take a look at ReptiLog &rarr;</a>
+            </div>
+"""
+
 
 def read_storefront_config() -> tuple[str, str]:
     text = STOREFRONT_JS.read_text(encoding="utf-8")
@@ -242,6 +264,17 @@ def sync_care_guide_home() -> None:
             raise RuntimeError("Could not locate the Snakes care-guide section on the homepage.")
         text = text.replace(marker, WESTERN_HOGNOSE_CARD + marker, 1)
 
+    if "data-care-reptilog-promo" not in text:
+        marker = '            <div class="care-menu" aria-label="Care guide categories">'
+        if marker not in text:
+            raise RuntimeError("Could not locate the care-guide category menu on the homepage.")
+        text = text.replace(marker, CARE_REPTILOG_PROMO + marker, 1)
+
+    if "data-care-reptilog-footer" not in text:
+        if LEGACY_CARE_GUIDE_FOOTER not in text:
+            raise RuntimeError("Could not locate the existing care-guide footer callout on the homepage.")
+        text = text.replace(LEGACY_CARE_GUIDE_FOOTER, CARE_REPTILOG_FOOTER, 1)
+
     categories = ("geckos", "skinks", "lizards", "snakes")
     labels = {
         "geckos": "Geckos",
@@ -275,7 +308,7 @@ def sync_care_guide_home() -> None:
 
     if text != original:
         INDEX_PATH.write_text(text, encoding="utf-8")
-        print("Synced homepage care-guide cards and counts.")
+        print("Synced homepage care-guide cards, ReptiLog callouts, and counts.")
 
 
 def validate() -> None:
@@ -303,6 +336,10 @@ def validate() -> None:
     index = INDEX_PATH.read_text(encoding="utf-8")
     if 'care-guides/western-hognose-snake.html' not in index:
         raise RuntimeError("Western Hognose care guide is missing from the homepage.")
+    if "data-care-reptilog-promo" not in index or "data-care-reptilog-footer" not in index:
+        raise RuntimeError("ReptiLog care-guide promotion is missing from the homepage.")
+    if "hundreds of reptile species profiles and care guides" not in index:
+        raise RuntimeError("ReptiLog care-guide promotion copy is incomplete.")
     for category in ("geckos", "skinks", "lizards", "snakes"):
         card_count = len(re.findall(rf'\bdata-care="{category}"', index))
         count_match = re.search(

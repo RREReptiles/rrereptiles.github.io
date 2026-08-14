@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Apply live storefront behavior to generated product detail pages."""
+"""Apply final integration patches to product pages and care-guide navigation."""
 
 from __future__ import annotations
 
@@ -8,10 +8,20 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+INDEX_PATH = ROOT / "index.html"
 STOREFRONT_JS = ROOT / "shop" / "storefront.js"
 PRODUCT_PAGE_JS = ROOT / "shop" / "product-page.js"
 PRODUCTS_DIR = ROOT / "products"
 BUSINESS_EMAIL = "rrereptiles@gmail.com"
+
+WESTERN_HOGNOSE_CARD = """                <a href="care-guides/western-hognose-snake.html" class="guide-card" data-care="snakes" style="color:inherit;" hidden>
+                    <div class="guide-icon">&#129422;</div>
+                    <div>
+                        <h4>Western Hognose Snake</h4>
+                        <p>Heterodon nasicus</p>
+                    </div>
+                </a>
+"""
 
 
 def read_storefront_config() -> tuple[str, str]:
@@ -219,6 +229,55 @@ def patch_product_pages() -> int:
     return count
 
 
+def sync_care_guide_home() -> None:
+    text = INDEX_PATH.read_text(encoding="utf-8")
+    original = text
+
+    if 'care-guides/western-hognose-snake.html' not in text:
+        marker = (
+            '                <a href="care-guides/rough-green-snake.html" '
+            'class="guide-card" data-care="snakes" style="color:inherit;" hidden>'
+        )
+        if marker not in text:
+            raise RuntimeError("Could not locate the Snakes care-guide section on the homepage.")
+        text = text.replace(marker, WESTERN_HOGNOSE_CARD + marker, 1)
+
+    categories = ("geckos", "skinks", "lizards", "snakes")
+    labels = {
+        "geckos": "Geckos",
+        "skinks": "Skinks",
+        "lizards": "Lizards",
+        "snakes": "Snakes",
+        "all": "All Guides",
+    }
+    counts = {
+        category: len(re.findall(rf'\bdata-care="{category}"', text))
+        for category in categories
+    }
+    counts["all"] = sum(counts.values())
+
+    for category, label in labels.items():
+        pattern = (
+            rf'(<button type="button" class="care-tab(?: active)?" '
+            rf'data-care-filter="{category}"[^>]*>{re.escape(label)} <span>)'
+            rf'\d+(</span></button>)'
+        )
+        text, replacements = re.subn(
+            pattern,
+            lambda match, count=counts[category]: (
+                f"{match.group(1)}{count}{match.group(2)}"
+            ),
+            text,
+            count=1,
+        )
+        if replacements != 1:
+            raise RuntimeError(f"Could not update the {label} care-guide count.")
+
+    if text != original:
+        INDEX_PATH.write_text(text, encoding="utf-8")
+        print("Synced homepage care-guide cards and counts.")
+
+
 def validate() -> None:
     storefront = STOREFRONT_JS.read_text(encoding="utf-8")
     if "requestedValue === null ? null" not in storefront:
@@ -241,11 +300,24 @@ def validate() -> None:
     if any(value not in sample for value in required):
         raise RuntimeError("Generated product pages are missing live storefront bindings.")
 
+    index = INDEX_PATH.read_text(encoding="utf-8")
+    if 'care-guides/western-hognose-snake.html' not in index:
+        raise RuntimeError("Western Hognose care guide is missing from the homepage.")
+    for category in ("geckos", "skinks", "lizards", "snakes"):
+        card_count = len(re.findall(rf'\bdata-care="{category}"', index))
+        count_match = re.search(
+            rf'data-care-filter="{category}"[^>]*>[^<]+<span>(\d+)</span>',
+            index,
+        )
+        if not count_match or int(count_match.group(1)) != card_count:
+            raise RuntimeError(f"{category.title()} care-guide count is out of sync.")
+
 
 def main() -> None:
     patch_storefront_request()
     write_live_product_script()
     count = patch_product_pages()
+    sync_care_guide_home()
     validate()
     print(f"Applied live storefront bindings to {count} product pages.")
 

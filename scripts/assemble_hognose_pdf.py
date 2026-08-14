@@ -29,9 +29,9 @@ def main() -> None:
     chunks: list[str] = []
     for index in range(14):
         if index == 5:
-            names = ["part-05a.b64", "part-05b.b64", "part-05c.b64"]
+            names = ["part-05a.b64", "part-05b.b64", "part-05c0.b64", "part-05c1.b64", "part-05c2.b64"]
         elif index == 6:
-            names = ["part-06a.b64", "part-06b.b64", "part-06c.b64"]
+            names = ["part-06a0.b64", "part-06a1.b64", "part-06a2.b64", "part-06b.b64", "part-06c.b64"]
         else:
             names = [f"part-{index:02d}.b64"]
         chunks.extend(fetch_chunk(name) for name in names)

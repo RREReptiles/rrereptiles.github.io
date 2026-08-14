@@ -14,7 +14,7 @@ PHOTO_SYNC_JS = ROOT / "shop" / "storefront-photo-sync.js"
 STOREFRONT_JS = ROOT / "shop" / "storefront.js"
 BUILD_SEO = ROOT / "scripts" / "build_seo.py"
 PRODUCTS_DIR = ROOT / "products"
-ASSET_VERSION = "20260729-5"
+ASSET_VERSION = "20260814-1"
 STOREFRONT_ASSET_VERSION = "20260729-5"
 SHELL_COMPATIBILITY_MARKERS = "\n// Generated shell compatibility markers: SITE_HEADER SITE_FOOTER\n"
 

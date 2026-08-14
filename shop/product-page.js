@@ -204,11 +204,17 @@
         const existingSources = Array.from(gallery.querySelectorAll('img'))
             .map(image => image.getAttribute('src'))
             .filter(Boolean);
-        const catalogSources = Array.isArray(product?.image_urls) ? product.image_urls : [];
+        const catalogSources = [
+            ...(Array.isArray(product?.image_urls) ? product.image_urls : []),
+            product?.image_url
+        ]
+            .map(imageSource)
+            .filter(Boolean);
+        const fallbackSources = [...rememberedSources, ...existingSources]
+            .map(imageSource)
+            .filter(Boolean);
         const sources = Array.from(new Set(
-            [...catalogSources, product?.image_url, ...rememberedSources, ...existingSources]
-                .map(imageSource)
-                .filter(Boolean)
+            product && catalogSources.length > 0 ? catalogSources : fallbackSources
         ));
         if (sources.length === 0) sources.push(PLACEHOLDER_IMAGE);
         gallery.dataset.gallerySources = JSON.stringify(sources);

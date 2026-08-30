@@ -55,7 +55,7 @@
     function loadStorefrontPhotoSync() {
         if (document.querySelector('script[data-storefront-photo-sync]')) return;
         const script = document.createElement('script');
-        script.src = 'shop/storefront-photo-sync.js?v=20260727';
+        script.src = 'shop/storefront-photo-sync.js?v=20260830-1';
         script.defer = true;
         script.dataset.storefrontPhotoSync = '';
         document.head.appendChild(script);

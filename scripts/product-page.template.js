@@ -298,6 +298,9 @@
     }
 
     function applyProduct(product, layout) {
+        const heading = document.querySelector('.product-detail-copy h1');
+        if (heading) heading.textContent = textValue(product.public_name) || 'Product';
+        document.title = `${textValue(product.public_name) || 'Product'} | Red Rocks Exotic Reptiles`;
         prepareProductGallery(product);
         const action = document.querySelector('[data-product-action]');
         const price = document.querySelector('[data-product-price]');
@@ -346,7 +349,9 @@
         const layout = prepareDescriptionLayout();
         prepareProductGallery();
         const itemId = Number(document.body.dataset.storefrontItemId);
-        if (!Number.isInteger(itemId) || itemId <= 0) return;
+        const requestedSlug = textValue(new URLSearchParams(window.location.search).get('slug'));
+        const hasItemId = Number.isInteger(itemId) && itemId > 0;
+        if (!hasItemId && !requestedSlug) return;
 
         try {
             const response = await fetch(CATALOG_URL, {
@@ -360,8 +365,11 @@
             });
             const products = await response.json();
             if (!response.ok || !Array.isArray(products)) throw new Error('Catalog response was invalid.');
-            const product = products.find(row => Number(row.item_id) === itemId);
+            const product = products.find(row => (
+                hasItemId ? Number(row.item_id) === itemId : textValue(row.slug) === requestedSlug
+            ));
             if (!product) throw new Error('Product is no longer published.');
+            document.body.dataset.storefrontItemId = String(product.item_id);
             applyProduct(product, layout);
         } catch (error) {
             console.error('[product-page] catalog error', error);

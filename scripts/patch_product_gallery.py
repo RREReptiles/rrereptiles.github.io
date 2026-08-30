@@ -14,8 +14,8 @@ PHOTO_SYNC_JS = ROOT / "shop" / "storefront-photo-sync.js"
 STOREFRONT_JS = ROOT / "shop" / "storefront.js"
 BUILD_SEO = ROOT / "scripts" / "build_seo.py"
 PRODUCTS_DIR = ROOT / "products"
-ASSET_VERSION = "20260814-1"
-STOREFRONT_ASSET_VERSION = "20260729-5"
+ASSET_VERSION = "20260830-1"
+STOREFRONT_ASSET_VERSION = "20260830-1"
 SHELL_COMPATIBILITY_MARKERS = "\n// Generated shell compatibility markers: SITE_HEADER SITE_FOOTER\n"
 
 ANIMALS_PANEL = """
@@ -227,6 +227,8 @@ def validate() -> None:
 
     storefront = STOREFRONT_JS.read_text(encoding="utf-8")
     for marker in (
+        "function productDetailUrl(product)",
+        "`/product.html?slug=${encodeURIComponent(slug)}`",
         "function storefrontCategory(product)",
         ".trim().toLowerCase()",
         "'animal'",
@@ -237,6 +239,25 @@ def validate() -> None:
     ):
         if marker not in storefront:
             raise RuntimeError(f"Animal category routing marker is missing: {marker}")
+
+    photo_sync = PHOTO_SYNC_JS.read_text(encoding="utf-8")
+    if "`/product.html?slug=${encodeURIComponent(slug)}`" not in photo_sync:
+        raise RuntimeError("Storefront photo navigation does not use the live product detail shell.")
+
+    live_detail = ROOT / "product.html"
+    if not live_detail.exists():
+        raise RuntimeError("Missing live product detail shell: product.html")
+    live_detail_text = live_detail.read_text(encoding="utf-8")
+    for marker in (
+        'meta name="robots" content="noindex, follow"',
+        'data-product-price',
+        'data-product-stock',
+        'data-product-description',
+        'data-product-action',
+        '/shop/product-page.js?v=20260830-1',
+    ):
+        if marker not in live_detail_text:
+            raise RuntimeError(f"Live product detail shell is missing: {marker}")
 
     seo_script = BUILD_SEO.read_text(encoding="utf-8")
     for marker in (

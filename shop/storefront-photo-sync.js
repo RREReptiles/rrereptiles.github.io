@@ -45,28 +45,11 @@
 
     function productDetailPath(product, card) {
         const staticPath = staticDetailPath(card);
-        if (staticPath) return staticPath;
-
-        const explicit = String(
-            product?.detail_url
-            || product?.product_url
-            || product?.public_url
-            || ''
-        ).trim();
-        if (explicit) {
-            try {
-                const url = new URL(explicit, window.location.origin);
-                if (url.origin === window.location.origin && url.pathname.startsWith('/products/')) {
-                    return `${url.pathname}${url.search}${url.hash}`;
-                }
-            } catch (_) {
-                // Fall through to the catalog slug.
-            }
-        }
+        if (!product && staticPath) return staticPath;
 
         const slug = String(product?.slug || '').trim();
-        if (!slug) return '';
-        return `/products/${encodeURIComponent(slug)}.html`;
+        if (!slug) return staticPath;
+        return `/product.html?slug=${encodeURIComponent(slug)}`;
     }
 
     function customDisplayPrice(product) {

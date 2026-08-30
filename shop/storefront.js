@@ -70,7 +70,7 @@
 
     function productDetailUrl(product) {
         const slug = String(product?.slug || `item-${product?.item_id || 'product'}`);
-        return `/products/${encodeURIComponent(slug)}.html`;
+        return `/product.html?slug=${encodeURIComponent(slug)}`;
     }
 
     function syncProductDetailLink(card, product) {
@@ -393,6 +393,7 @@
         image.decoding = 'async';
         placeholder.replaceWith(image);
     }
+
 
 
 

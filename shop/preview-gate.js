@@ -9,6 +9,7 @@
     const SESSION_STORAGE_KEY = 'rre-stripe-checkout-session-v1';
     const CORE_SRC = '/shop/preview-gate-core.js?v=20260831-1';
     let staleCleanupPromise = Promise.resolve();
+    let bootstrapOwnedSession = null;
 
     function loadCart() {
         try {
@@ -44,7 +45,18 @@
         }
     }
 
+    function currentBootstrapSession() {
+        const current = loadSession();
+        if (!bootstrapOwnedSession || !current) return null;
+        if (current.sessionId !== bootstrapOwnedSession.sessionId) return null;
+        if (current.expiresAtMs <= Date.now()) return null;
+        return current;
+    }
+
     function activeSession() {
+        const bootstrapSession = currentBootstrapSession();
+        if (bootstrapSession) return bootstrapSession;
+
         const session = loadSession();
         if (!session || session.expiresAtMs <= Date.now()) return null;
         return session.cartHash === cartHash() ? session : null;
@@ -136,6 +148,7 @@
             throw new Error(payload.error || payload.message || `Checkout release failed (${response.status})`);
         }
         sessionStorage.removeItem(SESSION_STORAGE_KEY);
+        bootstrapOwnedSession = null;
         return true;
     }
 
@@ -243,7 +256,8 @@
         const session = loadSession();
         if (!session) return;
         const expired = session.expiresAtMs <= Date.now();
-        const cartChanged = session.cartHash !== cartHash();
+        const bootstrapOwned = bootstrapOwnedSession?.sessionId === session.sessionId && !expired;
+        const cartChanged = !bootstrapOwned && session.cartHash !== cartHash();
         if (!expired && !cartChanged) return;
 
         try {
@@ -262,13 +276,80 @@
         document.head.appendChild(script);
     }
 
+    function quantities(items) {
+        const result = new Map();
+        items.forEach(item => {
+            result.set(item.itemId, (result.get(item.itemId) || 0) + item.quantity);
+        });
+        return result;
+    }
+
+    function cartIsDesiredSubset(currentItems, desiredItems) {
+        const current = quantities(currentItems);
+        const desired = quantities(desiredItems);
+        for (const [itemId, quantity] of current.entries()) {
+            if (!desired.has(itemId) || quantity > desired.get(itemId)) return false;
+        }
+        return true;
+    }
+
+    async function waitForInitialStorefrontLoad() {
+        for (let attempt = 0; attempt < 80; attempt += 1) {
+            const storefront = window.RREStorefront;
+            const status = document.querySelector('[data-storefront-status]');
+            const loading = /loading current inventory|loading products/i.test(status?.textContent || '');
+            if (typeof storefront?.refresh === 'function' && status && (status.hidden || !loading)) return true;
+            await new Promise(resolve => window.setTimeout(resolve, 50));
+        }
+        return typeof window.RREStorefront?.refresh === 'function';
+    }
+
+    async function restoreReservedCartIfNeeded() {
+        const session = currentBootstrapSession();
+        if (!session) return;
+        const desiredItems = sessionItems(session);
+        if (desiredItems.length === 0) return;
+
+        const storefrontReady = await waitForInitialStorefrontLoad();
+        if (!storefrontReady) return;
+
+        const currentItems = loadCart();
+        if (cartHash(currentItems) === session.cartHash) {
+            syncReservationUi();
+            return;
+        }
+        if (!cartIsDesiredSubset(currentItems, desiredItems)) return;
+
+        const current = quantities(currentItems);
+        for (const item of desiredItems) {
+            let missing = item.quantity - (current.get(item.itemId) || 0);
+            while (missing > 0) {
+                const url = new URL(window.location.href);
+                url.searchParams.set('add', String(item.itemId));
+                window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+                await window.RREStorefront.refresh();
+                current.set(item.itemId, (current.get(item.itemId) || 0) + 1);
+                missing -= 1;
+            }
+        }
+        syncReservationUi();
+    }
+
     async function bootstrap() {
+        const initialSession = loadSession();
+        if (initialSession && initialSession.expiresAtMs > Date.now() && sessionItems(initialSession).length > 0) {
+            bootstrapOwnedSession = initialSession;
+        }
+
         installCatalogPatch();
         installCartEditGuard();
         observeReservationUi();
         staleCleanupPromise = releaseStaleSession();
         await staleCleanupPromise;
         loadCore();
+        restoreReservedCartIfNeeded().catch(error => {
+            console.warn('[storefront-reservation] reserved cart recovery deferred', error);
+        });
     }
 
     bootstrap();

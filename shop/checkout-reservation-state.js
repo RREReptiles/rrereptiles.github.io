@@ -24,10 +24,11 @@
             const session = JSON.parse(sessionStorage.getItem(SESSION_STORAGE_KEY) || 'null');
             if (!session || typeof session !== 'object') return null;
             const expiresAt = Number(session.expiresAt || 0) * 1000;
-            if (!session.sessionId || !session.cartHash || !Number.isFinite(expiresAt) || expiresAt <= Date.now()) {
+            if (!session.sessionId || !session.cartHash || !Number.isFinite(expiresAt)) {
                 sessionStorage.removeItem(SESSION_STORAGE_KEY);
                 return null;
             }
+            if (expiresAt <= Date.now()) return null;
             return session.cartHash === cartHash(cart) ? session : null;
         } catch (_) {
             sessionStorage.removeItem(SESSION_STORAGE_KEY);

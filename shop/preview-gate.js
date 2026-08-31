@@ -8,6 +8,7 @@
     const CART_STORAGE_KEY = 'rre-storefront-cart-v1';
     const SESSION_STORAGE_KEY = 'rre-stripe-checkout-session-v1';
     const CORE_SRC = '/shop/preview-gate-core.js?v=20260831-1';
+    let staleCleanupPromise = Promise.resolve();
 
     function loadCart() {
         try {
@@ -100,8 +101,10 @@
     function installCatalogPatch() {
         const originalFetch = window.fetch.bind(window);
         window.fetch = async (input, init) => {
+            const catalogRequest = isCatalogRequest(input);
+            if (catalogRequest) await staleCleanupPromise;
             const response = await originalFetch(input, init);
-            if (!isCatalogRequest(input) || !response.ok || !activeSession()) return response;
+            if (!catalogRequest || !response.ok || !activeSession()) return response;
 
             try {
                 const products = await response.clone().json();
@@ -263,7 +266,8 @@
         installCatalogPatch();
         installCartEditGuard();
         observeReservationUi();
-        await releaseStaleSession();
+        staleCleanupPromise = releaseStaleSession();
+        await staleCleanupPromise;
         loadCore();
     }
 

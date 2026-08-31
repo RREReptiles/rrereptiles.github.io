@@ -1,0 +1,230 @@
+@import url("/shop/seo.css");
+
+.events-shell {
+  width: min(var(--max), calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 1.25rem 0 4.5rem;
+}
+
+.events-hero {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #9e1403, #43140e 62%, #1a1a1a);
+  color: #fff;
+  border-radius: 18px;
+  padding: clamp(2rem, 6vw, 4.5rem);
+  margin-bottom: 1.75rem;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .16);
+}
+
+.events-hero::after {
+  content: '';
+  position: absolute;
+  width: 340px;
+  height: 340px;
+  right: -100px;
+  top: -150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,.16), transparent 68%);
+  pointer-events: none;
+}
+
+.events-hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+.events-hero h1 {
+  margin: .25rem 0 .8rem;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2.2rem, 5vw, 3.9rem);
+  line-height: 1.05;
+}
+
+.events-hero .lead {
+  margin: 0;
+  max-width: 760px;
+  color: rgba(255,255,255,.92);
+}
+
+.events-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1rem 0 1.25rem;
+}
+
+.events-summary h2 {
+  margin: 0;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
+.events-summary p {
+  margin: .2rem 0 0;
+  color: var(--muted);
+}
+
+.events-status {
+  min-height: 52px;
+  display: grid;
+  place-items: center;
+  margin: 1rem 0;
+  color: var(--muted);
+}
+
+.events-status[hidden] {
+  display: none;
+}
+
+.events-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.event-card {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) auto;
+  gap: 1.25rem;
+  align-items: start;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 5px 18px rgba(0,0,0,.065);
+}
+
+.event-date-badge {
+  overflow: hidden;
+  border: 1px solid #d9c6be;
+  border-radius: 13px;
+  background: #f8f3ea;
+  text-align: center;
+}
+
+.event-date-month {
+  display: block;
+  padding: .38rem .4rem;
+  background: var(--accent);
+  color: #fff;
+  font-size: .76rem;
+  font-weight: 800;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.event-date-day {
+  display: block;
+  padding: .55rem .25rem .15rem;
+  color: var(--ink);
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.event-date-end {
+  display: block;
+  min-height: 1.75rem;
+  padding: .15rem .3rem .5rem;
+  color: var(--muted);
+  font-size: .74rem;
+  font-weight: 700;
+}
+
+.event-copy h3 {
+  margin: 0 0 .25rem;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.3rem, 2.4vw, 1.65rem);
+  line-height: 1.2;
+}
+
+.event-dates,
+.event-location,
+.event-promoter,
+.event-description {
+  margin: .3rem 0 0;
+}
+
+.event-dates {
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.event-location,
+.event-promoter {
+  color: var(--muted);
+}
+
+.event-description {
+  max-width: 75ch;
+  padding-top: .35rem;
+  color: #3f3b36;
+}
+
+.event-action {
+  align-self: center;
+  white-space: nowrap;
+}
+
+.event-action.button {
+  margin: 0;
+}
+
+.events-empty,
+.events-error {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2.25rem 1.5rem;
+  text-align: center;
+  box-shadow: 0 5px 18px rgba(0,0,0,.06);
+}
+
+.events-empty h3,
+.events-error h3 {
+  margin: 0 0 .45rem;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.5rem;
+}
+
+.events-empty p,
+.events-error p {
+  max-width: 650px;
+  margin: 0 auto;
+  color: var(--muted);
+}
+
+.events-note {
+  margin-top: 1.5rem;
+  padding: 1rem 1.15rem;
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  background: rgba(255,255,255,.62);
+  color: var(--muted);
+  font-size: .92rem;
+}
+
+@media (max-width: 760px) {
+  .event-card {
+    grid-template-columns: 82px minmax(0, 1fr);
+    gap: .9rem;
+    padding: 1rem;
+  }
+
+  .event-action {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .event-action.button {
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+
+  .event-date-day {
+    font-size: 1.7rem;
+  }
+}

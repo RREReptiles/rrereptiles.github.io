@@ -457,6 +457,7 @@
 
 
 
+
     function storefrontCategory(product) {
         const category = String(product?.store_category || '').trim().toLowerCase();
         if (['animal', 'animals', 'reptile', 'reptiles', 'geckos-crested', 'geckos-other'].includes(category)) {
@@ -583,6 +584,7 @@
             ? 'Secure card and wallet payments are processed by Stripe.'
             : 'Products will become purchasable as their shipping details are verified.');
     }
+
 
 
 

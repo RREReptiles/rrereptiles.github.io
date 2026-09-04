@@ -275,12 +275,14 @@ def sync_care_guide_home() -> None:
             raise RuntimeError("Could not locate the existing care-guide footer callout on the homepage.")
         text = text.replace(LEGACY_CARE_GUIDE_FOOTER, CARE_REPTILOG_FOOTER, 1)
 
-    categories = ("geckos", "skinks", "lizards", "snakes")
+    categories = ("geckos", "skinks", "lizards", "snakes", "amphibians", "invertebrates")
     labels = {
         "geckos": "Geckos",
         "skinks": "Skinks",
         "lizards": "Lizards",
         "snakes": "Snakes",
+        "amphibians": "Amphibians",
+        "invertebrates": "Invertebrates",
         "all": "All Guides",
     }
     counts = {

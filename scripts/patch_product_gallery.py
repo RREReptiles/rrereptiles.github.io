@@ -15,13 +15,26 @@ STOREFRONT_JS = ROOT / "shop" / "storefront.js"
 BUILD_SEO = ROOT / "scripts" / "build_seo.py"
 PRODUCTS_DIR = ROOT / "products"
 ASSET_VERSION = "20260830-1"
-STOREFRONT_ASSET_VERSION = "20260830-1"
+STOREFRONT_ASSET_VERSION = "20260912-1"
 SHELL_COMPATIBILITY_MARKERS = "\n// Generated shell compatibility markers: SITE_HEADER SITE_FOOTER\n"
 
 ANIMALS_PANEL = """
             <!-- Animals -->
             <div class="shop-category active" id="shop-animals">
                 <p class="section-subtitle">Browse all reptiles and other animals currently available from Red Rocks Exotic Reptiles.</p>
+                <div class="animal-browse-tools" data-animal-browse-tools hidden>
+                    <div class="animal-filter-chips" data-animal-filter-chips role="group" aria-label="Filter animals by type"></div>
+                    <label class="animal-sort-control">
+                        Sort
+                        <select data-animal-sort aria-label="Sort animals">
+                            <option value="featured">Featured</option>
+                            <option value="name">Name A-Z</option>
+                            <option value="price-asc">Price: Low to High</option>
+                            <option value="price-desc">Price: High to Low</option>
+                        </select>
+                    </label>
+                    <div class="animal-results-count" data-animal-results-count aria-live="polite"></div>
+                </div>
                 <div class="product-grid"></div>
             </div>
 

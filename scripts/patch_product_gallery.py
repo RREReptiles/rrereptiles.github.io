@@ -15,7 +15,7 @@ STOREFRONT_JS = ROOT / "shop" / "storefront.js"
 BUILD_SEO = ROOT / "scripts" / "build_seo.py"
 PRODUCTS_DIR = ROOT / "products"
 ASSET_VERSION = "20260830-1"
-STOREFRONT_ASSET_VERSION = "20260912-1"
+STOREFRONT_ASSET_VERSION = "20260912-2"
 SHELL_COMPATIBILITY_MARKERS = "\n// Generated shell compatibility markers: SITE_HEADER SITE_FOOTER\n"
 
 ANIMALS_PANEL = """

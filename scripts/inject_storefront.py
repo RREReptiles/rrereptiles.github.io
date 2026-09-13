@@ -2,7 +2,7 @@ import re
 from pathlib import Path
 
 INDEX_PATH = Path("index.html")
-ASSET_VERSION = "20260912-1"
+ASSET_VERSION = "20260912-2"
 STYLESHEETS = (
     '    <link rel="stylesheet" href="shop/storefront.css">\n',
     '    <link rel="stylesheet" href="shop/checkout.css">\n',

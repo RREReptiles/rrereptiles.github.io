@@ -479,6 +479,77 @@
             color: var(--white);
         }
 
+
+        .animal-browse-tools[hidden] { display: none; }
+
+        .animal-browse-tools {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: .85rem 1rem;
+            margin: 0 0 1.5rem;
+            padding: .9rem 1rem;
+            background: var(--card-bg);
+            border: 1px solid #e0dbd1;
+            border-radius: var(--radius);
+        }
+
+        .animal-filter-chips {
+            display: flex;
+            flex: 1 1 360px;
+            min-width: 0;
+            gap: .5rem;
+            overflow-x: auto;
+            scrollbar-width: thin;
+            padding-bottom: .1rem;
+        }
+
+        .animal-filter-chip {
+            flex: 0 0 auto;
+            border: 1px solid rgba(158, 20, 3, .28);
+            background: var(--white);
+            color: var(--black);
+            border-radius: 999px;
+            padding: .45rem .8rem;
+            font: inherit;
+            font-size: .8rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .animal-filter-chip:hover,
+        .animal-filter-chip.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--white);
+        }
+
+        .animal-sort-control {
+            display: inline-flex;
+            margin-left: auto;
+            align-items: center;
+            gap: .5rem;
+            color: var(--gray);
+            font-size: .82rem;
+            white-space: nowrap;
+        }
+
+        .animal-sort-control select {
+            border: 1px solid #d7d1c8;
+            border-radius: 8px;
+            background: var(--white);
+            color: var(--black);
+            padding: .42rem .6rem;
+            font: inherit;
+        }
+
+        .animal-results-count {
+            flex-basis: 100%;
+            color: var(--gray);
+            font-size: .78rem;
+        }
+
         .shop-category { display: none; }
         .shop-category.active { display: block; }
 
@@ -1251,7 +1322,7 @@
         ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
 
         /* ==========================================================
-           DESIGN PASS 2 — Full Site Elevation
+           DESIGN PASS 2 Ã¢â‚¬â€ Full Site Elevation
            ========================================================== */
 
         /* --- Serif headlines for warmth & character --- */
@@ -1347,7 +1418,7 @@
         }
 
         /* ==========================================================
-           FEATURE CARDS (Home – What We Offer)
+           FEATURE CARDS (Home Ã¢â‚¬â€œ What We Offer)
            ========================================================== */
 
         .feature-card {
@@ -1626,7 +1697,7 @@
 
 <body>
     <!-- SEO-NOSCRIPT:BEGIN -->
-    <noscript><div class="section"><h2>Browse Red Rocks Exotic Reptiles</h2><p>Current products, care guides, business information, and shipping details are available throughout this website.</p><p><a href="/#shop">Shop current inventory</a> · <a href="/#care">Reptile care guides</a> · <a href="/#faq">Shipping and pickup information</a></p></div></noscript>
+    <noscript><div class="section"><h2>Browse Red Rocks Exotic Reptiles</h2><p>Current products, care guides, business information, and shipping details are available throughout this website.</p><p><a href="/#shop">Shop current inventory</a> Ã‚Â· <a href="/#care">Reptile care guides</a> Ã‚Â· <a href="/#faq">Shipping and pickup information</a></p></div></noscript>
     <!-- SEO-NOSCRIPT:END -->
     <!-- ===== HEADER ===== -->
     <header>
@@ -1669,12 +1740,12 @@
             <img src="images/Logo%20Letters.png" alt="Red Rocks Exotic Reptiles" class="hero-logo">
             <div class="hero-badges">
                 <button type="button" class="badge badge-link" data-page="about" aria-label="Go to About Us"><img src="https://flagcdn.com/w20/us.png" srcset="https://flagcdn.com/w40/us.png 2x" alt="United States flag" class="flag-icon">Colorado Based</button>
-                <button type="button" class="badge badge-link" data-page="about" aria-label="Go to About Us">🎖️ Veteran Owned</button>
-                <button type="button" class="badge badge-link" data-shop-target="animals" aria-label="Go to Other Geckos in Shop">🦎 Ethically Bred Reptiles</button>
+                <button type="button" class="badge badge-link" data-page="about" aria-label="Go to About Us">Ã°Å¸Å½â€“Ã¯Â¸Â Veteran Owned</button>
+                <button type="button" class="badge badge-link" data-shop-target="animals" aria-label="Go to Other Geckos in Shop">Ã°Å¸Â¦Å½ Ethically Bred Reptiles</button>
                 <button type="button" class="badge badge-link" data-shop-target="plants" aria-label="Go to Aquatic Plants in Shop">&#127793; Aquatic & Tropical Plants</button>
-                <button type="button" class="badge badge-link" data-shop-target="entomology" aria-label="Go to Entomology Art in Shop">🦋 Entomology Art</button>
+                <button type="button" class="badge badge-link" data-shop-target="entomology" aria-label="Go to Entomology Art in Shop">Ã°Å¸Â¦â€¹ Entomology Art</button>
             </div>
-            <h1>Red Rocks Exotic Reptiles — Colorado Reptile Store</h1>
+            <h1>Red Rocks Exotic Reptiles Ã¢â‚¬â€ Colorado Reptile Store</h1>
             <p class="tagline">Colorado's source for ethically bred geckos, skinks, arboreal lizards, aquatic plants&nbsp;&amp;&nbsp;reptile supplies.</p>
             <div class="hero-buttons">
                 <a href="/#shop" class="btn btn-primary" data-page="shop">Browse the Shop</a>
@@ -1718,12 +1789,12 @@
                     <p>Fully submerged grown plants including Amazon Swords, Java Fern, Java Moss, Red Root Floaters, Hornwort, and many more varieties.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🦗</div>
+                    <div class="feature-icon">Ã°Å¸Â¦â€”</div>
                     <h3>Feeders &amp; Insects</h3>
                     <p>Mealworms, Superworms, Dubia Roaches, and White Dwarf Isopods. Colonies growing &mdash; more options coming soon!</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🔨</div>
+                    <div class="feature-icon">Ã°Å¸â€Â¨</div>
                     <h3>Custom Goods</h3>
                     <p>Hand-made arboreal cup ledges, food bowls, flat hides, climbing vines, enclosure kits, and more in a wide range of colors.</p>
                 </div>
@@ -1954,6 +2025,19 @@
             <!-- Animals -->
             <div class="shop-category active" id="shop-animals">
                 <p class="section-subtitle">Browse all reptiles and other animals currently available from Red Rocks Exotic Reptiles.</p>
+                <div class="animal-browse-tools" data-animal-browse-tools hidden>
+                    <div class="animal-filter-chips" data-animal-filter-chips role="group" aria-label="Filter animals by type"></div>
+                    <label class="animal-sort-control">
+                        Sort
+                        <select data-animal-sort aria-label="Sort animals">
+                            <option value="featured">Featured</option>
+                            <option value="name">Name A-Z</option>
+                            <option value="price-asc">Price: Low to High</option>
+                            <option value="price-desc">Price: High to Low</option>
+                        </select>
+                    </label>
+                    <div class="animal-results-count" data-animal-results-count aria-live="polite"></div>
+                </div>
                 <div class="product-grid"></div>
             </div>
 
@@ -3277,7 +3361,7 @@
             });
         })();
     </script>
-    <script src="shop/storefront.js?v=20260830-1" defer></script>
-    <script src="shop/preview-gate.js?v=20260830-1" defer></script>
+    <script src="shop/storefront.js?v=20260912-1" defer></script>
+    <script src="shop/preview-gate.js?v=20260912-1" defer></script>
 </body>
 </html>

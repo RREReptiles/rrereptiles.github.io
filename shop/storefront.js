@@ -23,7 +23,9 @@
     const state = {
         products: new Map(),
         cart: loadCart(),
-        loaded: false
+        loaded: false,
+        animalGroup: 'all',
+        animalSort: 'featured'
     };
 
     function loadCart() {
@@ -479,6 +481,113 @@
         return category || 'husbandry-supplies';
     }
 
+    const ANIMAL_GROUP_LABELS = new Map([
+        ['gecko', 'Geckos'],
+        ['lizard_skink', 'Lizards & Skinks'],
+        ['frog_amphibian', 'Frogs & Amphibians'],
+        ['snake', 'Snakes'],
+        ['turtle_tortoise', 'Turtles & Tortoises'],
+        ['invertebrate', 'Invertebrates'],
+        ['other', 'Other']
+    ]);
+
+    function animalGroup(product) {
+        const group = String(product?.animal_group || '').trim().toLowerCase();
+        return ANIMAL_GROUP_LABELS.has(group) ? group : 'other';
+    }
+
+    function compareAnimalProducts(a, b) {
+        if (state.animalSort === 'name') {
+            return String(a.public_name || '').localeCompare(String(b.public_name || ''));
+        }
+        if (state.animalSort === 'price-asc' || state.animalSort === 'price-desc') {
+            const aPrice = Number(a.price || 0);
+            const bPrice = Number(b.price || 0);
+            const aPriced = aPrice > 0;
+            const bPriced = bPrice > 0;
+            if (aPriced !== bPriced) return aPriced ? -1 : 1;
+            if (aPrice !== bPrice) {
+                return state.animalSort === 'price-asc' ? aPrice - bPrice : bPrice - aPrice;
+            }
+        }
+        const aOrder = Number.isFinite(Number(a.display_order)) ? Number(a.display_order) : 0;
+        const bOrder = Number.isFinite(Number(b.display_order)) ? Number(b.display_order) : 0;
+        if (aOrder !== bOrder) return aOrder - bOrder;
+        return String(a.public_name || '').localeCompare(String(b.public_name || ''));
+    }
+
+    function applyAnimalBrowseState() {
+        const panel = document.getElementById('shop-animals');
+        const grid = panel?.querySelector('.product-grid');
+        const count = panel?.querySelector('[data-animal-results-count]');
+        if (!grid) return;
+
+        const cards = Array.from(grid.querySelectorAll('.product-card[data-storefront-item-id]'));
+        const visible = [];
+        cards.forEach(card => {
+            const product = state.products.get(Number(card.dataset.storefrontItemId));
+            if (!product) return;
+            const matches = state.animalGroup === 'all' || animalGroup(product) === state.animalGroup;
+            card.hidden = !matches;
+            if (matches) visible.push({ card, product });
+        });
+
+        visible.sort((a, b) => compareAnimalProducts(a.product, b.product));
+        visible.forEach(({ card }) => grid.appendChild(card));
+
+        panel.querySelectorAll('[data-animal-group]').forEach(button => {
+            const selected = button.dataset.animalGroup === state.animalGroup;
+            button.classList.toggle('active', selected);
+            button.setAttribute('aria-pressed', selected ? 'true' : 'false');
+        });
+        const sort = panel.querySelector('[data-animal-sort]');
+        if (sort && sort.value !== state.animalSort) sort.value = state.animalSort;
+        if (count) count.textContent = `${visible.length} animal${visible.length === 1 ? '' : 's'} shown`;
+    }
+
+    function renderAnimalBrowseControls(products) {
+        const panel = document.getElementById('shop-animals');
+        const tools = panel?.querySelector('[data-animal-browse-tools]');
+        const chips = panel?.querySelector('[data-animal-filter-chips]');
+        const sort = panel?.querySelector('[data-animal-sort]');
+        if (!tools || !chips || !sort) return;
+
+        const animals = products.filter(product => storefrontCategory(product) === 'animals');
+        if (animals.length === 0) {
+            tools.hidden = true;
+            return;
+        }
+
+        const counts = new Map();
+        animals.forEach(product => {
+            const group = animalGroup(product);
+            counts.set(group, (counts.get(group) || 0) + 1);
+        });
+        if (state.animalGroup !== 'all' && !counts.has(state.animalGroup)) state.animalGroup = 'all';
+
+        const buttons = [`<button type="button" class="animal-filter-chip" data-animal-group="all">All (${animals.length})</button>`];
+        ANIMAL_GROUP_LABELS.forEach((label, group) => {
+            const groupCount = counts.get(group) || 0;
+            if (groupCount > 0) {
+                buttons.push(`<button type="button" class="animal-filter-chip" data-animal-group="${group}">${escapeHtml(label)} (${groupCount})</button>`);
+            }
+        });
+        chips.innerHTML = buttons.join('');
+        chips.querySelectorAll('[data-animal-group]').forEach(button => {
+            button.addEventListener('click', () => {
+                state.animalGroup = button.dataset.animalGroup || 'all';
+                applyAnimalBrowseState();
+            });
+        });
+        sort.value = state.animalSort;
+        sort.onchange = () => {
+            state.animalSort = sort.value;
+            applyAnimalBrowseState();
+        };
+        tools.hidden = false;
+        applyAnimalBrowseState();
+    }
+
     function renderProducts(products) {
         document.querySelectorAll('.product-card[data-storefront-generated]').forEach(card => card.remove());
 
@@ -501,6 +610,8 @@
                 grid.appendChild(generatedCard(product));
             }
         });
+
+        renderAnimalBrowseControls(products);
 
         document.querySelectorAll('[data-storefront-add]').forEach(button => {
             button.addEventListener('click', () => addToCart(Number(button.dataset.storefrontAdd)));

@@ -529,7 +529,7 @@
             const product = state.products.get(Number(card.dataset.storefrontItemId));
             if (!product) return;
             const matches = state.animalGroup === 'all' || animalGroup(product) === state.animalGroup;
-            card.hidden = !matches;
+            card.classList.toggle('animal-filter-hidden', !matches);
             if (matches) visible.push({ card, product });
         });
 

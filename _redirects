@@ -1,0 +1,17 @@
+# Legacy Google Sites / pre-Cloudflare routes
+# Keep these exact-path redirects isolated from the live ReptiTrax-backed storefront assets.
+
+/home / 301
+/home/ / 301
+
+/shop /#shop 301
+/shop/ /#shop 301
+
+/care-guides /#care 301
+/care-guides/ /#care 301
+
+/shipping-and-faqs /#faq 301
+/shipping-and-faqs/ /#faq 301
+
+/store-policies /#faq 301
+/store-policies/ /#faq 301

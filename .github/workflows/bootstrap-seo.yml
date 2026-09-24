@@ -217,6 +217,29 @@ jobs:
           if leaked:
               raise SystemExit(f'Private backend naming remains in public source: {leaked}')
 
+          mojibake_markers = (
+              "\u00c3\u00b0",
+              "\u00c3\u00a2",
+              "\u00c2\u00b0",
+              "\u00e2\u20ac",
+              "\u00f0\u0178",
+              "\ufffd",
+          )
+          mojibake_hits = []
+          for path in Path('.').rglob('*'):
+              if not path.is_file() or '.git' in path.parts:
+                  continue
+              if path.suffix.lower() not in text_suffixes and path.name not in {'CNAME', 'robots.txt'}:
+                  continue
+              try:
+                  content = path.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+              if any(marker in content for marker in mojibake_markers):
+                  mojibake_hits.append(str(path))
+          if mojibake_hits:
+              raise SystemExit(f'Mojibake or invalid replacement characters found in public source: {mojibake_hits}')
+
           print(f'Validated {len(pages)} integrated product pages')
           PY
 

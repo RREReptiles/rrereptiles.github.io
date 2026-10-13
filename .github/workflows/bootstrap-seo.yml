@@ -41,16 +41,21 @@ jobs:
 
       - name: Generate integrated SEO pages
         run: |
-          python scripts/build_seo_integrated.py
-          python scripts/postprocess_seo_integration.py
-          python scripts/generate_product_descriptions.py
-          python scripts/patch_product_gallery.py
-          python scripts/clean_product_pages.py
-          python scripts/scrub_private_backend_name.py
+          if python scripts/seo_catalog_gate.py; then
+            python scripts/build_seo_integrated.py
+            python scripts/postprocess_seo_integration.py
+            python scripts/generate_product_descriptions.py
+            python scripts/patch_product_gallery.py
+            python scripts/clean_product_pages.py
+            python scripts/scrub_private_backend_name.py
+          else
+            status=$?
+            if [ "$status" -ne 42 ]; then exit "$status"; fi
+          fi
 
       - name: Validate output
         run: |
-          python -m py_compile scripts/build_seo.py scripts/build_seo_integrated.py scripts/postprocess_seo_integration.py scripts/generate_product_descriptions.py scripts/patch_product_gallery.py scripts/clean_product_pages.py scripts/wire_product_descriptions.py scripts/scrub_private_backend_name.py
+          python -m py_compile scripts/build_seo.py scripts/build_seo_integrated.py scripts/postprocess_seo_integration.py scripts/generate_product_descriptions.py scripts/patch_product_gallery.py scripts/clean_product_pages.py scripts/wire_product_descriptions.py scripts/scrub_private_backend_name.py scripts/seo_catalog_gate.py
           node --check shop/storefront.js
           node --check shop/product-page.js
           python - <<'PY'
@@ -62,6 +67,15 @@ jobs:
           pages = list(Path('products').glob('*.html'))
           if not pages:
               raise SystemExit('No product pages generated')
+          manifest = __import__('json').loads(Path('shop/product-thumbnails.json').read_text(encoding='utf-8'))
+          for item_id, variants in manifest.items():
+              for variant in ('card', 'detail'):
+                  image = Path(variants[variant].lstrip('/'))
+                  if not image.is_file():
+                      raise SystemExit(f'Missing {variant} image for item {item_id}: {image}')
+          storage_pages = [str(page) for page in pages if 'supabase.co/storage/v1/' in page.read_text(encoding='utf-8')]
+          if storage_pages:
+              raise SystemExit(f'Product pages still load Supabase originals: {storage_pages}')
 
           required = [
               Path('index.html'),

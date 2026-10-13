@@ -4,6 +4,26 @@
     const CATALOG_URL = 'https://zezpkoulxjagljjbyhhk.supabase.co/rest/v1/rpc/get_storefront_catalog';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_w1szxATkVRFs2JBQOyG8rg_ULipgOPv';
     const PLACEHOLDER_IMAGE = '/images/Logo.svg';
+    let productThumbnails = {};
+
+    async function loadProductThumbnails() {
+        try {
+            const response = await fetch('/shop/product-thumbnails.json');
+            if (response.ok) productThumbnails = await response.json();
+        } catch (_) {
+            productThumbnails = {};
+        }
+    }
+
+    function isSupabaseStorageImage(source) {
+        try {
+            const url = new URL(source, window.location.href);
+            return url.hostname.endsWith('.supabase.co') &&
+                url.pathname.startsWith('/storage/v1/');
+        } catch (_) {
+            return false;
+        }
+    }
     const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
     function renderSiteShell() {
@@ -204,15 +224,12 @@
         const existingSources = Array.from(gallery.querySelectorAll('img'))
             .map(image => image.getAttribute('src'))
             .filter(Boolean);
-        const catalogImageList = Array.isArray(product?.image_urls) ? product.image_urls : [];
-        const catalogSources = (catalogImageList.length > 0 ? catalogImageList : [product?.image_url])
-            .map(imageSource)
-            .filter(Boolean);
         const fallbackSources = [...rememberedSources, ...existingSources]
             .map(imageSource)
-            .filter(Boolean);
+            .filter(source => source && !isSupabaseStorageImage(source));
+        const thumbnail = productThumbnails[String(product?.item_id)]?.detail;
         const sources = Array.from(new Set(
-            product && catalogSources.length > 0 ? catalogSources : fallbackSources
+            thumbnail ? [thumbnail] : fallbackSources
         ));
         if (sources.length === 0) sources.push(PLACEHOLDER_IMAGE);
         gallery.dataset.gallerySources = JSON.stringify(sources);
@@ -347,6 +364,7 @@
     async function init() {
         renderSiteShell();
         const layout = prepareDescriptionLayout();
+        await loadProductThumbnails();
         prepareProductGallery();
         const itemId = Number(document.body.dataset.storefrontItemId);
         const requestedSlug = textValue(new URLSearchParams(window.location.search).get('slug'));

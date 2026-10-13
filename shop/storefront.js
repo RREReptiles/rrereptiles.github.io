@@ -4,6 +4,7 @@
     const SUPABASE_URL = 'https://zezpkoulxjagljjbyhhk.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_w1szxATkVRFs2JBQOyG8rg_ULipgOPv';
     const CATALOG_URL = `${SUPABASE_URL}/rest/v1/rpc/get_storefront_catalog`;
+    const THUMBNAIL_MANIFEST_URL = '/shop/product-thumbnails.json';
     const CART_STORAGE_KEY = 'rre-storefront-cart-v1';
     const currency = new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -27,6 +28,16 @@
         animalGroup: 'all',
         animalSort: 'featured'
     };
+    let productThumbnails = {};
+
+    async function loadProductThumbnails() {
+        try {
+            const response = await fetch(THUMBNAIL_MANIFEST_URL);
+            if (response.ok) productThumbnails = await response.json();
+        } catch (_) {
+            productThumbnails = {};
+        }
+    }
 
     function loadCart() {
         try {
@@ -67,7 +78,7 @@
     }
 
     function productImage(product) {
-        return product.image_url || 'images/Logo.svg';
+        return productThumbnails[String(product.item_id)]?.card || 'images/Logo.svg';
     }
 
     function productDetailUrl(product) {
@@ -277,7 +288,10 @@
         status.textContent = 'Loading current inventory…';
 
         try {
-            const products = await requestJson(CATALOG_URL, { method: 'POST', body: '{}' });
+            const [products] = await Promise.all([
+                requestJson(CATALOG_URL, { method: 'POST', body: '{}' }),
+                loadProductThumbnails()
+            ]);
             if (!Array.isArray(products)) throw new Error('Catalog response was invalid.');
             state.products = new Map(products.map(product => [Number(product.item_id), product]));
             state.loaded = true;
@@ -377,7 +391,7 @@
         const placeholder = card.querySelector('div.product-img');
         const shouldReplaceHardcodedImage = CATALOG_IMAGE_OVERRIDES.has(matchingName(product.public_name));
 
-        if (currentImage && (product.image_url || shouldReplaceHardcodedImage)) {
+        if (currentImage && (productThumbnails[String(product.item_id)] || shouldReplaceHardcodedImage)) {
             currentImage.src = imageUrl;
             currentImage.alt = product.public_name;
             currentImage.loading = 'lazy';
@@ -385,7 +399,7 @@
             return;
         }
 
-        if (!placeholder || !product.image_url) return;
+        if (!placeholder || !productThumbnails[String(product.item_id)]) return;
 
         const image = document.createElement('img');
         image.src = imageUrl;

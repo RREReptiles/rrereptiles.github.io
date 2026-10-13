@@ -2,6 +2,16 @@
     'use strict';
 
     const SUPABASE_URL = 'https://zezpkoulxjagljjbyhhk.supabase.co';
+    let productThumbnails = {};
+
+    async function loadProductThumbnails() {
+        try {
+            const response = await fetch('/shop/product-thumbnails.json');
+            if (response.ok) productThumbnails = await response.json();
+        } catch (_) {
+            productThumbnails = {};
+        }
+    }
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_w1szxATkVRFs2JBQOyG8rg_ULipgOPv';
     const FUNCTIONS_URL = `${SUPABASE_URL}/functions/v1`;
     const CATALOG_URL = `${SUPABASE_URL}/rest/v1/rpc/get_storefront_catalog`;
@@ -110,7 +120,7 @@
             const product = map.get(item.itemId);
             return `
                 <div class="checkout-item">
-                    <img src="${escapeHtml(product.image_url || 'images/Logo.svg')}" alt="">
+                    <img src="${escapeHtml(productThumbnails[String(product.item_id)]?.card || 'images/Logo.svg')}" alt="">
                     <div>
                         <h3>${escapeHtml(product.public_name)}</h3>
                         <p>Qty ${item.quantity} × ${currency.format(Number(product.price))}</p>
@@ -146,7 +156,8 @@
         try {
             const [products, config] = await Promise.all([
                 requestJson(CATALOG_URL, { method: 'POST', body: '{}' }),
-                requestJson(`${FUNCTIONS_URL}/stripe-config`, { method: 'GET' })
+                requestJson(`${FUNCTIONS_URL}/stripe-config`, { method: 'GET' }),
+                loadProductThumbnails()
             ]);
             renderSummary(products, items);
             if (!config.checkoutEnabled || !config.stripePublishableKey) throw new Error('Stripe checkout is not configured.');

@@ -14,8 +14,8 @@ PHOTO_SYNC_JS = ROOT / "shop" / "storefront-photo-sync.js"
 STOREFRONT_JS = ROOT / "shop" / "storefront.js"
 BUILD_SEO = ROOT / "scripts" / "build_seo.py"
 PRODUCTS_DIR = ROOT / "products"
-ASSET_VERSION = "20260830-1"
-STOREFRONT_ASSET_VERSION = "20260912-2"
+ASSET_VERSION = "20261012-egress-1"
+STOREFRONT_ASSET_VERSION = "20261012-egress-1"
 SHELL_COMPATIBILITY_MARKERS = "\n// Generated shell compatibility markers: SITE_HEADER SITE_FOOTER\n"
 
 ANIMALS_PANEL = """
@@ -267,7 +267,7 @@ def validate() -> None:
         'data-product-stock',
         'data-product-description',
         'data-product-action',
-        '/shop/product-page.js?v=20260830-1',
+        '/shop/product-page.js?v=20261012-egress-1',
     ):
         if marker not in live_detail_text:
             raise RuntimeError(f"Live product detail shell is missing: {marker}")

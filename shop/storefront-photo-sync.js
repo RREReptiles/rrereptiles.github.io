@@ -4,6 +4,7 @@
     const SUPABASE_URL = 'https://zezpkoulxjagljjbyhhk.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_w1szxATkVRFs2JBQOyG8rg_ULipgOPv';
     const CATALOG_URL = `${SUPABASE_URL}/rest/v1/rpc/get_storefront_catalog`;
+    const THUMBNAIL_MANIFEST_URL = '/shop/product-thumbnails.json';
     const PLACEHOLDER_IMAGE = 'images/Logo.svg';
     const currency = new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -21,6 +22,16 @@
     let productsByName = new Map();
     let applyTimer = null;
     let refreshPromise = null;
+    let productThumbnails = {};
+
+    async function loadProductThumbnails() {
+        try {
+            const response = await fetch(THUMBNAIL_MANIFEST_URL);
+            if (response.ok) productThumbnails = await response.json();
+        } catch (_) {
+            productThumbnails = {};
+        }
+    }
 
     function normalizeName(value) {
         return String(value || '')
@@ -66,27 +77,7 @@
     }
 
     function productImages(product) {
-        const configured = Array.isArray(product?.image_urls)
-            ? product.image_urls
-            : [];
-        const candidates = [
-            ...configured,
-            product?.image_url
-        ];
-        const unique = [];
-        const seen = new Set();
-
-        candidates.forEach(value => {
-            const source = typeof value === 'object' && value
-                ? value.url || value.public_url || value.image_url || value.src
-                : value;
-            const url = String(source || '').trim();
-            if (!url || seen.has(url)) return;
-            seen.add(url);
-            unique.push(url);
-        });
-
-        return unique.length > 0 ? unique : [PLACEHOLDER_IMAGE];
+        return [productThumbnails[String(product?.item_id)]?.card || PLACEHOLDER_IMAGE];
     }
 
     function installCarouselStyles() {
@@ -407,6 +398,7 @@
 
         refreshPromise = (async () => {
             try {
+                await loadProductThumbnails();
                 const response = await fetch(CATALOG_URL, {
                     method: 'POST',
                     headers: {

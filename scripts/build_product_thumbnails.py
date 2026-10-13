@@ -62,7 +62,7 @@ def main():
                     resized.thumbnail((size, size), Image.Resampling.LANCZOS)
                     target = OUTPUT / f"{item_id}-{size}.webp"
                     resized.save(target, "WEBP", quality=76, method=3)
-                    variants[label] = f"/images/product-thumbnails/{target.name}"
+                    variants[label] = f"/images/product-thumbnails/{target.name}?v=20261012-egress-2"
                     output_bytes += target.stat().st_size
                 source_bytes += source.stat().st_size
                 manifest[item_id] = {**variants, "source": source_path}

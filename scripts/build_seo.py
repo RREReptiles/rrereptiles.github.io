@@ -44,7 +44,7 @@ def product_photo(product: dict[str, Any], variant: str = "detail") -> str:
     try:
         manifest = json.loads(THUMBNAIL_MANIFEST_PATH.read_text(encoding="utf-8"))
         image = manifest.get(str(product.get("item_id")), {}).get(variant)
-        if image and (ROOT / image.lstrip("/")).is_file():
+        if image and (ROOT / urlparse(image).path.lstrip("/")).is_file():
             return f"{BASE_URL}{image}"
     except (OSError, ValueError, TypeError):
         pass

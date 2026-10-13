@@ -61,6 +61,7 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           import re
+          from urllib.parse import urlparse
           import xml.etree.ElementTree as ET
 
           ET.parse('sitemap.xml')
@@ -70,7 +71,7 @@ jobs:
           manifest = __import__('json').loads(Path('shop/product-thumbnails.json').read_text(encoding='utf-8'))
           for item_id, variants in manifest.items():
               for variant in ('card', 'detail'):
-                  image = Path(variants[variant].lstrip('/'))
+                  image = Path(urlparse(variants[variant]).path.lstrip('/'))
                   if not image.is_file():
                       raise SystemExit(f'Missing {variant} image for item {item_id}: {image}')
           storage_pages = [str(page) for page in pages if 'supabase.co/storage/v1/' in page.read_text(encoding='utf-8')]
